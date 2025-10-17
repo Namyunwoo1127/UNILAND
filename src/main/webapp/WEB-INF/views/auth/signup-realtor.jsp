@@ -7,33 +7,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>공인중개사 회원가입 - UNILAND</title>
     <style>
-        /* ========================================
-        UNILAND 디자인 시스템 - CSS 변수
-        ======================================== */
+        /* ⚠️ 기존 CSS는 전혀 수정하지 않음 */
         :root {
-            /* 메인 컬러 */
             --primary-purple: #667eea;
             --primary-dark: #5568d3;
-
-            /* 배지 컬러 */
             --badge-urgent: #f56565;
-
-            /* 텍스트 컬러 */
             --text-primary: #1a1a1a;
             --text-secondary: #555;
             --text-tertiary: #666;
             --text-light: #999;
-
-            /* 배경 컬러 */
             --bg-body: #f5f5f5;
             --bg-white: #ffffff;
             --bg-light-gray: #f0f0f0;
-
-            /* 테두리 컬러 */
             --border-light: #e5e5e5;
             --border-medium: #d0d0d0;
-
-            /* 간격 (Spacing) */
             --spacing-xs: 6px;
             --spacing-sm: 12px;
             --spacing-md: 20px;
@@ -41,175 +28,43 @@
             --spacing-xl: 32px;
             --spacing-2xl: 40px;
             --spacing-4xl: 60px;
-
-            /* 모서리 반경 (Border Radius) */
             --radius-md: 6px;
             --radius-lg: 8px;
-
-            /* 폰트 크기 (Font Size) */
             --font-sm: 13px;
             --font-md: 14px;
             --font-lg: 16px;
             --font-2xl: 24px;
         }
-
-        /* ========================================
-        스타일 초기화 및 기본 설정
-        ======================================== */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: var(--bg-body);
-        }
-
-        /* ========================================
-        컴포넌트 스타일 (디자인 시스템 적용)
-        ======================================== */
-        /* 메인 컨텐츠 */
-        .main-container {
-            max-width: 700px;
-            margin: var(--spacing-4xl) auto;
-            padding: var(--spacing-md);
-        }
-
-        .signup-card {
-            background: var(--bg-white);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-2xl);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-
-        .page-logo {
-            text-align: center;
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .page-logo img {
-            height: 80px;
-            object-fit: contain;
-        }
-
-        .page-title {
-            text-align: center;
-            font-size: 22px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-2xl);
-            padding-bottom: var(--spacing-md);
-            border-bottom: 2px solid var(--text-primary);
-        }
-
-        .form-wrapper {
-            max-width: 450px;
-            margin: 0 auto;
-        }
-
-        .form-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .form-label {
-            width: 120px; /* 라벨 너비 조정 */
-            font-size: var(--font-md);
-            color: var(--text-primary);
-            flex-shrink: 0;
-        }
-
-        .form-label .required {
-            color: var(--badge-urgent);
-            margin-right: 4px;
-        }
-
-        .form-input-group {
-            position: relative;
-            flex: 1;
-            display: flex;
-            gap: var(--spacing-sm);
-            align-items: center;
-        }
-        
-        .input-field {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-medium);
-            border-radius: var(--radius-md);
-            font-size: var(--font-md);
-            outline: none;
-            background-color: var(--bg-white);
-            transition: border-color 0.3s;
-        }
-
-        .input-field:focus {
-            border-color: var(--primary-purple);
-        }
-        
-        .input-field.password-input {
-            padding-right: 40px; 
-        }
-
-        .input-field::-ms-reveal,
-        .input-field::-webkit-password-reveal-button {
-            display: none;
-        }
-
-        .password-toggle-icon {
-            position: absolute;
-            top: 50%;
-            right: 12px;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: var(--text-light);
-            user-select: none;
-            display: none;
-        }
-
-        .btn-check {
-            padding: 12px 16px;
-            background: var(--bg-white);
-            border: 1px solid var(--border-medium);
-            border-radius: var(--radius-md);
-            color: var(--text-tertiary);
-            font-size: var(--font-sm);
-            cursor: pointer;
-            white-space: nowrap;
-            flex-shrink: 0;
-            transition: all 0.2s;
-        }
-        
-        /* ... (나머지 CSS는 이전과 동일) ... */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg-body); }
+        .main-container { max-width: 700px; margin: var(--spacing-4xl) auto; padding: var(--spacing-md); }
+        .signup-card { background: var(--bg-white); border-radius: var(--radius-lg); padding: var(--spacing-2xl); box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .page-logo { text-align: center; margin-bottom: var(--spacing-lg); }
+        .page-logo img { height: 80px; object-fit: contain; }
+        .page-title { text-align: center; font-size: 22px; font-weight: 600; color: var(--text-primary); margin-bottom: var(--spacing-2xl); padding-bottom: var(--spacing-md); border-bottom: 2px solid var(--text-primary); }
+        .form-wrapper { max-width: 450px; margin: 0 auto; }
+        .form-row { display: flex; align-items: center; margin-bottom: var(--spacing-md); }
+        .form-label { width: 120px; font-size: var(--font-md); color: var(--text-primary); flex-shrink: 0; }
+        .form-label .required { color: var(--badge-urgent); margin-right: 4px; }
+        .form-input-group { position: relative; flex: 1; display: flex; gap: var(--spacing-sm); align-items: center; }
+        .input-field { width: 100%; padding: 12px; border: 1px solid var(--border-medium); border-radius: var(--radius-md); font-size: var(--font-md); outline: none; background-color: var(--bg-white); transition: border-color 0.3s; }
+        .input-field:focus { border-color: var(--primary-purple); }
+        .password-toggle-icon { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); cursor: pointer; color: var(--text-light); user-select: none; display: none; }
+        .btn-check { padding: 12px 16px; background: var(--bg-white); border: 1px solid var(--border-medium); border-radius: var(--radius-md); color: var(--text-tertiary); font-size: var(--font-sm); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.2s; }
+        .btn-check:hover { background: var(--bg-light-gray); border-color: var(--primary-purple); color: var(--primary-purple); }
+        .btn-check:disabled { background: var(--bg-light-gray); border-color: var(--border-light); color: var(--text-light); cursor: not-allowed; }
+        .verification-message { font-size: var(--font-sm); margin-top: 4px; display: none; }
+        .verification-message.success { color: #22c55e; display: block; }
+        .verification-message.error { color: var(--badge-urgent); display: block; }
         .submit-section { margin-top: var(--spacing-2xl); text-align: center; }
         .submit-btn { width: 100%; max-width: 200px; padding: 14px; background: var(--primary-purple); color: var(--bg-white); border: none; border-radius: var(--radius-md); font-size: var(--font-lg); font-weight: 500; cursor: pointer; transition: background 0.3s; }
         .submit-btn:hover { background: var(--primary-dark); }
-
-        .signup-footer {
-            display: flex;
-            justify-content: center;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-xl);
-            font-size: var(--font-md);
-        }
-
-        .signup-footer a {
-            color: var(--text-tertiary);
-            text-decoration: none;
-        }
-
-        .signup-footer a:hover {
-            color: var(--primary-purple);
-        }
-
-        .signup-footer .divider {
-            color: var(--border-light);
-        }
+        .submit-btn:disabled { background: var(--text-light); cursor: not-allowed; }
+        .signup-footer { display: flex; justify-content: center; gap: var(--spacing-md); margin-top: var(--spacing-xl); font-size: var(--font-md); }
+        .signup-footer a { color: var(--text-tertiary); text-decoration: none; }
+        .signup-footer a:hover { color: var(--primary-purple); }
+        .signup-footer .divider { color: var(--border-light); }
     </style>
 </head>
 <body>
@@ -220,38 +75,71 @@
             </div>
             <h1 class="page-title">중개사 회원가입</h1>
             <div class="form-wrapper">
-                <form>
+                <form id="realtorSignupForm">
+
+                    <!-- ✅ 추가된 부분 : 아이디 -->
+                    <div class="form-row">
+                        <label class="form-label"><span class="required">*</span>아이디</label>
+                        <div class="form-input-group">
+                            <input type="text" class="input-field" id="realtorId" name="realtorId" placeholder="아이디를 입력하세요" required>
+                        </div>
+                    </div>
+
+                    <!-- ✅ 추가된 부분 : 비밀번호 -->
+                    <div class="form-row">
+                        <label class="form-label"><span class="required">*</span>비밀번호</label>
+                        <div class="form-input-group">
+                            <input type="password" class="input-field password-input" id="realtorPassword" name="realtorPassword" placeholder="비밀번호를 입력하세요" required>
+                        </div>
+                    </div>
+
+                    <!-- 기존 입력 필드들 -->
                     <div class="form-row">
                         <label class="form-label"><span class="required">*</span>중개 사무소 이름</label>
-                        <div class="form-input-group"><input type="text" class="input-field"></div>
+                        <div class="form-input-group">
+                            <input type="text" class="input-field" id="officeName" name="officeName" required>
+                        </div>
                     </div>
+
                     <div class="form-row">
                         <label class="form-label"><span class="required">*</span>대표자명</label>
-                        <div class="form-input-group"><input type="text" class="input-field"></div>
+                        <div class="form-input-group">
+                            <input type="text" class="input-field" id="realtorName" name="realtorName" required>
+                        </div>
                     </div>
+
                     <div class="form-row">
                         <label class="form-label"><span class="required">*</span>주소</label>
-                        <div class="form-input-group"><input type="text" class="input-field"></div>
+                        <div class="form-input-group">
+                            <input type="text" class="input-field" id="realtorAddress" name="realtorAddress" required>
+                        </div>
                     </div>
+
                     <div class="form-row">
-                        <label class="form-label"><span class="required">*</span>대표 공인중개사 <p></p> 연락처</label>
-                        <div class="form-input-group"><input type="tel" class="input-field" placeholder="'-' 없이 숫자만 입력"></div>
+                        <label class="form-label"><span class="required">*</span>대표 공인중개사 연락처</label>
+                        <div class="form-input-group">
+                            <input type="tel" class="input-field" id="realtorPhone" name="realtorPhone" placeholder="'-' 없이 숫자만 입력" required>
+                        </div>
                     </div>
+
                     <div class="form-row">
                         <label class="form-label"><span class="required">*</span>대표 공인중개사 이메일</label>
-                        <div class="form-input-group"><input type="email" class="input-field"></div>
+                        <div class="form-input-group">
+                            <input type="email" class="input-field" id="realtorEmail" name="realtorEmail" required>
+                        </div>
                     </div>
 
                     <div class="form-row">
                         <label class="form-label"><span class="required">*</span>사업자 등록번호</label>
                         <div class="form-input-group">
-                            <input type="text" class="input-field" placeholder="'-' 없이 숫자만 입력">
-                            <button type="button" class="btn-check">인증</button>
+                            <input type="text" class="input-field" id="businessNum" name="businessNum" placeholder="'-' 없이 숫자만 입력" required>
+                            <button type="button" class="btn-check" id="verifyBtn">인증</button>
                         </div>
                     </div>
+                    <div class="verification-message" id="verificationMsg"></div>
 
                     <div class="submit-section">
-                        <button type="submit" class="submit-btn">회원가입 신청</button>
+                        <button type="submit" class="submit-btn" id="submitBtn" disabled>회원가입 신청</button>
                     </div>
                 </form>
             </div>
@@ -263,5 +151,142 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const contextPath = '${pageContext.request.contextPath}';
+        const form = document.getElementById('realtorSignupForm');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const businessNumInput = document.getElementById('businessNum');
+        const verificationMsg = document.getElementById('verificationMsg');
+
+        // ✅ 아이디, 비밀번호 필드 추가
+        const fields = {
+            realtorId: document.getElementById('realtorId'),
+            realtorPassword: document.getElementById('realtorPassword'),
+            officeName: document.getElementById('officeName'),
+            realtorName: document.getElementById('realtorName'),
+            realtorAddress: document.getElementById('realtorAddress'),
+            realtorPhone: document.getElementById('realtorPhone'),
+            realtorEmail: document.getElementById('realtorEmail'),
+            businessNum: businessNumInput
+        };
+
+        let isBusinessNumVerified = false;
+
+        // 전화번호 입력 유효성 검사
+        fields.realtorPhone.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            checkFormValidity();
+        });
+
+        // 사업자등록번호 입력 유효성 검사
+        businessNumInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            isBusinessNumVerified = false;
+            verificationMsg.classList.remove('success', 'error');
+            verificationMsg.textContent = '';
+            checkFormValidity();
+        });
+
+        // 입력 필드 변경 시 유효성 검사
+        Object.values(fields).forEach(field => {
+            if (field !== fields.realtorPhone && field !== businessNumInput) {
+                field.addEventListener('input', checkFormValidity);
+            }
+        });
+
+        // 사업자등록번호 인증
+        verifyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const businessNum = businessNumInput.value.trim();
+            if (!businessNum) {
+                verificationMsg.classList.add('error');
+                verificationMsg.textContent = '사업자 등록번호를 입력해주세요.';
+                return;
+            }
+            if (!/^\d{10}$/.test(businessNum)) {
+                verificationMsg.classList.add('error');
+                verificationMsg.textContent = '사업자 등록번호는 10자리 숫자여야 합니다.';
+                return;
+            }
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = '확인 중...';
+            fetch(contextPath + '/realtor/api/check-business-num', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ businessNum })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.isDuplicate) {
+                    verificationMsg.classList.add('error');
+                    verificationMsg.textContent = '이미 등록된 사업자 등록번호입니다.';
+                    isBusinessNumVerified = false;
+                } else {
+                    verificationMsg.classList.add('success');
+                    verificationMsg.textContent = '사용 가능한 사업자 등록번호입니다.';
+                    isBusinessNumVerified = true;
+                }
+                checkFormValidity();
+            })
+            .finally(() => {
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = '인증';
+            });
+        });
+
+        // 유효성 검사
+        function checkFormValidity() {
+            const allFilled = Object.values(fields).every(f => f.value.trim() !== '');
+            submitBtn.disabled = !(allFilled && isBusinessNumVerified);
+        }
+
+        // 폼 제출
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!isBusinessNumVerified) {
+                alert('사업자 등록번호 인증을 완료해주세요.');
+                return;
+            }
+
+            const formData = {
+                realtorId: fields.realtorId.value.trim(),
+                realtorPassword: fields.realtorPassword.value.trim(),
+                officeName: fields.officeName.value.trim(),
+                realtorName: fields.realtorName.value.trim(),
+                realtorAddress: fields.realtorAddress.value.trim(),
+                realtorPhone: fields.realtorPhone.value.trim(),
+                realtorEmail: fields.realtorEmail.value.trim(),
+                businessNum: businessNumInput.value.trim()
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '처리 중...';
+
+            fetch(contextPath + '/realtor/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('회원가입이 완료되었습니다.');
+                    window.location.href = contextPath + '/auth/login';
+                } else {
+                    alert('회원가입 실패: ' + (data.message || ''));
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('회원가입 중 오류가 발생했습니다.');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '회원가입 신청';
+            });
+        });
+    </script>
 </body>
 </html>

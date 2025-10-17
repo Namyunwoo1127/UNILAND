@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.elon.boot.domain.realtor.model.store.RealtorMapper">
+
+    <resultMap id="realtorResultMap" type="com.elon.boot.domain.realtor.model.vo.Realtor">
+        <id column="REALTOR_ID" property="realtorId" jdbcType="VARCHAR"/>
+        <result column="OFFICE_NAME" property="officeName"/>
+        <result column="REALTOR_NAME" property="realtorName"/>
+        <result column="REALTOR_ADDRESS" property="realtorAddress"/>
+        <result column="REALTOR_PHONE" property="realtorPhone"/>
+        <result column="REALTOR_EMAIL" property="realtorEmail"/>
+        <result column="BUSINESS_NUM" property="businessNum"/>
+        <result column="CREATED_AT" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="UPDATED_AT" property="updatedAt" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insertRealtor" parameterType="com.elon.boot.domain.realtor.model.vo.Realtor">
+        INSERT INTO REALTOR_TBL (
+            REALTOR_ID,
+            OFFICE_NAME,
+            REALTOR_NAME,
+            REALTOR_ADDRESS,
+            REALTOR_PHONE,
+            REALTOR_EMAIL,
+            BUSINESS_NUM,
+            CREATED_AT,
+            UPDATED_AT
+        ) VALUES (
+            #{realtorId},
+            #{officeName},
+            #{realtorName},
+            #{realtorAddress},
+            #{realtorPhone},
+            #{realtorEmail},
+            #{businessNum},
+            SYSDATE,
+            SYSDATE
+        )
+    </insert>
+
+    <select id="selectRealtorById" parameterType="String" resultMap="realtorResultMap">
+        SELECT *
+        FROM REALTOR_TBL
+        WHERE REALTOR_ID = #{realtorId}
+    </select>
+
+    <select id="selectRealtorByBusinessNum" parameterType="String" resultMap="realtorResultMap">
+        SELECT *
+        FROM REALTOR_TBL
+        WHERE BUSINESS_NUM = #{businessNum}
+    </select>
+
+    <update id="updateRealtor" parameterType="com.elon.boot.domain.realtor.model.vo.Realtor">
+        UPDATE REALTOR_TBL
+        SET
+            OFFICE_NAME = #{officeName},
+            REALTOR_NAME = #{realtorName},
+            REALTOR_ADDRESS = #{realtorAddress},
+            REALTOR_PHONE = #{realtorPhone},
+            REALTOR_EMAIL = #{realtorEmail},
+            BUSINESS_NUM = #{businessNum},
+            UPDATED_AT = SYSDATE
+        WHERE REALTOR_ID = #{realtorId}
+    </update>
+
+    <delete id="deleteRealtor" parameterType="String">
+        DELETE FROM REALTOR_TBL
+        WHERE REALTOR_ID = #{realtorId}
+    </delete>
+
+</mapper>

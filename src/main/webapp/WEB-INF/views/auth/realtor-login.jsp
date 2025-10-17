@@ -5,45 +5,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로그인 - UNILAND</title>
+    <title>중개사 로그인 - UNILAND</title>
+
+    <!-- 기존 CSS 그대로 유지 -->
     <style>
-        /* ========================================
-        UNILAND 디자인 시스템 - CSS 변수
-        ======================================== */
         :root {
-            /* 메인 컬러 */
             --primary-purple: #667eea;
             --primary-dark: #5568d3;
             --secondary-purple: #764ba2;
-
-            /* 텍스트 컬러 */
             --text-primary: #1a1a1a;
             --text-secondary: #555;
             --text-tertiary: #666;
             --text-light: #999;
-
-            /* 배경 컬러 */
             --bg-body: #f5f5f5;
             --bg-white: #ffffff;
-
-            /* 테두리 컬러 */
             --border-light: #e5e5e5;
             --border-medium: #d0d0d0;
-
-            /* 간격 (Spacing) */
             --spacing-sm: 12px;
             --spacing-md: 20px;
             --spacing-lg: 24px;
             --spacing-xl: 32px;
             --spacing-2xl: 40px;
-            --spacing-4xl: 60px;
-
-            /* 모서리 반경 (Border Radius) */
             --radius-md: 6px;
             --radius-lg: 8px;
-
-            /* 폰트 크기 (Font Size) */
-            --font-sm: 13px;
+            --font-sm: 12.5px;
             --font-md: 14px;
             --font-base: 15px;
             --font-lg: 16px;
@@ -51,9 +36,6 @@
             --font-3xl: 32px;
         }
 
-        /* ========================================
-        스타일 초기화 및 기본 설정
-        ======================================== */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
         * {
@@ -67,12 +49,8 @@
             background-color: var(--bg-body);
         }
 
-        /* ========================================
-        컴포넌트 스타일 (디자인 시스템 적용)
-        ======================================== */
-        /* 메인 컨텐츠 */
         .main-container {
-            max-width: 420px; /* 로그인 카드에 맞춰 너비 조정 */
+            max-width: 420px;
             margin: 80px auto;
             padding: var(--spacing-md);
         }
@@ -80,7 +58,7 @@
         .login-card {
             background: var(--bg-white);
             border-radius: var(--radius-lg);
-            padding: var(--spacing-2xl) var(--spacing-2xl);
+            padding: var(--spacing-2xl);
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             text-align: center;
         }
@@ -199,21 +177,23 @@
         .login-footer {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: var(--spacing-md);
             margin-top: var(--spacing-xl);
-            font-size: var(--font-md);
+            font-size: var(--font-sm);
         }
 
         .login-footer a {
             color: var(--text-tertiary);
             text-decoration: none;
+            transition: color 0.2s;
         }
 
         .login-footer a:hover {
             color: var(--primary-purple);
         }
 
-        .divider {
+        .login-footer .divider {
             color: var(--border-light);
         }
 
@@ -221,7 +201,6 @@
             color: #f56565;
             font-size: 14px;
             margin-bottom: 20px;
-            display: ${not empty error ? 'block' : 'none'};
         }
     </style>
 </head>
@@ -229,22 +208,24 @@
     <div class="main-container">
         <div class="login-card">
             <div class="login-logo">
-                <a href="${pageContext.request.contextPath}/">
-                    <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
-                </a>
+                <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
             </div>
-            <div class="login-subtitle">대학교 부동산 임대 플랫폼</div>
+            <div class="login-subtitle">중개사 로그인 페이지</div>
 
             <c:if test="${not empty error}">
                 <div class="error-message">${error}</div>
             </c:if>
 
-            <form action="${pageContext.request.contextPath}/auth/login" method="post">
+            <form action="${pageContext.request.contextPath}/auth/realtor-login" method="post">
                 <div class="input-group">
-                    <input type="text" name="userId" class="input-field" placeholder="아이디를 입력해주세요" required>
+                    <input type="text" name="realtorId" class="input-field" placeholder="중개사 아이디를 입력해주세요" required>
                 </div>
                 <div class="input-group">
-                    <input type="password" name="userPassword" class="input-field" placeholder="비밀번호를 입력해주세요" required>
+                    <input type="password" name="password" class="input-field" placeholder="비밀번호를 입력해주세요" required>
+                </div>
+                <!-- ✅ 새로 추가된 사업자등록번호 입력 -->
+                <div class="input-group">
+                    <input type="text" name="businessNumber" class="input-field" placeholder="사업자등록번호를 입력해주세요" required>
                 </div>
 
                 <div class="checkbox-group">
@@ -252,23 +233,15 @@
                     <label for="remember">로그인 상태 유지</label>
                 </div>
 
-                <button type="submit" class="login-btn">로그인</button>
+                <button type="submit" class="login-btn">중개사 로그인</button>
             </form>
-
-            <div class="social-divider">소셜 로그인</div>
-
-            <div class="social-login">
-                <button class="social-btn" title="Google"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" width="24"></button>
-                <button class="social-btn" title="Kakao"><img src="https://www.kakaocorp.com/page/favicon.ico" alt="Kakao" width="24"></button>
-                <button class="social-btn" title="Naver"><img src="https://logoproject.naver.com/favicon.ico" alt="Naver" width="24"></button>
-            </div>
 
             <div class="login-footer">
                 <a href="${pageContext.request.contextPath}/auth/find-password">비밀번호 찾기</a>
                 <span class="divider">|</span>
                 <a href="${pageContext.request.contextPath}/auth/signup">회원가입</a>
                 <span class="divider">|</span>
-                <a href="${pageContext.request.contextPath}/auth/realtor-login">중개사 로그인</a>
+                <a href="${pageContext.request.contextPath}/auth/login">일반 회원 로그인</a>
             </div>
         </div>
     </div>

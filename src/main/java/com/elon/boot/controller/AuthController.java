@@ -163,4 +163,8 @@ public class AuthController {
         // TODO: 중개사 회원가입 로직 구현
         return "redirect:/auth/login";
     }
+	@GetMapping("/realtor-login")
+	public String realtorLogin() {
+	    return "auth/realtor-login";
+	}
 }
