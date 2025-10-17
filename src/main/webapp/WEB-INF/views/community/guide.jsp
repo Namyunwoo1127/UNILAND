@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -22,14 +23,12 @@
             line-height: 1.6;
         }
 
-        /* 메인 컨테이너 */
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 40px 24px;
         }
 
-        /* 페이지 헤더 */
         .page-header {
             text-align: center;
             margin-bottom: 50px;
@@ -47,7 +46,6 @@
             color: #666;
         }
 
-        /* 카테고리 탭 */
         .category-tabs {
             background: white;
             padding: 20px;
@@ -83,7 +81,6 @@
             border-color: #667eea;
         }
 
-        /* 컨텐츠 영역 */
         .content-wrapper {
             background: white;
             border-radius: 12px;
@@ -91,7 +88,6 @@
             padding: 30px;
         }
 
-        /* 상단 컨트롤 */
         .controls {
             display: flex;
             justify-content: space-between;
@@ -158,7 +154,6 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
-        /* 게시글 리스트 */
         .post-list {
             list-style: none;
         }
@@ -202,7 +197,12 @@
             margin-bottom: 8px;
         }
 
-        .post-category.tip {
+        .post-category.contract {
+            background: #e0e7ff;
+            color: #667eea;
+        }
+
+        .post-category.moving {
             background: #feebc8;
             color: #c05621;
         }
@@ -213,8 +213,8 @@
         }
 
         .post-category.area {
-            background: #e0e7ff;
-            color: #434190;
+            background: #bee3f8;
+            color: #2c5282;
         }
 
         .post-category.qna {
@@ -269,6 +269,7 @@
             border-radius: 4px;
             font-size: 12px;
             font-weight: 600;
+            margin-left: 8px;
         }
 
         .post-badge.hot {
@@ -276,7 +277,6 @@
             color: #c53030;
         }
 
-        /* 인기글 섹션 */
         .popular-section {
             background: #f7fafc;
             padding: 20px;
@@ -332,43 +332,6 @@
             font-weight: 500;
         }
 
-        /* 페이지네이션 */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-top: 40px;
-        }
-
-        .pagination button {
-            padding: 10px 15px;
-            border: 2px solid #e2e8f0;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            color: #4a5568;
-            transition: all 0.2s;
-        }
-
-        .pagination button:hover {
-            border-color: #667eea;
-            color: #667eea;
-        }
-
-        .pagination button.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* 빈 상태 */
         .empty-state {
             text-align: center;
             padding: 80px 20px;
@@ -388,10 +351,8 @@
 
         .empty-state p {
             color: #718096;
-            margin-bottom: 30px;
         }
 
-        /* 반응형 */
         @media (max-width: 768px) {
             .controls {
                 flex-direction: column;
@@ -414,12 +375,9 @@
     </style>
 </head>
 <body>
-    <!-- 헤더 포함 -->
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
-    <!-- 메인 컨테이너 -->
     <div class="main-container">
-        <!-- 페이지 헤더 -->
         <div class="page-header">
             <h1 class="page-title">🏠 자취 가이드</h1>
             <p class="page-subtitle">처음 자취하는 대학생을 위한 꿀팁 모음</p>
@@ -427,63 +385,60 @@
 
         <!-- 카테고리 탭 -->
         <div class="category-tabs">
-            <button class="category-tab active" onclick="filterCategory('all')">
+            <button class="category-tab ${empty category or category eq 'all' ? 'active' : ''}" 
+                    onclick="filterCategory('all')">
                 <i class="fa-solid fa-list"></i> 전체
             </button>
-            <button class="category-tab" onclick="filterCategory('contract')">
+            <button class="category-tab ${category eq 'contract' ? 'active' : ''}" 
+                    onclick="filterCategory('contract')">
                 <i class="fa-solid fa-file-contract"></i> 계약 팁
             </button>
-            <button class="category-tab" onclick="filterCategory('moving')">
+            <button class="category-tab ${category eq 'moving' ? 'active' : ''}" 
+                    onclick="filterCategory('moving')">
                 <i class="fa-solid fa-truck-moving"></i> 이사 팁
             </button>
-            <button class="category-tab" onclick="filterCategory('life')">
+            <button class="category-tab ${category eq 'life' ? 'active' : ''}" 
+                    onclick="filterCategory('life')">
                 <i class="fa-solid fa-house-user"></i> 생활 팁
             </button>
-            <button class="category-tab" onclick="filterCategory('area')">
+            <button class="category-tab ${category eq 'area' ? 'active' : ''}" 
+                    onclick="filterCategory('area')">
                 <i class="fa-solid fa-map-location-dot"></i> 동네 정보
             </button>
-            <button class="category-tab" onclick="filterCategory('qna')">
+            <button class="category-tab ${category eq 'qna' ? 'active' : ''}" 
+                    onclick="filterCategory('qna')">
                 <i class="fa-solid fa-question-circle"></i> 질문/답변
             </button>
         </div>
 
-        <!-- 컨텐츠 영역 -->
         <div class="content-wrapper">
-            <!-- 인기글 -->
+            <!-- 인기글 섹션 -->
+            <c:if test="${not empty popularGuides}">
             <div class="popular-section">
                 <h3 class="popular-title">
                     <i class="fa-solid fa-fire" style="color: #f56565;"></i>
                     인기 게시글 TOP 5
                 </h3>
                 <ul class="popular-list">
-                    <li class="popular-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/1'">
-                        <span class="popular-number">1</span>
-                        <span class="popular-item-title">계약 전 꼭 확인해야 할 10가지 체크리스트</span>
+                    <c:forEach var="popular" items="${popularGuides}" varStatus="status">
+                    <li class="popular-item" 
+                        onclick="location.href='${pageContext.request.contextPath}/community/guide/${popular.guideNo}'">
+                        <span class="popular-number">${status.index + 1}</span>
+                        <span class="popular-item-title">${popular.guideTitle}</span>
                     </li>
-                    <li class="popular-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/2'">
-                        <span class="popular-number">2</span>
-                        <span class="popular-item-title">신촌 자취생이 알려주는 실전 생활비 절약법</span>
-                    </li>
-                    <li class="popular-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/3'">
-                        <span class="popular-number">3</span>
-                        <span class="popular-item-title">원룸 곰팡이 예방 완벽 가이드</span>
-                    </li>
-                    <li class="popular-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/4'">
-                        <span class="popular-number">4</span>
-                        <span class="popular-item-title">대학가 숨은 맛집 추천 (홍대편)</span>
-                    </li>
-                    <li class="popular-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/5'">
-                        <span class="popular-number">5</span>
-                        <span class="popular-item-title">보증금 돌려받기 실전 노하우</span>
-                    </li>
+                    </c:forEach>
                 </ul>
             </div>
+            </c:if>
 
             <!-- 상단 컨트롤 -->
             <div class="controls">
                 <form action="${pageContext.request.contextPath}/community/guide" method="get" class="search-box">
+                    <c:if test="${not empty category and category ne 'all'}">
+                        <input type="hidden" name="category" value="${category}">
+                    </c:if>
                     <input type="text" name="keyword" class="search-input"
-                           placeholder="검색어를 입력하세요" value="${param.keyword}">
+                           placeholder="검색어를 입력하세요" value="${keyword}">
                     <button type="submit" class="btn-search">
                         <i class="fa-solid fa-magnifying-glass"></i> 검색
                     </button>
@@ -498,22 +453,51 @@
                 <c:choose>
                     <c:when test="${not empty guideList}">
                         <c:forEach var="guide" items="${guideList}">
-                            <li class="post-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/${guide.guideId}'">
+                            <li class="post-item" 
+                                onclick="location.href='${pageContext.request.contextPath}/community/guide/${guide.guideNo}'">
                                 <div class="post-header">
                                     <div class="post-left">
-                                        <span class="post-category ${guide.category}">${guide.categoryName}</span>
-                                        <c:if test="${guide.isHot}">
+                                        <span class="post-category ${guide.guideCategory}">
+                                            <c:choose>
+                                                <c:when test="${guide.guideCategory eq 'contract'}">계약 팁</c:when>
+                                                <c:when test="${guide.guideCategory eq 'moving'}">이사 팁</c:when>
+                                                <c:when test="${guide.guideCategory eq 'life'}">생활 팁</c:when>
+                                                <c:when test="${guide.guideCategory eq 'area'}">동네 정보</c:when>
+                                                <c:when test="${guide.guideCategory eq 'qna'}">질문/답변</c:when>
+                                                <c:otherwise>${guide.guideCategory}</c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                        <c:if test="${guide.isHot eq 'Y'}">
                                             <span class="post-badge hot">
                                                 <i class="fa-solid fa-fire"></i> HOT
                                             </span>
                                         </c:if>
-                                        <h3 class="post-title">${guide.title}</h3>
-                                        <p class="post-preview">${guide.preview}</p>
+                                        <h3 class="post-title">${guide.guideTitle}</h3>
+                                        <p class="post-preview">
+                                            <c:set var="content" value="${fn:replace(guide.guideContent, '<p>', '')}" />
+                                            <c:set var="content" value="${fn:replace(content, '</p>', ' ')}" />
+                                            <c:set var="content" value="${fn:replace(content, '<br>', ' ')}" />
+                                            <c:set var="content" value="${fn:replace(content, '<h3>', '')}" />
+                                            <c:set var="content" value="${fn:replace(content, '</h3>', ' ')}" />
+                                            <c:set var="content" value="${fn:replace(content, '<ul>', '')}" />
+                                            <c:set var="content" value="${fn:replace(content, '</ul>', '')}" />
+                                            <c:set var="content" value="${fn:replace(content, '<li>', '')}" />
+                                            <c:set var="content" value="${fn:replace(content, '</li>', ' ')}" />
+                                            <c:choose>
+                                                <c:when test="${fn:length(content) > 100}">
+                                                    ${fn:substring(content, 0, 100)}...
+                                                </c:when>
+                                                <c:otherwise>
+                                                    ${content}
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="post-meta">
-                                    <span><i class="fa-solid fa-user"></i> ${guide.authorNickname}</span>
-                                    <span><i class="fa-solid fa-calendar"></i> <fmt:formatDate value="${guide.createdAt}" pattern="yyyy.MM.dd"/></span>
+                                    <span><i class="fa-solid fa-calendar"></i> 
+                                        <fmt:formatDate value="${guide.writeDate}" pattern="yyyy.MM.dd"/>
+                                    </span>
                                     <span><i class="fa-solid fa-eye"></i> ${guide.viewCount}</span>
                                     <span><i class="fa-solid fa-heart"></i> ${guide.likeCount}</span>
                                     <span><i class="fa-solid fa-comment"></i> ${guide.commentCount}</span>
@@ -522,233 +506,35 @@
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
-                        <!-- 샘플 데이터 (서버에서 데이터가 없을 때) -->
-                        <li class="post-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/1'">
-                    <div class="post-header">
-                        <div class="post-left">
-                            <span class="post-category">계약 팁</span>
-                            <span class="post-badge hot">
-                                <i class="fa-solid fa-fire"></i> HOT
-                            </span>
-                            <h3 class="post-title">계약 전 꼭 확인해야 할 10가지 체크리스트</h3>
-                            <p class="post-preview">
-                                처음 원룸 계약하시는 분들을 위해 실전 체크리스트를 준비했습니다. 
-                                수압, 채광, 곰팡이, 소음 등 현장에서 꼭 확인해야 할 항목들을 정리했어요...
-                            </p>
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <h3>게시글이 없습니다</h3>
+                            <p>첫 번째 게시글을 작성해보세요!</p>
                         </div>
-                    </div>
-                    <div class="post-meta">
-                        <span><i class="fa-solid fa-user"></i> 자취고수</span>
-                        <span><i class="fa-solid fa-calendar"></i> 2024.01.15</span>
-                        <span><i class="fa-solid fa-eye"></i> 1,245</span>
-                        <span><i class="fa-solid fa-heart"></i> 89</span>
-                        <span><i class="fa-solid fa-comment"></i> 23</span>
-                    </div>
-                </li>
-
-                <li class="post-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/2'">
-                    <div class="post-header">
-                        <div class="post-left">
-                            <span class="post-category life">생활 팁</span>
-                            <h3 class="post-title">신촌 자취생이 알려주는 실전 생활비 절약법</h3>
-                            <p class="post-preview">
-                                월 생활비 50만원으로 버티는 법! 장보기 꿀팁부터 통신비 절약까지 
-                                실제로 제가 사용하는 방법들을 공유합니다...
-                            </p>
-                        </div>
-                    </div>
-                    <div class="post-meta">
-                        <span><i class="fa-solid fa-user"></i> 알뜰자취러</span>
-                        <span><i class="fa-solid fa-calendar"></i> 2024.01.14</span>
-                        <span><i class="fa-solid fa-eye"></i> 892</span>
-                        <span><i class="fa-solid fa-heart"></i> 67</span>
-                        <span><i class="fa-solid fa-comment"></i> 15</span>
-                    </div>
-                </li>
-
-                <li class="post-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/3'">
-                    <div class="post-header">
-                        <div class="post-left">
-                            <span class="post-category life">생활 팁</span>
-                            <span class="post-badge hot">
-                                <i class="fa-solid fa-fire"></i> HOT
-                            </span>
-                            <h3 class="post-title">원룸 곰팡이 예방 완벽 가이드</h3>
-                            <p class="post-preview">
-                                겨울철 원룸 곰팡이 때문에 고생하시는 분들 많으시죠? 
-                                환기, 제습, 청소 방법까지 곰팡이 예방의 모든 것을 알려드립니다...
-                            </p>
-                        </div>
-                    </div>
-                    <div class="post-meta">
-                        <span><i class="fa-solid fa-user"></i> 깔끔쟁이</span>
-                        <span><i class="fa-solid fa-calendar"></i> 2024.01.13</span>
-                        <span><i class="fa-solid fa-eye"></i> 756</span>
-                        <span><i class="fa-solid fa-heart"></i> 54</span>
-                        <span><i class="fa-solid fa-comment"></i> 18</span>
-                    </div>
-                </li>
-
-                <li class="post-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/4'">
-                    <div class="post-header">
-                        <div class="post-left">
-                            <span class="post-category area">동네 정보</span>
-                            <h3 class="post-title">대학가 숨은 맛집 추천 (홍대편)</h3>
-                            <p class="post-preview">
-                                홍대 근처에서 자취하시는 분들! 가성비 좋은 숨은 맛집들을 소개합니다. 
-                                혼밥하기 좋은 곳부터 회식 장소까지...
-                            </p>
-                        </div>
-                    </div>
-                    <div class="post-meta">
-                        <span><i class="fa-solid fa-user"></i> 홍대맛집러</span>
-                        <span><i class="fa-solid fa-calendar"></i> 2024.01.12</span>
-                        <span><i class="fa-solid fa-eye"></i> 623</span>
-                        <span><i class="fa-solid fa-heart"></i> 42</span>
-                        <span><i class="fa-solid fa-comment"></i> 12</span>
-                    </div>
-                </li>
-
-                <li class="post-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/5'">
-                    <div class="post-header">
-                        <div class="post-left">
-                            <span class="post-category tip">이사 팁</span>
-                            <h3 class="post-title">보증금 돌려받기 실전 노하우</h3>
-                            <p class="post-preview">
-                                계약 종료 후 보증금 100% 돌려받는 법! 
-                                입주 시 사진 찍기부터 퇴거 청소까지 단계별로 알려드립니다...
-                            </p>
-                        </div>
-                    </div>
-                    <div class="post-meta">
-                        <span><i class="fa-solid fa-user"></i> 현명한자취러</span>
-                        <span><i class="fa-solid fa-calendar"></i> 2024.01.11</span>
-                        <span><i class="fa-solid fa-eye"></i> 534</span>
-                        <span><i class="fa-solid fa-heart"></i> 38</span>
-                        <span><i class="fa-solid fa-comment"></i> 9</span>
-                    </div>
-                </li>
-
-                <li class="post-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/6'">
-                    <div class="post-header">
-                        <div class="post-left">
-                            <span class="post-category qna">질문/답변</span>
-                            <h3 class="post-title">첫 자취 준비물 뭐가 필요할까요?</h3>
-                            <p class="post-preview">
-                                다음 달에 처음으로 자취를 시작하는데요, 
-                                필수 준비물이 뭐가 있을까요? 선배님들 조언 부탁드립니다...
-                            </p>
-                        </div>
-                    </div>
-                    <div class="post-meta">
-                        <span><i class="fa-solid fa-user"></i> 자취초보</span>
-                        <span><i class="fa-solid fa-calendar"></i> 2024.01.10</span>
-                        <span><i class="fa-solid fa-eye"></i> 421</span>
-                        <span><i class="fa-solid fa-heart"></i> 24</span>
-                        <span><i class="fa-solid fa-comment"></i> 16</span>
-                    </div>
-                </li>
-
-                <li class="post-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/7'">
-                    <div class="post-header">
-                        <div class="post-left">
-                            <span class="post-category">계약 팁</span>
-                            <h3 class="post-title">월세 vs 전세, 어떤 게 유리할까?</h3>
-                            <p class="post-preview">
-                                대학생 입장에서 월세와 전세 중 어떤 것이 더 유리한지 비교 분석해봤습니다. 
-                                각각의 장단점과 상황별 추천...
-                            </p>
-                        </div>
-                    </div>
-                    <div class="post-meta">
-                        <span><i class="fa-solid fa-user"></i> 부동산공부중</span>
-                        <span><i class="fa-solid fa-calendar"></i> 2024.01.09</span>
-                        <span><i class="fa-solid fa-eye"></i> 387</span>
-                        <span><i class="fa-solid fa-heart"></i> 19</span>
-                        <span><i class="fa-solid fa-comment"></i> 7</span>
-                    </div>
-                </li>
-
-                <li class="post-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/8'">
-                    <div class="post-header">
-                        <div class="post-left">
-                            <span class="post-category area">동네 정보</span>
-                            <h3 class="post-title">신촌 vs 홍대, 어디가 살기 좋을까?</h3>
-                            <p class="post-preview">
-                                연세대 다니는 학생입니다. 신촌과 홍대 중 어디에 방을 구할지 고민 중인데요, 
-                                실거주자 분들의 의견이 궁금합니다...
-                            </p>
-                        </div>
-                    </div>
-                    <div class="post-meta">
-                        <span><i class="fa-solid fa-user"></i> 연세대24</span>
-                        <span><i class="fa-solid fa-calendar"></i> 2024.01.08</span>
-                        <span><i class="fa-solid fa-eye"></i> 298</span>
-                        <span><i class="fa-solid fa-heart"></i> 15</span>
-                        <span><i class="fa-solid fa-comment"></i> 11</span>
-                    </div>
-                </li>
                     </c:otherwise>
                 </c:choose>
             </ul>
-
-            <!-- 페이지네이션 -->
-            <div class="pagination">
-                <c:if test="${currentPage > 1}">
-                    <button onclick="location.href='?page=${currentPage - 1}'">
-                        <i class="fa-solid fa-chevron-left"></i> 이전
-                    </button>
-                </c:if>
-                <c:if test="${currentPage == null || currentPage <= 1}">
-                    <button disabled><i class="fa-solid fa-chevron-left"></i> 이전</button>
-                </c:if>
-
-                <c:choose>
-                    <c:when test="${not empty totalPages}">
-                        <c:forEach var="i" begin="1" end="${totalPages}">
-                            <button onclick="location.href='?page=${i}'"
-                                    class="${i == currentPage ? 'active' : ''}">
-                                ${i}
-                            </button>
-                        </c:forEach>
-                    </c:when>
-                    <c:otherwise>
-                        <button class="active">1</button>
-                        <button onclick="location.href='?page=2'">2</button>
-                        <button onclick="location.href='?page=3'">3</button>
-                        <button onclick="location.href='?page=4'">4</button>
-                        <button onclick="location.href='?page=5'">5</button>
-                    </c:otherwise>
-                </c:choose>
-
-                <c:if test="${currentPage < totalPages}">
-                    <button onclick="location.href='?page=${currentPage + 1}'">
-                        다음 <i class="fa-solid fa-chevron-right"></i>
-                    </button>
-                </c:if>
-                <c:if test="${currentPage == null || (totalPages != null && currentPage >= totalPages)}">
-                    <button onclick="location.href='?page=2'">다음 <i class="fa-solid fa-chevron-right"></i></button>
-                </c:if>
-            </div>
         </div>
     </div>
 
-    <!-- 푸터 포함 -->
     <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
 
     <script>
         // 카테고리 필터
         function filterCategory(category) {
-            const tabs = document.querySelectorAll('.category-tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-
-            // 카테고리별 필터링
-            if (category === 'all') {
-                location.href = '${pageContext.request.contextPath}/community/guide';
-            } else {
-                location.href = '${pageContext.request.contextPath}/community/guide?category=' + category;
+            const keyword = '${keyword}' || '';
+            let url = '${pageContext.request.contextPath}/community/guide';
+            
+            if (category !== 'all') {
+                url += '?category=' + category;
+                if (keyword) {
+                    url += '&keyword=' + encodeURIComponent(keyword);
+                }
+            } else if (keyword) {
+                url += '?keyword=' + encodeURIComponent(keyword);
             }
+            
+            location.href = url;
         }
 
         // 글쓰기 (로그인 체크)
@@ -762,16 +548,8 @@
                 return;
             }
 
-            // 글쓰기 페이지로 이동
             location.href = '${pageContext.request.contextPath}/community/guide/write';
         }
-
-        // 엔터키로 검색
-        document.querySelector('.search-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.querySelector('.btn-search').click();
-            }
-        });
     </script>
 </body>
 </html>

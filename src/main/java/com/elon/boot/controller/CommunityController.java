@@ -1,15 +1,30 @@
 package com.elon.boot.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.elon.boot.domain.community.guide.model.service.GuideService;
+import com.elon.boot.domain.community.guide.model.vo.Guide;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/community")
+@RequiredArgsConstructor
 public class CommunityController {
 
+   private final GuideService gService;
+   
     // 공지사항 목록
     @GetMapping("/notice")
     public String noticeList(
@@ -47,10 +62,33 @@ public class CommunityController {
     @GetMapping("/guide")
     public String guideList(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String category,
+            @RequestParam(required = false, defaultValue = "all") String category,
             @RequestParam(required = false, defaultValue = "1") int page,
             Model model) {
-
+       try {
+          // 카테고리 처리 ('all'이면 null로)
+          String searchCategory = (category != null && !"all".equals(category)) ? category : null;
+           
+//           int totalCount = gService.getGuideCount(keyword, searchCategory);
+           
+           int boardLimit = 10;
+           int pageLimit = 5;
+           
+           List<Guide> guideList = gService.getGuideList(keyword, searchCategory);
+           
+           List<Guide> popularGuides = gService.getPopularGuides();
+          
+          model.addAttribute("guideList", guideList);
+          model.addAttribute("popularGuides", popularGuides);
+          model.addAttribute("keyword", keyword);
+          model.addAttribute("category", category);
+          
+          
+      } catch (Exception e) {
+         e.printStackTrace();
+           model.addAttribute("errorMessage", "게시글 목록을 불러오는데 실패했습니다.");
+      }
+       
         // TODO: 실제 데이터베이스에서 가이드 목록 가져오기
         // List<Guide> guideList = guideService.getGuideList(keyword, category, page);
         // int totalCount = guideService.getGuideCount(keyword, category);

@@ -154,7 +154,7 @@ public class AuthController {
     // 중개사 회원가입 페이지
     @GetMapping("/signup-realtor")
     public String signupRealtorPage() {
-        return "auth/signup-realtor";
+        return "auth/signup-realtor"; 
     }
 
     // 중개사 회원가입 처리
