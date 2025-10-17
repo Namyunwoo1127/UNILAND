@@ -528,7 +528,7 @@
         <!-- 인기 매물 섹션 -->
         <section class="popular-section">
             <div class="section-header">
-                <h2>이번 주 인기 매물</h2>
+                <h2>이번 주 인기 매물123</h2>
                 <span class="view-all">전체보기 →</span>
             </div>
             <div class="property-slider-container">
