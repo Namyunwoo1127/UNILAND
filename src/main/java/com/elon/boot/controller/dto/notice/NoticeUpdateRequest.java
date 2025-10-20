@@ -8,9 +8,9 @@ import lombok.ToString;
 @Getter
 @ToString
 public class NoticeUpdateRequest {
-   private int noticeNo;
+    private int noticeNo;
     private String noticeSubject;
     private String noticeContent;
-    private String noticeImportant;  // 'Y' or 'N'
-    private String noticeIsNew;      // 'Y' or 'N'
+    private String noticeImportant;  // Y/N
+    private String noticeIsNew;      // Y/N
 }
