@@ -1,8 +1,8 @@
 package com.elon.boot.controller;
 
-import java.util.HashMap;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.elon.boot.controller.dto.notice.NoticeInsertRequest;
 import com.elon.boot.controller.dto.notice.NoticeUpdateRequest;
@@ -21,236 +22,215 @@ import com.elon.boot.domain.user.model.vo.User;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
-@RequestMapping("/community/notice")
+@RequestMapping("/community")
 @RequiredArgsConstructor
+@Slf4j
 public class NoticeController {
-   
-   private final NoticeService nService;
     
-   /**
-     * 공지사항 목록 조회
-     * URL: /community/notice
-     */
-    @GetMapping
-    public String showNoticeList(
-            @RequestParam(value = "page", defaultValue = "1") int currentPage,
-            @RequestParam(value = "keyword", required = false) String keyword,
-            Model model) {
+    private final NoticeService noticeService;
+    
+    // 공지사항 목록
+    @GetMapping("/notice")
+    public String noticeList(Model model) {
         try {
-            int boardCountPerPage = 10;  // 한 페이지당 게시물 수
-            int naviCountPerPage = 5;    // 한 페이징당 페이지 수
-            
-            List<Notice> noticeList;
-            int totalCount;
-            
-            // 검색어가 있는 경우
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                Map<String, Object> searchMap = new HashMap<>();
-                searchMap.put("searchCondition", "title");  // 제목으로 검색
-                searchMap.put("searchKeyword", keyword);
-                searchMap.put("currentPage", currentPage);
-                searchMap.put("boardLimit", boardCountPerPage);
-                
-                noticeList = nService.selectSearchList(searchMap);
-                totalCount = nService.getTotalCount(searchMap);
-                model.addAttribute("keyword", keyword);
-            } else {
-                // 전체 목록 조회
-                noticeList = nService.selectList(currentPage, boardCountPerPage);
-                totalCount = nService.getTotalCount();
-            }
-            
-            // 페이징 계산
-            int totalPages = (int) Math.ceil((double) totalCount / boardCountPerPage);
-            int startNavi = ((currentPage - 1) / naviCountPerPage) * naviCountPerPage + 1;
-            int endNavi = Math.min(startNavi + naviCountPerPage - 1, totalPages);
-            
+            List<Notice> noticeList = noticeService.getAllNotices();
             model.addAttribute("noticeList", noticeList);
-            model.addAttribute("totalCount", totalCount);
-            model.addAttribute("currentPage", currentPage);
-            model.addAttribute("totalPages", totalPages);
-            model.addAttribute("startNavi", startNavi);
-            model.addAttribute("endNavi", endNavi);
             
-            return "community/notice";
-        } catch (Exception e) {
-            model.addAttribute("errorMsg", e.getMessage());
-            return "common/error";
-        }
-    }
-    
-    /**
-     * 공지사항 상세 조회
-     * URL: /community/notice/{noticeNo}
-     */
-    @GetMapping("/{noticeNo}")
-    public String showNoticeDetail(
-            @PathVariable("noticeNo") int noticeNo,
-            Model model) {
-        try {
-            Notice notice = nService.selectOneByNo(noticeNo);
-            if (notice == null) {
-                model.addAttribute("errorMsg", "존재하지 않는 공지사항입니다.");
-                return "common/error";
-            }
-            model.addAttribute("notice", notice);
-            return "community/notice-detail";
-        } catch (Exception e) {
-            model.addAttribute("errorMsg", e.getMessage());
-            return "common/error";
-        }
-    }
-    
-    /**
-     * 공지사항 작성 폼
-     * URL: /community/notice/insert (GET)
-     */
-    @GetMapping("/insert")
-    public String showInsertForm(HttpSession session, Model model) {
-        try {
-            // 관리자 체크
-            User loginUser = (User) session.getAttribute("loginUser");
-            if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
-                model.addAttribute("errorMsg", "관리자만 공지사항을 작성할 수 있습니다.");
-                return "common/error";
-            }
-            return "community/notice-insert";
-        } catch (Exception e) {
-            model.addAttribute("errorMsg", e.getMessage());
-            return "common/error";
-        }
-    }
-    
-    /**
-     * 공지사항 작성 처리
-     * URL: /community/notice/insert (POST)
-     */
-    @PostMapping("/insert")
-    public String insertNotice(
-            @ModelAttribute NoticeInsertRequest notice,
-            HttpSession session,
-            Model model) {
-        try {
-            // 관리자 체크
-            User loginUser = (User) session.getAttribute("loginUser");
-            if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
-                model.addAttribute("errorMsg", "관리자만 공지사항을 작성할 수 있습니다.");
-                return "common/error";
+            log.debug("공지사항 목록 조회 성공: {} 건", noticeList != null ? noticeList.size() : 0);
+            
+            if (noticeList != null) {
+                for (Notice notice : noticeList) {
+                    log.debug("공지사항: NO={}, SUBJECT={}, WRITER={}", 
+                        notice.getNoticeNo(), 
+                        notice.getNoticeSubject(), 
+                        notice.getNoticeWriter());
+                }
             }
             
-            // 사용자 정보 설정
+        } catch (Exception e) {
+            log.error("공지사항 조회 실패: ", e);
+            model.addAttribute("error", "공지사항을 불러올 수 없습니다.");
+        }
+        
+        return "community/notice";
+    }
+    
+    // 공지사항 상세
+    @GetMapping("/notice/{noticeNo}")
+    public String noticeDetail(@PathVariable Integer noticeNo, Model model) {
+        try {
+            Notice notice = noticeService.getNoticeById(noticeNo);
+            
+            if (notice != null) {
+                model.addAttribute("notice", notice);
+                log.debug("공지사항 상세 조회: {}", notice);
+            } else {
+                model.addAttribute("error", "존재하지 않는 공지사항입니다.");
+            }
+            
+        } catch (Exception e) {
+            log.error("공지사항 상세 조회 실패: ", e);
+            model.addAttribute("error", "공지사항을 불러올 수 없습니다.");
+        }
+        
+        return "community/notice-detail";
+    }
+    
+    // 공지사항 작성 페이지
+    @GetMapping("/notice-write")
+    public String noticeWriteForm(HttpSession session, RedirectAttributes redirectAttributes) {
+        // 로그인 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/auth/login";
+        }
+        
+        return "community/notice-write";
+    }
+    
+    // 공지사항 작성 처리
+    @PostMapping("/notice-write")
+    public String noticeWrite(@ModelAttribute Notice notice,
+                             @RequestParam(value = "noticeImportant", defaultValue = "N") String noticeImportant,
+                             @RequestParam(value = "noticeIsnew", defaultValue = "N") String noticeIsnew,
+                             HttpSession session,
+                             RedirectAttributes redirectAttributes) {
+        
+        // 로그인 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/auth/login";
+        }
+        
+        try {
+            // 작성자 정보 설정
             notice.setUserId(loginUser.getUserId());
             notice.setNoticeWriter(loginUser.getUserName());
+            notice.setNoticeImportant(noticeImportant);
+            notice.setNoticeIsnew(noticeIsnew);
             
-            // 공지사항 등록
-            int result = nService.insertNotice(notice);
+            log.debug("공지사항 등록 시도: {}", notice);
+            
+            int result = noticeService.createNotice(notice);
             
             if (result > 0) {
-                return "redirect:/community/notice";
+                redirectAttributes.addFlashAttribute("message", "공지사항이 등록되었습니다.");
+                return "redirect:/notice";
             } else {
-                model.addAttribute("errorMsg", "공지사항 등록에 실패했습니다.");
-                return "common/error";
+                redirectAttributes.addFlashAttribute("error", "공지사항 등록에 실패했습니다.");
+                return "redirect:/community/notice-write";
             }
+            
         } catch (Exception e) {
-            model.addAttribute("errorMsg", e.getMessage());
-            return "common/error";
+            log.error("공지사항 등록 실패: ", e);
+            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다: " + e.getMessage());
+            return "redirect:/community/notice-write";
         }
     }
     
-    /**
-     * 공지사항 수정 폼
-     * URL: /community/notice/modify?noticeNo=1
-     */
-    @GetMapping("/modify")
-    public String showModifyForm(
-            @RequestParam("noticeNo") int noticeNo,
-            HttpSession session,
-            Model model) {
+    // 공지사항 수정 페이지
+    @GetMapping("/edit/{noticeNo}")
+    public String noticeEditForm(@PathVariable Integer noticeNo,
+                                HttpSession session,
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
+        
+        // 로그인 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/auth/login";
+        }
+        
         try {
-            // 관리자 체크
-            User loginUser = (User) session.getAttribute("loginUser");
-            if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
-                model.addAttribute("errorMsg", "관리자만 공지사항을 수정할 수 있습니다.");
-                return "common/error";
-            }
+            Notice notice = noticeService.getNoticeById(noticeNo);
             
-            Notice notice = nService.selectOneByNo(noticeNo);
-            if (notice == null) {
-                model.addAttribute("errorMsg", "존재하지 않는 공지사항입니다.");
-                return "common/error";
+            // 작성자 본인 확인
+            if (notice != null && !notice.getUserId().equals(loginUser.getUserId())) {
+                redirectAttributes.addFlashAttribute("error", "수정 권한이 없습니다.");
+                return "redirect:/community/notice/" + noticeNo;
             }
             
             model.addAttribute("notice", notice);
-            return "community/notice-modify";
+            
         } catch (Exception e) {
-            model.addAttribute("errorMsg", e.getMessage());
-            return "common/error";
+            log.error("공지사항 조회 실패: ", e);
+            redirectAttributes.addFlashAttribute("error", "공지사항을 불러올 수 없습니다.");
+            return "redirect:/community/notice";
         }
+        
+        return "community/notice/edit";
     }
     
-    /**
-     * 공지사항 수정 처리
-     * URL: /community/notice/modify (POST)
-     */
-    @PostMapping("/modify")
-    public String updateNotice(
-            @ModelAttribute NoticeUpdateRequest notice,
-            HttpSession session,
-            Model model) {
+    // 공지사항 수정 처리
+    @PostMapping("/edit/{noticeNo}")
+    public String noticeEdit(@PathVariable Integer noticeNo,
+                           @ModelAttribute Notice notice,
+                           @RequestParam(value = "noticeImportant", defaultValue = "N") String noticeImportant,
+                           @RequestParam(value = "noticeIsnew", defaultValue = "N") String noticeIsnew,
+                           HttpSession session,
+                           RedirectAttributes redirectAttributes) {
+        
+        // 로그인 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/auth/login";
+        }
+        
         try {
-            // 관리자 체크
-            User loginUser = (User) session.getAttribute("loginUser");
-            if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
-                model.addAttribute("errorMsg", "관리자만 공지사항을 수정할 수 있습니다.");
-                return "common/error";
-            }
+            notice.setNoticeNo(noticeNo);
+            notice.setNoticeImportant(noticeImportant);
+            notice.setNoticeIsnew(noticeIsnew);
             
-            // 공지사항 수정
-            int result = nService.updateNotice(notice);
+            int result = noticeService.updateNotice(notice);
             
             if (result > 0) {
-                return "redirect:/community/notice/" + notice.getNoticeNo();
+                redirectAttributes.addFlashAttribute("message", "공지사항이 수정되었습니다.");
             } else {
-                model.addAttribute("errorMsg", "공지사항 수정에 실패했습니다.");
-                return "common/error";
+                redirectAttributes.addFlashAttribute("error", "공지사항 수정에 실패했습니다.");
             }
+            
         } catch (Exception e) {
-            model.addAttribute("errorMsg", e.getMessage());
-            return "common/error";
+            log.error("공지사항 수정 실패: ", e);
+            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다.");
         }
+        
+        return "redirect:/community/notice/" + noticeNo;
     }
     
-    /**
-     * 공지사항 삭제
-     * URL: /community/notice/delete?noticeNo=1
-     */
-    @GetMapping("/delete")
-    public String deleteNotice(
-            @RequestParam("noticeNo") int noticeNo,
-            HttpSession session,
-            Model model) {
+    // 공지사항 삭제
+    @PostMapping("/delete/{noticeNo}")
+    public String noticeDelete(@PathVariable Integer noticeNo,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes) {
+        
+        // 로그인 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/auth/login";
+        }
+        
         try {
-            // 관리자 체크
-            User loginUser = (User) session.getAttribute("loginUser");
-            if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
-                model.addAttribute("errorMsg", "관리자만 공지사항을 삭제할 수 있습니다.");
-                return "common/error";
-            }
-            
-            // 공지사항 삭제
-            int result = nService.deleteNotice(noticeNo);
+            int result = noticeService.deleteNotice(noticeNo);
             
             if (result > 0) {
-                return "redirect:/community/notice";
+                redirectAttributes.addFlashAttribute("message", "공지사항이 삭제되었습니다.");
             } else {
-                model.addAttribute("errorMsg", "공지사항 삭제에 실패했습니다.");
-                return "common/error";
+                redirectAttributes.addFlashAttribute("error", "공지사항 삭제에 실패했습니다.");
             }
+            
         } catch (Exception e) {
-            model.addAttribute("errorMsg", e.getMessage());
-            return "common/error";
+            log.error("공지사항 삭제 실패: ", e);
+            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다.");
         }
+        
+        return "redirect:/community/notice";
     }
 }

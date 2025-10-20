@@ -14,23 +14,14 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Notice {
-	private int noticeNo;
-    private String userId;
-    private String noticeSubject;
-    private String noticeContent;
-    private String noticeWriter;
-    private Timestamp noticeCreateAt;
-    private String noticeImportant;
-    private String noticeIsNew;
-    private int viewCount;
-    private String deleteYn;
-    
-    // JSP에서 사용하는 computed 속성들
-    public boolean isImportant() {
-        return "Y".equals(this.noticeImportant);
-    }
-    
-    public boolean isNew() {
-        return "Y".equals(this.noticeIsNew);
-    }
+	private Integer 	noticeNo;           // 공지사항 번호
+	private String 		userId;        		// 작성자 아이디 (USER_ID)
+    private String 		noticeSubject;      // 제목
+    private String 		noticeContent;      // 내용
+    private String 		noticeWriter;		// 작성자
+    private Timestamp 	noticeCreateat;   	// 작성일시
+    private String 		noticeImportant;	// 중요 공지 여부
+    private String 		noticeIsnew;		// 신규 공지 여부
+    private Integer 	viewCount;	        // 조회수
+    private String 		deleteYn;           // 삭제 여부 (Y/N)
 }
