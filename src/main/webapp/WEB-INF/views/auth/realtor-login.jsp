@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>중개사 로그인 - UNILAND</title>
 
-    <!-- 기존 CSS 그대로 유지 -->
+    <!-- ✅ 기존 CSS 그대로 유지 -->
     <style>
         :root {
             --primary-purple: #667eea;
@@ -130,50 +130,6 @@
             margin-right: 8px;
         }
 
-        .social-divider {
-            display: flex;
-            align-items: center;
-            margin: var(--spacing-xl) 0;
-            color: var(--text-light);
-            font-size: var(--font-md);
-        }
-
-        .social-divider::before,
-        .social-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border-light);
-        }
-
-        .social-divider::before { margin-right: 15px; }
-        .social-divider::after { margin-left: 15px; }
-
-        .social-login {
-            display: flex;
-            gap: var(--spacing-md);
-            justify-content: center;
-        }
-
-        .social-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 1px solid var(--border-light);
-            background: var(--bg-white);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .social-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
         .login-footer {
             display: flex;
             justify-content: center;
@@ -196,12 +152,6 @@
         .login-footer .divider {
             color: var(--border-light);
         }
-
-        .error-message {
-            color: #f56565;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body>
@@ -212,18 +162,20 @@
             </div>
             <div class="login-subtitle">중개사 로그인 페이지</div>
 
-            <c:if test="${not empty error}">
-                <div class="error-message">${error}</div>
+            <!-- ✅ 로그인 실패 시 alert 띄우기 -->
+            <c:if test="${not empty loginError}">
+                <script>
+                    alert("${loginError}");
+                </script>
             </c:if>
 
-            <form action="${pageContext.request.contextPath}/auth/realtor-login" method="post">
+            <form action="${pageContext.request.contextPath}/realtor/realtor-login" method="post">
                 <div class="input-group">
                     <input type="text" name="realtorId" class="input-field" placeholder="중개사 아이디를 입력해주세요" required>
                 </div>
                 <div class="input-group">
                     <input type="password" name="password" class="input-field" placeholder="비밀번호를 입력해주세요" required>
                 </div>
-                <!-- ✅ 새로 추가된 사업자등록번호 입력 -->
                 <div class="input-group">
                     <input type="text" name="businessNumber" class="input-field" placeholder="사업자등록번호를 입력해주세요" required>
                 </div>
@@ -239,7 +191,7 @@
             <div class="login-footer">
                 <a href="${pageContext.request.contextPath}/auth/find-password">비밀번호 찾기</a>
                 <span class="divider">|</span>
-                <a href="${pageContext.request.contextPath}/auth/signup">회원가입</a>
+                <a href="${pageContext.request.contextPath}/auth/signup-realtor">회원가입</a>
                 <span class="divider">|</span>
                 <a href="${pageContext.request.contextPath}/auth/login">일반 회원 로그인</a>
             </div>
