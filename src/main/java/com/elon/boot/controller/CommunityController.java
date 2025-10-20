@@ -36,7 +36,7 @@ public class CommunityController {
           // 카테고리 처리 ('all'이면 null로)
           String searchCategory = (category != null && !"all".equals(category)) ? category : null;
           
-           int boardLimit = 3;
+           int boardLimit = 10;
            int pageLimit = 5;
            int totalCount = gService.getGuideCount(keyword, searchCategory);
            int maxPage = (int) Math.ceil((double) totalCount / boardLimit);
