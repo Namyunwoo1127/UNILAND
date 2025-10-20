@@ -25,38 +25,6 @@ public class CommunityController {
 
    private final GuideService gService;
    
-    // 공지사항 목록
-    @GetMapping("/notice")
-    public String noticeList(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false, defaultValue = "1") int page,
-            Model model) {
-
-        // TODO: 실제 데이터베이스에서 공지사항 목록 가져오기
-        // List<Notice> noticeList = noticeService.getNoticeList(keyword, page);
-        // int totalCount = noticeService.getNoticeCount(keyword);
-        // int totalPages = (int) Math.ceil((double) totalCount / 10);
-
-        // model.addAttribute("noticeList", noticeList);
-        // model.addAttribute("totalCount", totalCount);
-        // model.addAttribute("currentPage", page);
-        // model.addAttribute("totalPages", totalPages);
-        // model.addAttribute("keyword", keyword);
-
-        return "community/notice";
-    }
-
-    // 공지사항 상세
-    @GetMapping("/notice/{id}")
-    public String noticeDetail(@PathVariable Long id, Model model) {
-        // TODO: 실제 데이터베이스에서 공지사항 상세 정보 가져오기
-        // Notice notice = noticeService.getNoticeById(id);
-        // noticeService.increaseViewCount(id);
-
-        // model.addAttribute("notice", notice);
-
-        return "community/notice-detail";
-    }
 
     // 가이드 목록
     @GetMapping("/guide")

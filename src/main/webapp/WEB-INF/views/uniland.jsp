@@ -163,6 +163,8 @@
             margin-top: 24px;
             color: rgba(255,255,255,0.75);
             font-size: 13px;
+            position: relative;
+            z-index: 2;
         }
 
         .search-examples span {
@@ -174,6 +176,8 @@
             cursor: pointer;
             transition: background 0.2s;
             font-weight: 400;
+            position: relative;
+            z-index: 2;
         }
 
         .search-examples span:hover {
@@ -748,11 +752,16 @@
         });
 
         // 검색 예시 클릭
-        document.querySelectorAll('.search-examples span').forEach(function(span) {
-            span.addEventListener('click', function() {
-                const searchInput = document.querySelector('.search-input');
-                searchInput.value = this.textContent;
-                searchInput.focus();
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchExamples = document.querySelectorAll('.search-examples span');
+            const searchInput = document.querySelector('.search-input');
+
+            searchExamples.forEach(function(span) {
+                span.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    searchInput.value = this.textContent;
+                    searchInput.focus();
+                });
             });
         });
 
