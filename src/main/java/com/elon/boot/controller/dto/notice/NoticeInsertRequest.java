@@ -8,10 +8,10 @@ import lombok.ToString;
 @Getter
 @ToString
 public class NoticeInsertRequest {
-   private String userId;
+    private String userId;
     private String noticeSubject;
     private String noticeContent;
     private String noticeWriter;
-    private String noticeImportant;  // 'Y' or 'N'
-    private String noticeIsNew;      // 'Y' or 'N'
+    private String noticeImportant;  // Y/N
+    private String noticeIsNew;      // Y/N
 }

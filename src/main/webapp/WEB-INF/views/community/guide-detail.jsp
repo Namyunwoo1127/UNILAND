@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${guide.title} - UNILAND</title>
+    <title>${guide.guideTitle} - UNILAND</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -62,13 +62,36 @@
 
         .post-category {
             display: inline-block;
-            background: #feebc8;
-            color: #c05621;
             padding: 6px 16px;
             border-radius: 6px;
             font-size: 13px;
             font-weight: 600;
             margin-bottom: 16px;
+        }
+
+        .post-category.contract {
+            background: #e0e7ff;
+            color: #667eea;
+        }
+
+        .post-category.moving {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .post-category.life {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .post-category.area {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .post-category.qna {
+            background: #fed7d7;
+            color: #c53030;
         }
 
         .post-title {
@@ -512,195 +535,76 @@
         <button class="btn-back" onclick="location.href='${pageContext.request.contextPath}/community/guide'">
             <i class="fa-solid fa-arrow-left"></i> 목록으로
         </button>
+        
         <!-- 게시글 헤더 -->
-        <div class="post-header">
-            <c:choose>
-                <c:when test="${not empty guide}">
-                    <span class="post-category">
-                        <i class="fa-solid fa-file-contract"></i> ${guide.categoryName}
-                    </span>
-                    <h1 class="post-title">${guide.title}</h1>
-                    <div class="post-meta">
-                        <div class="post-author-info">
-                            <div class="author-avatar">${guide.authorNickname.substring(0, 1)}</div>
-                            <div class="author-details">
-                                <span class="author-name">${guide.authorNickname}</span>
-                                <span class="post-date"><fmt:formatDate value="${guide.createdAt}" pattern="yyyy.MM.dd"/></span>
-                            </div>
-                        </div>
-                        <div class="post-stats">
-                            <span><i class="fa-solid fa-eye"></i> ${guide.viewCount}</span>
-                            <span><i class="fa-solid fa-heart"></i> ${guide.likeCount}</span>
-                            <span><i class="fa-solid fa-comment"></i> ${guide.commentCount}</span>
-                        </div>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <span class="post-category">
-                        <i class="fa-solid fa-file-contract"></i> 계약 팁
-                    </span>
-                    <h1 class="post-title">계약 전 꼭 확인해야 할 10가지 체크리스트</h1>
-                    <div class="post-meta">
-                        <div class="post-author-info">
-                            <div class="author-avatar">자</div>
-                            <div class="author-details">
-                                <span class="author-name">자취고수</span>
-                                <span class="post-date">2024.01.15</span>
-                            </div>
-                        </div>
-                        <div class="post-stats">
-                            <span><i class="fa-solid fa-eye"></i> 1,245</span>
-                            <span><i class="fa-solid fa-heart"></i> 89</span>
-                            <span><i class="fa-solid fa-comment"></i> 23</span>
-                        </div>
-                    </div>
-                </c:otherwise>
-            </c:choose>
-        </div>
+		<div class="post-header">
+		    <c:choose>
+		        <c:when test="${guide.guideCategory eq 'contract'}">
+		            <span class="post-category contract">
+		                <i class="fa-solid fa-file-contract"></i> 계약 팁
+		            </span>
+		        </c:when>
+		        <c:when test="${guide.guideCategory eq 'moving'}">
+		            <span class="post-category moving">
+		                <i class="fa-solid fa-truck-moving"></i> 이사 팁
+		            </span>
+		        </c:when>
+		        <c:when test="${guide.guideCategory eq 'life'}">
+		            <span class="post-category life">
+		                <i class="fa-solid fa-house-user"></i> 생활 팁
+		            </span>
+		        </c:when>
+		        <c:when test="${guide.guideCategory eq 'area'}">
+		            <span class="post-category area">
+		                <i class="fa-solid fa-map-location-dot"></i> 동네 정보
+		            </span>
+		        </c:when>
+		        <c:when test="${guide.guideCategory eq 'qna'}">
+		            <span class="post-category qna">
+		                <i class="fa-solid fa-question-circle"></i> 질문/답변
+		            </span>
+		        </c:when>
+		        <c:otherwise>
+		            <span class="post-category contract">
+		                <i class="fa-solid fa-file-contract"></i> ${guide.categoryName}
+		            </span>
+		        </c:otherwise>
+		    </c:choose>
+		    <h1 class="post-title">${guide.guideTitle}</h1>
+		    <div class="post-meta">
+		        <div class="post-author-info">
+		            <div class="author-avatar">
+		                ${guide.userId.substring(0, 1)}
+		            </div>
+		            <div class="author-details">
+		                <span class="author-name">
+		                    ${guide.userId}
+		                </span>
+		                <span class="post-date">
+		                    <fmt:formatDate value="${guide.writeDate}" pattern="yyyy.MM.dd"/>
+		                </span>
+		            </div>
+		        </div>
+		        <div class="post-stats">
+		            <span><i class="fa-solid fa-eye"></i> ${guide.viewCount}</span>
+		            <span><i class="fa-solid fa-heart"></i> ${guide.likeCount}</span>
+		            <span><i class="fa-solid fa-comment"></i> ${guide.commentCount}</span>
+		        </div>
+		    </div>
+		</div>
 
         <!-- 게시글 내용 -->
         <div class="post-content">
             <div class="post-body">
-                <c:choose>
-                    <c:when test="${not empty guide}">
-                        ${guide.content}
-                    </c:when>
-                    <c:otherwise>
-                        <p>
-                    안녕하세요! 3년차 자취생입니다. 
-                    처음 원룸 계약하실 때 무엇을 확인해야 할지 막막하셨던 경험 다들 있으시죠?
-                </p>
-
-                <p>
-                    저도 첫 계약 때 제대로 확인하지 못해서 나중에 후회했던 적이 많았는데요,
-                    그동안의 경험을 바탕으로 <strong>계약 전 꼭 확인해야 할 체크리스트</strong>를 정리해봤습니다!
-                </p>
-
-                <div class="highlight-box">
-                    <p>
-                        💡 <strong>꿀팁!</strong> 이 체크리스트를 프린트해서 매물 방문 시 직접 체크하면서 확인하시면 더욱 좋습니다!
-                    </p>
-                </div>
-
-                <h2>1. 수압 및 배수 확인 💧</h2>
-                <p>
-                    가장 중요한 체크 포인트입니다!
-                </p>
-                <ul>
-                    <li><strong>수압 확인:</strong> 샤워기와 세면대 수도꼭지를 모두 틀어보세요. 수압이 약하면 샤워할 때 정말 불편합니다.</li>
-                    <li><strong>온수 확인:</strong> 온수가 나오는지, 얼마나 빨리 나오는지 확인하세요.</li>
-                    <li><strong>배수 확인:</strong> 물을 틀어놓고 배수가 잘 되는지 확인하세요. 배수가 느리면 곰팡이의 원인이 됩니다.</li>
-                </ul>
-
-                <h2>2. 채광 및 환기 ☀️</h2>
-                <p>
-                    낮에 방문해서 직접 확인하는 것이 가장 중요합니다.
-                </p>
-                <ul>
-                    <li><strong>창문 위치:</strong> 남향이 가장 좋지만, 동향도 괜찮습니다. 북향은 피하시는 게 좋아요.</li>
-                    <li><strong>햇빛:</strong> 낮 시간대에 방문해서 햇빛이 얼마나 들어오는지 확인하세요.</li>
-                    <li><strong>환기:</strong> 창문을 열어보고 맞바람이 치는지 확인하세요.</li>
-                </ul>
-
-                <h2>3. 곰팡이 및 습기 🔍</h2>
-                <p>
-                    곰팡이는 건강에도 안 좋고 한번 생기면 없애기 정말 힘듭니다!
-                </p>
-                <ul>
-                    <li><strong>벽지 확인:</strong> 벽지가 들뜨거나 얼룩이 있는지 확인하세요.</li>
-                    <li><strong>코너 부분:</strong> 방 구석구석, 특히 창문 주변을 자세히 살펴보세요.</li>
-                    <li><strong>화장실:</strong> 화장실 환기구가 제대로 작동하는지 확인하세요.</li>
-                    <li><strong>냄새:</strong> 곰팡이 냄새나 퀴퀴한 냄새가 나는지 확인하세요.</li>
-                </ul>
-
-                <h2>4. 방음 상태 🔇</h2>
-                <p>
-                    소음 문제는 생활의 질과 직결됩니다!
-                </p>
-                <ul>
-                    <li><strong>벽 두드리기:</strong> 벽을 두드려보고 얼마나 울리는지 확인하세요.</li>
-                    <li><strong>시간대별 방문:</strong> 가능하면 저녁 시간에도 한 번 방문해보세요.</li>
-                    <li><strong>주변 환경:</strong> 도로와 가까운지, 주변에 술집이나 클럽이 있는지 확인하세요.</li>
-                </ul>
-
-                <h2>5. 보안 및 안전 🔒</h2>
-                <ul>
-                    <li><strong>도어락:</strong> 도어락이 최신형인지, 잘 작동하는지 확인하세요.</li>
-                    <li><strong>CCTV:</strong> 건물 입구와 복도에 CCTV가 있는지 확인하세요.</li>
-                    <li><strong>현관문:</strong> 이중 잠금장치가 있는지 확인하세요.</li>
-                    <li><strong>1층 여부:</strong> 1층이라면 창문 잠금장치를 꼭 확인하세요.</li>
-                </ul>
-
-                <h2>6. 옵션 상태 확인 ✅</h2>
-                <p>
-                    계약서에 명시된 옵션들이 실제로 있는지, 작동하는지 확인해야 합니다.
-                </p>
-                <ul>
-                    <li><strong>에어컨:</strong> 직접 켜보고 냉방이 잘 되는지 확인하세요.</li>
-                    <li><strong>냉장고:</strong> 냉동/냉장이 제대로 되는지 확인하세요.</li>
-                    <li><strong>세탁기:</strong> 탈수가 잘 되는지, 소음은 얼마나 되는지 확인하세요.</li>
-                    <li><strong>가구:</strong> 침대, 책상 등이 흔들리지 않는지 확인하세요.</li>
-                </ul>
-
-                <h2>7. 전기 설비 ⚡</h2>
-                <ul>
-                    <li><strong>콘센트 위치:</strong> 콘센트가 필요한 곳에 있는지 확인하세요.</li>
-                    <li><strong>콘센트 개수:</strong> 멀티탭 없이도 충분한지 확인하세요.</li>
-                    <li><strong>전등:</strong> 모든 전등이 잘 켜지는지 확인하세요.</li>
-                    <li><strong>전기용량:</strong> 차단기를 확인해 전기 용량이 충분한지 확인하세요.</li>
-                </ul>
-
-                <h2>8. 관리비 항목 상세 확인 💰</h2>
-                <p>
-                    관리비에 무엇이 포함되는지 꼼꼼히 확인하세요!
-                </p>
-                <ul>
-                    <li><strong>포함 항목:</strong> 수도, 인터넷, 가스 등 어떤 것이 포함되는지 확인하세요.</li>
-                    <li><strong>개별 난방:</strong> 난방비는 어떻게 청구되는지 확인하세요.</li>
-                    <li><strong>예상 비용:</strong> 겨울철/여름철 평균 관리비가 얼마인지 물어보세요.</li>
-                </ul>
-
-                <h2>9. 입주 가능일 및 계약 기간 📅</h2>
-                <ul>
-                    <li><strong>입주일:</strong> 정확한 입주 가능일을 확인하세요.</li>
-                    <li><strong>계약 기간:</strong> 최소 계약 기간이 얼마인지 확인하세요.</li>
-                    <li><strong>단기 계약:</strong> 학기 단위 계약이 가능한지 물어보세요.</li>
-                </ul>
-
-                <h2>10. 주변 편의시설 🏪</h2>
-                <ul>
-                    <li><strong>편의점:</strong> 도보 5분 이내에 편의점이 있는지 확인하세요.</li>
-                    <li><strong>세탁소:</strong> 이불 빨래를 위한 세탁소가 가까운지 확인하세요.</li>
-                    <li><strong>교통:</strong> 지하철역이나 버스 정류장까지의 거리를 확인하세요.</li>
-                    <li><strong>학교:</strong> 학교까지의 실제 소요 시간을 확인하세요.</li>
-                </ul>
-
-                <div class="highlight-box">
-                    <p>
-                        📸 <strong>사진 꼭 찍어두세요!</strong><br>
-                        입주 전 방 상태를 사진으로 남겨두면 나중에 보증금 돌려받을 때 도움이 됩니다!
-                    </p>
-                </div>
-
-                <h2>마무리 💪</h2>
-                <p>
-                    이 체크리스트를 참고하셔서 좋은 방 구하시길 바랍니다!
-                    궁금한 점이 있으시면 댓글로 남겨주세요. 아는 범위 내에서 답변 드리겠습니다!
-                </p>
-
-                <p>
-                    모두 행복한 자취 생활 하세요! 🏠✨
-                </p>
-                    </c:otherwise>
-                </c:choose>
+                ${guide.guideContent}
             </div>
         </div>
 
         <!-- 액션 버튼 -->
         <div class="post-actions">
-            <button class="btn-action btn-like" onclick="toggleLike()">
-                <i class="fa-regular fa-heart"></i>
-                <span id="likeText">좋아요 (<c:out value="${guide.likeCount != null ? guide.likeCount : 89}"/>)</span>
+            <button class="btn-action btn-like ${guide.likedByUser ? 'active' : ''}" onclick="toggleLike()">
+                <i class="${guide.likedByUser ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                <span id="likeText">좋아요 (${guide.likeCount})</span>
             </button>
             <button class="btn-action btn-share" onclick="sharePost()">
                 <i class="fa-solid fa-share-nodes"></i>
@@ -712,18 +616,18 @@
         <div class="comments-section">
             <h3 class="comments-header">
                 <i class="fa-solid fa-comments"></i>
-                댓글 <span class="comment-count"><c:out value="${guide.commentCount != null ? guide.commentCount : 23}"/></span>
+                댓글 <span class="comment-count">${guide.commentCount}</span>
             </h3>
 
             <!-- 댓글 작성 -->
             <div class="comment-form">
-                <form action="${pageContext.request.contextPath}/community/guide/${guide.guideId}/comment" method="post">
+                <form action="${pageContext.request.contextPath}/community/guide/${guide.guideNo}/comment" method="post">
                     <textarea class="comment-textarea" name="content" placeholder="댓글을 입력하세요..." id="commentInput"></textarea>
                     <div class="comment-form-footer">
                         <span class="comment-info">
                             <c:choose>
-                                <c:when test="${not empty sessionScope.user}">
-                                    ${sessionScope.user.nickname}님으로 댓글 작성
+                                <c:when test="${not empty sessionScope.loginUser}">
+                                    ${sessionScope.loginUser.nickname}님으로 댓글 작성
                                 </c:when>
                                 <c:otherwise>
                                     로그인 후 댓글을 작성할 수 있습니다.
@@ -755,7 +659,7 @@
                                         <button class="btn-comment-action">
                                             <i class="fa-regular fa-heart"></i> 좋아요
                                         </button>
-                                        <c:if test="${sessionScope.user.userId == comment.userId}">
+                                        <c:if test="${sessionScope.loginUser.userId == comment.userId}">
                                             <button class="btn-comment-action" onclick="deleteComment(${comment.commentId})">삭제</button>
                                         </c:if>
                                     </div>
@@ -767,111 +671,9 @@
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
-                        <!-- 샘플 댓글 데이터 -->
-                <li class="comment-item">
-                    <div class="comment-header">
-                        <div class="comment-author-info">
-                            <div class="comment-avatar">김</div>
-                            <div>
-                                <span class="comment-author">김대학</span>
-                                <span class="comment-date">2024.01.15 14:30</span>
-                            </div>
-                        </div>
-                        <div class="comment-actions">
-                            <button class="btn-comment-action">
-                                <i class="fa-regular fa-heart"></i> 좋아요
-                            </button>
-                            <button class="btn-comment-action">답글</button>
-                        </div>
-                    </div>
-                    <div class="comment-body">
-                        정말 유용한 정보 감사합니다! 다음 주에 방 보러 가는데 이 체크리스트 프린트해서 가져가야겠어요 👍
-                    </div>
-                </li>
-
-                <li class="comment-item">
-                    <div class="comment-header">
-                        <div class="comment-author-info">
-                            <div class="comment-avatar">이</div>
-                            <div>
-                                <span class="comment-author">이학생</span>
-                                <span class="comment-date">2024.01.15 15:20</span>
-                            </div>
-                        </div>
-                        <div class="comment-actions">
-                            <button class="btn-comment-action">
-                                <i class="fa-regular fa-heart"></i> 좋아요
-                            </button>
-                            <button class="btn-comment-action">답글</button>
-                        </div>
-                    </div>
-                    <div class="comment-body">
-                        특히 곰팡이 확인 부분이 중요한 것 같아요. 제가 첫 자취방에서 곰팡이 때문에 고생 많이 했거든요 ㅠㅠ
-                    </div>
-                </li>
-
-                <li class="comment-item">
-                    <div class="comment-header">
-                        <div class="comment-author-info">
-                            <div class="comment-avatar">박</div>
-                            <div>
-                                <span class="comment-author">박연세</span>
-                                <span class="comment-date">2024.01.15 16:45</span>
-                            </div>
-                        </div>
-                        <div class="comment-actions">
-                            <button class="btn-comment-action">
-                                <i class="fa-regular fa-heart"></i> 좋아요
-                            </button>
-                            <button class="btn-comment-action">답글</button>
-                        </div>
-                    </div>
-                    <div class="comment-body">
-                        수압 체크는 정말 중요합니다! 저는 이거 안 봐서 지금 샤워할 때마다 후회 중이에요... 다음 계약 때는 꼭 확인해야겠네요.
-                    </div>
-                </li>
-
-                <li class="comment-item">
-                    <div class="comment-header">
-                        <div class="comment-author-info">
-                            <div class="comment-avatar">최</div>
-                            <div>
-                                <span class="comment-author">최학생</span>
-                                <span class="comment-date">2024.01.15 18:30</span>
-                            </div>
-                        </div>
-                        <div class="comment-actions">
-                            <button class="btn-comment-action">
-                                <i class="fa-regular fa-heart"></i> 좋아요
-                            </button>
-                            <button class="btn-comment-action">답글</button>
-                        </div>
-                    </div>
-                    <div class="comment-body">
-                        관리비 항목 확인 부분 추가해주셔서 감사합니다! 처음에 관리비에 뭐가 포함되는지 안 물어봐서 나중에 청구서 보고 깜짝 놀랐었어요.
-                    </div>
-                </li>
-
-                <li class="comment-item">
-                    <div class="comment-header">
-                        <div class="comment-author-info">
-                            <div class="comment-avatar">정</div>
-                            <div>
-                                <span class="comment-author">정대학</span>
-                                <span class="comment-date">2024.01.16 09:15</span>
-                            </div>
-                        </div>
-                        <div class="comment-actions">
-                            <button class="btn-comment-action">
-                                <i class="fa-regular fa-heart"></i> 좋아요
-                            </button>
-                            <button class="btn-comment-action">답글</button>
-                        </div>
-                    </div>
-                    <div class="comment-body">
-                        저장해놨다가 친구들한테도 공유해야겠어요! 정말 꿀팁 가득한 글이네요 👏👏
-                    </div>
-                </li>
+                        <li style="text-align: center; padding: 40px 0; color: #999;">
+                            첫 번째 댓글을 작성해보세요!
+                        </li>
                     </c:otherwise>
                 </c:choose>
             </ul>
@@ -882,19 +684,19 @@
             <div class="post-navigation">
                 <h3 class="nav-title">다른 글 보기</h3>
                 <c:if test="${not empty prevGuide}">
-                    <div class="nav-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/${prevGuide.guideId}'">
+                    <div class="nav-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/${prevGuide.guideNo}'">
                         <div class="nav-label">
                             <i class="fa-solid fa-chevron-up"></i> 이전 글
                         </div>
-                        <div class="nav-post-title">${prevGuide.title}</div>
+                        <div class="nav-post-title">${prevGuide.guideTitle}</div>
                     </div>
                 </c:if>
                 <c:if test="${not empty nextGuide}">
-                    <div class="nav-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/${nextGuide.guideId}'">
+                    <div class="nav-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/${nextGuide.guideNo}'">
                         <div class="nav-label">
                             <i class="fa-solid fa-chevron-down"></i> 다음 글
                         </div>
-                        <div class="nav-post-title">${nextGuide.title}</div>
+                        <div class="nav-post-title">${nextGuide.guideTitle}</div>
                     </div>
                 </c:if>
             </div>
@@ -911,11 +713,11 @@
 
     <script>
         // 좋아요 토글
-        let isLiked = false;
-        let likeCount = ${guide.likeCount != null ? guide.likeCount : 89};
+        let isLiked = ${guide.likedByUser};
+        let likeCount = ${guide.likeCount};
 
         function toggleLike() {
-            const isLoggedIn = ${not empty sessionScope.user};
+            const isLoggedIn = ${not empty sessionScope.loginUser};
 
             if (!isLoggedIn) {
                 if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
@@ -929,7 +731,7 @@
             const text = document.getElementById('likeText');
 
             // AJAX로 좋아요 처리
-            fetch('${pageContext.request.contextPath}/community/guide/${guide.guideId}/like', {
+            fetch('${pageContext.request.contextPath}/community/guide/${guide.guideNo}/like', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -975,7 +777,7 @@
 
         // 댓글 작성
         function submitComment() {
-            const isLoggedIn = ${not empty sessionScope.user};
+            const isLoggedIn = ${not empty sessionScope.loginUser};
             const commentInput = document.getElementById('commentInput');
 
             if (!isLoggedIn) {
@@ -1002,7 +804,7 @@
                 return;
             }
 
-            fetch('${pageContext.request.contextPath}/community/guide/${guide.guideId}/comment/' + commentId, {
+            fetch('${pageContext.request.contextPath}/community/guide/${guide.guideNo}/comment/' + commentId, {
                 method: 'DELETE'
             })
             .then(response => response.json())
