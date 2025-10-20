@@ -352,6 +352,36 @@
         .empty-state p {
             color: #718096;
         }
+        
+        /* [추가] 페이징 바 스타일 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 40px;
+            gap: 8px;
+        }
+        .page-link {
+            display: block;
+            padding: 8px 14px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #4a5568;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .page-link:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        .page-link.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
 
         @media (max-width: 768px) {
             .controls {
@@ -495,6 +525,7 @@
                                     </div>
                                 </div>
                                 <div class="post-meta">
+                                    <span><i class="fa-solid fa-user"></i> ${guide.userId}</span> 
                                     <span><i class="fa-solid fa-calendar"></i> 
                                         <fmt:formatDate value="${guide.writeDate}" pattern="yyyy.MM.dd"/>
                                     </span>
@@ -514,6 +545,36 @@
                     </c:otherwise>
                 </c:choose>
             </ul>
+
+            <!-- [추가] 페이징 바 -->
+            <c:if test="${not empty guideList}">
+            <div class="pagination">
+                <!-- 이전 페이지 그룹으로 이동 -->
+                <c:if test="${startPage > 1}">
+                    <a href="${pageContext.request.contextPath}/community/guide?page=${startPage - 1}&category=${category}&keyword=${keyword}" class="page-link">&laquo;</a>
+                </c:if>
+                <!-- 이전 페이지로 이동 -->
+                <c:if test="${currentPage > 1}">
+                    <a href="${pageContext.request.contextPath}/community/guide?page=${currentPage - 1}&category=${category}&keyword=${keyword}" class="page-link">&lt;</a>
+                </c:if>
+    
+                <!-- 페이지 번호 목록 -->
+                <c:forEach var="p" begin="${startPage}" end="${endPage}">
+                    <a href="${pageContext.request.contextPath}/community/guide?page=${p}&category=${category}&keyword=${keyword}"
+                       class="page-link ${currentPage == p ? 'active' : ''}">${p}</a>
+                </c:forEach>
+    
+                <!-- 다음 페이지로 이동 -->
+                <c:if test="${currentPage < maxPage}">
+                    <a href="${pageContext.request.contextPath}/community/guide?page=${currentPage + 1}&category=${category}&keyword=${keyword}" class="page-link">&gt;</a>
+                </c:if>
+                <!-- 다음 페이지 그룹으로 이동 -->
+                <c:if test="${endPage < maxPage}">
+                     <a href="${pageContext.request.contextPath}/community/guide?page=${endPage + 1}&category=${category}&keyword=${keyword}" class="page-link">&raquo;</a>
+                </c:if>
+            </div>
+            </c:if>
+
         </div>
     </div>
 
