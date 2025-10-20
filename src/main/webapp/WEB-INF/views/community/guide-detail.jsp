@@ -526,18 +526,18 @@
     </style>
 </head>
 <body>
-    <!-- 헤더 포함 -->
+	<!-- 헤더 포함 -->
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
-    <!-- 메인 컨테이너 -->
+	<!-- 메인 컨테이너 -->
     <div class="main-container">
-        <!-- 뒤로가기 버튼 -->
+		<!-- 뒤로가기 버튼 -->
         <button class="btn-back" onclick="location.href='${pageContext.request.contextPath}/community/guide'">
             <i class="fa-solid fa-arrow-left"></i> 목록으로
         </button>
         
-        <!-- 게시글 헤더 -->
-		<div class="post-header">
+		<!-- 게시글 헤더 -->
+        <div class="post-header">
 		    <c:choose>
 		        <c:when test="${guide.guideCategory eq 'contract'}">
 		            <span class="post-category contract">
@@ -587,24 +587,24 @@
 		        </div>
 		        <div class="post-stats">
 		            <span><i class="fa-solid fa-eye"></i> ${guide.viewCount}</span>
-		            <span><i class="fa-solid fa-heart"></i> ${guide.likeCount}</span>
+		            <span><i class="fa-solid fa-heart"></i> ${likeCount}</span>
 		            <span><i class="fa-solid fa-comment"></i> ${guide.commentCount}</span>
 		        </div>
 		    </div>
 		</div>
 
-        <!-- 게시글 내용 -->
+		<!-- 게시글 내용 -->
         <div class="post-content">
             <div class="post-body">
                 ${guide.guideContent}
             </div>
         </div>
 
-        <!-- 액션 버튼 -->
+		<!-- 액션 버튼 -->
         <div class="post-actions">
-            <button class="btn-action btn-like ${guide.likedByUser ? 'active' : ''}" onclick="toggleLike()">
-                <i class="${guide.likedByUser ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-                <span id="likeText">좋아요 (${guide.likeCount})</span>
+            <button class="btn-action btn-like ${isLiked ? 'active' : ''}" onclick="toggleLike()">
+                <i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                <span id="likeText">좋아요 (${likeCount})</span>
             </button>
             <button class="btn-action btn-share" onclick="sharePost()">
                 <i class="fa-solid fa-share-nodes"></i>
@@ -612,14 +612,14 @@
             </button>
         </div>
 
-        <!-- 댓글 섹션 -->
+		<!-- 댓글 섹션 -->
         <div class="comments-section">
             <h3 class="comments-header">
                 <i class="fa-solid fa-comments"></i>
                 댓글 <span class="comment-count">${guide.commentCount}</span>
             </h3>
 
-            <!-- 댓글 작성 -->
+			<!-- 댓글 작성 -->
             <div class="comment-form">
                 <form action="${pageContext.request.contextPath}/community/guide/${guide.guideNo}/comment" method="post">
                     <textarea class="comment-textarea" name="content" placeholder="댓글을 입력하세요..." id="commentInput"></textarea>
@@ -627,7 +627,7 @@
                         <span class="comment-info">
                             <c:choose>
                                 <c:when test="${not empty sessionScope.loginUser}">
-                                    ${sessionScope.loginUser.nickname}님으로 댓글 작성
+                                    ${sessionScope.loginUser.userId}님으로 댓글 작성
                                 </c:when>
                                 <c:otherwise>
                                     로그인 후 댓글을 작성할 수 있습니다.
@@ -641,7 +641,7 @@
                 </form>
             </div>
 
-            <!-- 댓글 리스트 -->
+			<!-- 댓글 리스트 -->
             <ul class="comment-list">
                 <c:choose>
                     <c:when test="${not empty comments}">
@@ -649,9 +649,11 @@
                             <li class="comment-item">
                                 <div class="comment-header">
                                     <div class="comment-author-info">
-                                        <div class="comment-avatar">${comment.authorNickname.substring(0, 1)}</div>
+                                        <%-- [수정됨] authorNickname -> userId --%>
+                                        <div class="comment-avatar">${comment.userId.substring(0, 1)}</div>
                                         <div>
-                                            <span class="comment-author">${comment.authorNickname}</span>
+                                            <%-- [수정됨] authorNickname -> userId --%>
+                                            <span class="comment-author">${comment.userId}</span>
                                             <span class="comment-date"><fmt:formatDate value="${comment.createdAt}" pattern="yyyy.MM.dd HH:mm"/></span>
                                         </div>
                                     </div>
@@ -679,7 +681,7 @@
             </ul>
         </div>
 
-        <!-- 이전/다음 글 -->
+		<!-- 이전/다음 글 -->
         <c:if test="${not empty prevGuide || not empty nextGuide}">
             <div class="post-navigation">
                 <h3 class="nav-title">다른 글 보기</h3>
@@ -702,19 +704,19 @@
             </div>
         </c:if>
 
-        <!-- 목록 버튼 -->
+		<!-- 목록 버튼 -->
         <button class="btn-list" onclick="location.href='${pageContext.request.contextPath}/community/guide'">
             <i class="fa-solid fa-list"></i> 목록으로 돌아가기
         </button>
     </div>
 
-    <!-- 푸터 포함 -->
+	<!-- 푸터 포함 -->
     <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
 
     <script>
         // 좋아요 토글
-        let isLiked = ${guide.likedByUser};
-        let likeCount = ${guide.likeCount};
+        let isLiked = ${isLiked};
+        let likeCount = ${likeCount};
 
         function toggleLike() {
             const isLoggedIn = ${not empty sessionScope.loginUser};
