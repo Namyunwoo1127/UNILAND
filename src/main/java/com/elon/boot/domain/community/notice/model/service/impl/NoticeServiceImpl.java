@@ -1,7 +1,6 @@
 package com.elon.boot.domain.community.notice.model.service.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
@@ -14,68 +13,94 @@ import com.elon.boot.domain.community.notice.model.store.NoticeMapper;
 import com.elon.boot.domain.community.notice.model.vo.Notice;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
+@Slf4j
 public class NoticeServiceImpl implements NoticeService {
 	
-	private final NoticeMapper nMapper;
+private final NoticeMapper noticeMapper;
     
-	@Override
-    public int getTotalCount() {
-        int totalCount = nMapper.getTotalCount();
-        return totalCount;
-    }
-
     @Override
-    public List<Notice> selectList(int currentPage, int boardCountPerPage) {
-        int offset = (currentPage - 1) * boardCountPerPage;
-        RowBounds rowBounds = new RowBounds(offset, boardCountPerPage);
-        List<Notice> nList = nMapper.selectNoticeList(rowBounds);
-        return nList;
+    public List<Notice> getAllNotices() {
+        try {
+            List<Notice> noticeList = noticeMapper.selectAllNotices();
+            log.debug("공지사항 조회 성공: {} 건", noticeList != null ? noticeList.size() : 0);
+            return noticeList;
+        } catch (Exception e) {
+            log.error("공지사항 조회 실패: ", e);
+            throw e;
+        }
     }
-
+    
     @Override
-    public int getTotalCount(Map<String, Object> searchMap) {
-        int totalCount = nMapper.getSearchTotalCount(searchMap);
-        return totalCount;
+    public List<Notice> getImportantNotices() {
+        try {
+            return noticeMapper.selectImportantNotices();
+        } catch (Exception e) {
+            log.error("중요 공지사항 조회 실패: ", e);
+            throw e;
+        }
     }
-
+    
     @Override
-    public List<Notice> selectSearchList(Map<String, Object> searchMap) {
-        int currentPage = (int) searchMap.get("currentPage");
-        int boardLimit = (int) searchMap.get("boardLimit");
-        int offset = (currentPage - 1) * boardLimit;
-        RowBounds rowBounds = new RowBounds(offset, boardLimit);
-        List<Notice> searchList = nMapper.selectSearchList(searchMap, rowBounds);
-        return searchList;
+    public Notice getNoticeById(Integer noticeNo) {
+        try {
+            // 조회수 증가
+            noticeMapper.increaseViewCount(noticeNo);
+            
+            Notice notice = noticeMapper.selectNoticeById(noticeNo);
+            log.debug("공지사항 상세 조회: {}", notice);
+            return notice;
+        } catch (Exception e) {
+            log.error("공지사항 상세 조회 실패: ", e);
+            throw e;
+        }
     }
-
+    
     @Override
-    @Transactional
-    public Notice selectOneByNo(int noticeNo) {
-        // 조회수 증가
-        nMapper.updateViewCount(noticeNo);
-        // 공지사항 조회
-        Notice notice = nMapper.selectOneByNo(noticeNo);
-        return notice;
+    public int createNotice(Notice notice) {
+        try {
+            // 기본값 설정
+            if (notice.getNoticeImportant() == null) {
+                notice.setNoticeImportant("N");
+            }
+            if (notice.getNoticeIsnew() == null) {
+                notice.setNoticeIsnew("N");
+            }
+            
+            int result = noticeMapper.insertNotice(notice);
+            log.debug("공지사항 등록 결과: {}", result);
+            return result;
+        } catch (Exception e) {
+            log.error("공지사항 등록 실패: ", e);
+            throw e;
+        }
     }
-
+    
     @Override
-    public int insertNotice(NoticeInsertRequest notice) {
-        int result = nMapper.insertNotice(notice);
-        return result;
+    public int updateNotice(Notice notice) {
+        try {
+            int result = noticeMapper.updateNotice(notice);
+            log.debug("공지사항 수정 결과: {}", result);
+            return result;
+        } catch (Exception e) {
+            log.error("공지사항 수정 실패: ", e);
+            throw e;
+        }
     }
-
+    
     @Override
-    public int updateNotice(NoticeUpdateRequest notice) {
-        int result = nMapper.updateNotice(notice);
-        return result;
-    }
-
-    @Override
-    public int deleteNotice(int noticeNo) {
-        int result = nMapper.deleteNotice(noticeNo);
-        return result;
+    public int deleteNotice(Integer noticeNo) {
+        try {
+            int result = noticeMapper.deleteNotice(noticeNo);
+            log.debug("공지사항 삭제 결과: {}", result);
+            return result;
+        } catch (Exception e) {
+            log.error("공지사항 삭제 실패: ", e);
+            throw e;
+        }
     }
 }
