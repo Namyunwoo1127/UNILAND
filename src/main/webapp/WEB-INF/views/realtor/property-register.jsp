@@ -44,18 +44,14 @@
             font-size: 24px;
             font-weight: bold;
             color: #2d3748;
+            text-decoration: none;
         }
 
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
+        .logo img {
+            width: 140px;
+            height: auto;
+            object-fit: contain;
+            display: block;
         }
 
         .user-info {
@@ -501,13 +497,16 @@
 <body>
     <header>
         <div class="header-container">
-            <div class="logo">
-                <div class="logo-icon">🏠</div>
-                <span>UNILAND</span>
-            </div>
+            <div class="logo-icon">
+                <a href="${pageContext.request.contextPath}/realtor/realtor-dashboard" class="logo">
+                		<img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
+            		</a>
+         	</div>
             <div class="user-info">
-                <span class="user-name">김부동산 중개사님</span>
-                <button class="btn-logout">로그아웃</button>
+                <span class="user-name">${sessionScope.loginRealtor.realtorName} 중개사님</span>
+                <button class="btn-logout" onclick="alert('로그아웃되었습니다.'); location.href='${pageContext.request.contextPath}/auth/logout';">
+                    로그아웃
+                </button>
             </div>
         </div>
     </header>
