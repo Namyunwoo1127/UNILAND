@@ -17,24 +17,19 @@
             </div>
             <div class="footer-section">
                 <h4>서비스</h4>
-                <a href="${pageContext.request.contextPath}/property/list">매물 검색</a>
-                <a href="${pageContext.request.contextPath}/property/ai-search">AI 검색</a>
-                <a href="${pageContext.request.contextPath}/property/transaction">실거래가 조회</a>
+                <a href="${pageContext.request.contextPath}/map">지도에서 매물 찾기</a>
                 <a href="${pageContext.request.contextPath}/community/guide">자취 가이드</a>
+                <a href="${pageContext.request.contextPath}/mypage">마이페이지</a>
             </div>
             <div class="footer-section">
                 <h4>고객지원</h4>
                 <a href="${pageContext.request.contextPath}/community/notice">공지사항</a>
-                <a href="${pageContext.request.contextPath}/support/faq">FAQ</a>
-                <a href="${pageContext.request.contextPath}/support/inquiry">1:1 문의</a>
-                <a href="${pageContext.request.contextPath}/terms">이용약관</a>
-                <a href="${pageContext.request.contextPath}/privacy">개인정보처리방침</a>
+                <a href="${pageContext.request.contextPath}/auth/find-password">비밀번호 찾기</a>
             </div>
             <div class="footer-section">
-                <h4>입점문의</h4>
+                <h4>중개사</h4>
                 <a href="${pageContext.request.contextPath}/auth/signup-realtor">중개사 회원가입</a>
-                <a href="${pageContext.request.contextPath}/support/partnership">입점 안내</a>
-                <a href="${pageContext.request.contextPath}/support/contact">제휴 문의</a>
+                <a href="${pageContext.request.contextPath}/auth/realtor-login">중개사 로그인</a>
                 <p style="margin-top: 20px;">
                     고객센터: 1588-0000<br>
                     평일 09:00 - 18:00
