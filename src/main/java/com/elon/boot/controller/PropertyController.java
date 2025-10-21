@@ -2,6 +2,7 @@ package com.elon.boot.controller;
 
 import com.elon.boot.controller.dto.property.PropertyAddRequest;
 import com.elon.boot.domain.property.model.service.PropertyService;
+import com.elon.boot.domain.realtor.model.vo.Realtor;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -26,24 +27,40 @@ public class PropertyController {
         return "property/detail";
     }
 
-//    @PostMapping("/regiset")
+//    @PostMapping("/register")
 //    public String register(PropertyAddRequest req, HttpSession session) {
-//        String realtorId = (String) session.getAttribute("LOGIN_REALTOR_ID");
-//        if (realtorId == null || realtorId.isBlank()) {
-//            return "redirect:/auth/login";
+//        Realtor realtor = (Realtor) session.getAttribute("loginRealtor");
+//        if (realtor == null || realtor.getRealtorId() == null || realtor.getRealtorId().isBlank()) {
+//            return "redirect:/realtor/realtor-dashboard";
 //        }
-//        propertyService.register(req, realtorId);
+//        propertyService.register(req, realtor.getRealtorId());
 //        return "redirect:/realtor/property-management";
 //    }
     
-//    임시로 사용할 테스트용 하드코딩 / 중개사 회원 로그인 기능 완성되면 지우고 위의 코딩을 사용해야함 
-    @PostMapping("/regiset")
-    public String register(PropertyAddRequest propReq, HttpSession session) {
-        String realtorId = "realtor_0001";
+    @PostMapping("/register")
+    public String register(PropertyAddRequest req, HttpSession session) {
 
-        
-        propertyService.register(propReq, realtorId);
+        Realtor realtor = (Realtor) session.getAttribute("loginRealtor");
+
+        if (realtor == null || realtor.getRealtorId() == null) {
+            return "redirect:/auth/login";
+        }
+
+        req.setRealtorId(realtor.getRealtorId());
+
+        propertyService.register(req, realtor.getRealtorId());
 
         return "redirect:/realtor/property-management";
     }
+    
+    
+//    임시로 사용할 테스트용 하드코딩 / 중개사 회원 로그인 기능 완성되면 지우고 위의 코딩을 사용해야함 
+//    @PostMapping("/regiset")
+//    public String register(PropertyAddRequest propReq, HttpSession session) {
+//        String realtorId = "realtor_0001";
+//        
+//        propertyService.register(propReq, realtorId);
+//
+//        return "redirect:/realtor/property-management";
+//    }
 }
