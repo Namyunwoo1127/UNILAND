@@ -674,7 +674,7 @@
                     <li>도어락 및 보안 점검</li>
                     <li>인터넷 및 통신 환경</li>
                 </ul>
-                <span class="view-more">PDF 다운로드 →</span>
+                <span class="view-more" onclick="openChecklistModal()">PDF 다운로드 →</span>
             </div>
 
             <div class="info-card">
@@ -696,6 +696,9 @@
 
     <!-- 푸터 포함 -->
     <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
+
+    <!-- 입주 점검표 모달 포함 -->
+    <jsp:include page="/WEB-INF/views/components/checklist-modal.jsp"/>
 
     <script>
         // 슬라이더 관련
@@ -776,18 +779,6 @@
             alert('매물 목록 페이지는 준비 중입니다.');
         });
 
-        // 정보 카드 리스트 아이템 클릭 (onclick이 이미 있는 항목 제외)
-        document.querySelectorAll('.info-list li').forEach(function(item) {
-            // onclick이 없는 항목들에만 이벤트 추가
-            if (!item.hasAttribute('onclick')) {
-                item.addEventListener('click', function() {
-                    const text = this.textContent;
-                    if (text.includes('점검') || text.includes('확인') || text.includes('체크')) {
-                        alert('입주 점검표 기능은 준비 중입니다.');
-                    }
-                });
-            }
-        });
     </script>
 </body>
 </html>
