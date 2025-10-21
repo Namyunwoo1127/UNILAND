@@ -24,6 +24,11 @@ public class NoticeServiceImpl implements NoticeService {
 private final NoticeMapper noticeMapper;
     
     @Override
+	public List<Notice> getRecentNotices(int limit) {
+    	return noticeMapper.selectRecentNotices(limit);
+	}
+
+	@Override
     public List<Notice> getAllNotices() {
         try {
             List<Notice> noticeList = noticeMapper.selectAllNotices();
