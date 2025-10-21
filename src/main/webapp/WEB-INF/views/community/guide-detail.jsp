@@ -753,6 +753,12 @@
                         btn.classList.remove('active');
                     }
                     text.textContent = '좋아요 (' + likeCount + ')';
+                    
+                 // ⭐ 상단 post-stats의 좋아요 수 실시간 업데이트
+                    const statsHeart = document.querySelector('.post-stats span:nth-child(2)');
+                    if (statsHeart) {
+                        statsHeart.innerHTML = '<i class="fa-solid fa-heart"></i> ' + likeCount;
+                    }
                 }
             })
             .catch(err => console.error('좋아요 처리 실패:', err));
