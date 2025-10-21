@@ -1,6 +1,8 @@
 package com.elon.boot.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,8 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.elon.boot.domain.community.guide.model.service.GuideCommentService;
+import com.elon.boot.domain.community.guide.model.service.GuideLikeService;
 import com.elon.boot.domain.community.guide.model.service.GuideService;
 import com.elon.boot.domain.community.guide.model.vo.Guide;
+import com.elon.boot.domain.community.guide.model.vo.GuideComment;
+import com.elon.boot.domain.user.model.vo.User;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 public class CommunityController {
 
    private final GuideService gService;
+   private final GuideCommentService cService;
+   private final GuideLikeService lService;
 
     // 가이드 목록
     @GetMapping("/guide")
@@ -90,40 +98,48 @@ public class CommunityController {
     public String guideDetail(@PathVariable("id") int guideNo, 
             HttpSession session,
             Model model) {
-		try {
-			// 세션에서 현재 사용자 ID 가져오기
-			String currentUserId = null;
-			Object userObj = session.getAttribute("loginUser");
-		if (userObj != null) {
-			// User 클래스에 userId getter를 저장
-			currentUserId = ((com.elon.boot.domain.user.model.vo.User) userObj).getUserId();
-		}
-		
-		// 가이드 상세 정보 조회 (조회수 증가 포함)
-		Guide guide = gService.getGuideDetail(guideNo, currentUserId);
-		
-		if (guide == null) {
-			model.addAttribute("errorMessage", "존재하지 않는 게시글입니다.");
-			return "redirect:/community/guide";
-		}
-		
-		// 이전/다음 글 조회
-		Guide prevGuide = gService.getPrevGuide(guideNo);
-		Guide nextGuide = gService.getNextGuide(guideNo);
-		
-		// 댓글 목록 조회 (나중에 추가)
-		// List<Comment> comments = commentService.getCommentsByGuideNo(guideNo);
-		
-		model.addAttribute("guide", guide);
-		model.addAttribute("prevGuide", prevGuide);
-		model.addAttribute("nextGuide", nextGuide);
-		// model.addAttribute("comments", comments);
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-			model.addAttribute("errorMessage", "게시글을 불러오는데 실패했습니다.");
-			return "redirect:/community/guide";
-		}
+        try {
+            // 세션에서 현재 사용자 정보 가져오기
+            String currentUserId = null;
+            User loginUser = (User) session.getAttribute("loginUser");
+            if (loginUser != null) {
+                currentUserId = loginUser.getUserId();
+            }
+            
+            // 가이드 상세 정보 조회 (조회수 증가 포함)
+            Guide guide = gService.getGuideDetail(guideNo, currentUserId);
+            
+            if (guide == null) {
+                model.addAttribute("errorMessage", "존재하지 않는 게시글입니다.");
+                return "redirect:/community/guide";
+            }
+            
+            // 이전/다음 글 조회
+            Guide prevGuide = gService.getPrevGuide(guideNo);
+            Guide nextGuide = gService.getNextGuide(guideNo);
+            
+            // 댓글 목록 조회
+            List<GuideComment> comments = cService.getCommentsByGuideNo(guideNo);
+            
+            // 좋아요 정보 조회
+            int likeCount = lService.getLikeCount(guideNo);
+            boolean isLiked = false;
+            if (currentUserId != null) {
+                isLiked = lService.isLikedByUser(guideNo, currentUserId);
+            }
+            
+            model.addAttribute("guide", guide);
+            model.addAttribute("prevGuide", prevGuide);
+            model.addAttribute("nextGuide", nextGuide);
+            model.addAttribute("comments", comments);
+            model.addAttribute("likeCount", likeCount);
+            model.addAttribute("isLiked", isLiked);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "게시글을 불러오는데 실패했습니다.");
+            return "redirect:/community/guide";
+        }
     	
         // TODO: 실제 데이터베이스에서 가이드 상세 정보 가져오기
         // Guide guide = guideService.getGuideById(id);
@@ -140,10 +156,36 @@ public class CommunityController {
         return "community/guide-detail";
     }
 
-    // 가이드 좋아요
+ // 가이드 좋아요
     @PostMapping("/guide/{id}/like")
     @ResponseBody
-    public String likeGuide(@PathVariable Long id, HttpSession session) {
+    public Map<String, Object> likeGuide(@PathVariable("id") int guideNo, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            User loginUser = (User) session.getAttribute("loginUser");
+            if (loginUser == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return response;
+            }
+            
+            String userId = loginUser.getUserId();
+            
+            // 좋아요 토글
+            boolean isLiked = lService.toggleLike(guideNo, userId);
+            int likeCount = lService.getLikeCount(guideNo);
+            
+            response.put("success", true);
+            response.put("isLiked", isLiked);
+            response.put("likeCount", likeCount);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "좋아요 처리 중 오류가 발생했습니다.");
+        }
+    	
         // TODO: 좋아요 처리
         // Object user = session.getAttribute("user");
         // if (user == null) {
@@ -154,16 +196,33 @@ public class CommunityController {
         // int likeCount = likeService.getLikeCount(id);
 
         // return String.format("{\"success\": true, \"isLiked\": %b, \"likeCount\": %d}", isLiked, likeCount);
-
-        return "{\"success\": true, \"isLiked\": true, \"likeCount\": 90}";
+        return response;
     }
 
-    // 댓글 작성
     @PostMapping("/guide/{id}/comment")
     public String addComment(
-            @PathVariable Long id,
+            @PathVariable("id") int guideNo,
             @RequestParam String content,
-            HttpSession session) {
+            HttpSession session,
+            Model model) {
+        
+        try {
+            User loginUser = (User) session.getAttribute("loginUser");
+            if (loginUser == null) {
+                return "redirect:/login";
+            }
+            
+            GuideComment comment = new GuideComment();
+            comment.setGuideNo(guideNo);
+            comment.setUserId(loginUser.getUserId());
+            comment.setContent(content);
+            
+            cService.addComment(comment);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "댓글 작성 중 오류가 발생했습니다.");
+        }
 
         // TODO: 댓글 작성
         // Object user = session.getAttribute("user");
@@ -173,16 +232,42 @@ public class CommunityController {
 
         // commentService.addComment(id, userId, content);
 
-        return "redirect:/community/guide/" + id;
+        return "redirect:/community/guide/" + guideNo;
     }
 
-    // 댓글 삭제
+ // 댓글 삭제
     @DeleteMapping("/guide/{guideId}/comment/{commentId}")
     @ResponseBody
-    public String deleteComment(
-            @PathVariable Long guideId,
-            @PathVariable Long commentId,
+    public Map<String, Object> deleteComment(
+            @PathVariable("guideId") int guideNo,
+            @PathVariable("commentId") int commentId,
             HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            User loginUser = (User) session.getAttribute("loginUser");
+            if (loginUser == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return response;
+            }
+            
+            String userId = loginUser.getUserId();
+            int result = cService.deleteComment(commentId, userId);
+            
+            if (result > 0) {
+                response.put("success", true);
+            } else {
+                response.put("success", false);
+                response.put("message", "댓글 삭제에 실패했습니다.");
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "댓글 삭제 중 오류가 발생했습니다.");
+        }
 
         // TODO: 댓글 삭제
         // Object user = session.getAttribute("user");
@@ -194,6 +279,6 @@ public class CommunityController {
 
         // return String.format("{\"success\": %b}", result);
 
-        return "{\"success\": true}";
+        return response;
     }
 }

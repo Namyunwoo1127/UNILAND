@@ -33,5 +33,6 @@ public interface GuideMapper {
 	
 	
 	 Guide selectNextGuide(@Param("guideNo") int guideNo);
-
+	 
+	 void updateLikeCount(@Param("guideNo") int guideNo);
 }
