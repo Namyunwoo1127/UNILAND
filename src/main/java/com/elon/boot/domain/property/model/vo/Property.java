@@ -1,0 +1,48 @@
+package com.elon.boot.domain.property.model.vo;
+
+import lombok.*;
+import java.sql.Timestamp;
+
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public class Property {
+    private Long propertyNo;
+    private String realtorId;
+    private String userId;
+
+    private String propertyName;
+    private String propertyType;
+
+    private String priceType;
+    private Integer deposit;
+    private Integer monthlyRent;
+    private Integer maintenanceFee;
+    private String maintenanceIncl; // Y/N
+
+    private String roadAddress;
+    private String parcelAddress;
+    private String addressDetail;
+    private String province;
+    private String district;
+
+    private Double latitude;
+    private Double longitude;
+
+    private Double contractArea;
+    private Integer floor;
+
+    private String options;
+    private String images;
+    private String description;
+
+    private String contractStatus;
+    private Timestamp contractAt;
+
+    private String status;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+    private Timestamp deletedAt;
+}
