@@ -4,5 +4,4 @@ import com.elon.boot.controller.dto.property.PropertyAddRequest;
 
 public interface PropertyService {
     Long register(PropertyAddRequest req, String realtorId);
-	
 }
