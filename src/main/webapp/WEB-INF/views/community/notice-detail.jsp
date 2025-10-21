@@ -113,8 +113,9 @@
             <a href="${pageContext.request.contextPath}/community/notice" class="btn btn-back">목록으로</a>
 
             <!-- 작성자 또는 관리자일 때만 수정/삭제 버튼 표시 -->
-            <c:if test="${not empty sessionScope.loginUser && (sessionScope.loginUser.userId == notice.userId || sessionScope.loginUser.userId == 'admin')}">
-                <a href="${pageContext.request.contextPath}/community/notice/edit/${notice.noticeNo}" class="btn btn-edit">수정</a>
+            <c:if test="${not empty sessionScope.loginUser && (sessionScope.loginUser.userId == 'admin')}">
+            	<a href="${pageContext.request.contextPath}/admin/content-management" class="btn btn-back">관리자 목록으로</a>
+                <a href="${pageContext.request.contextPath}/community/notice-update/${notice.noticeNo}" class="btn btn-edit">수정</a>
                 <form action="${pageContext.request.contextPath}/community/notice/delete/${notice.noticeNo}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
                 </form>

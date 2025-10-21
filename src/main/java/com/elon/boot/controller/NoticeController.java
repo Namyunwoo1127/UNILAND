@@ -114,27 +114,32 @@ public class NoticeController {
             notice.setNoticeImportant(noticeImportant);
             notice.setNoticeIsnew(noticeIsnew);
             
-            log.debug("공지사항 등록 시도: {}", notice);
-            
-            int result = noticeService.createNotice(notice);
-            
-            if (result > 0) {
-                redirectAttributes.addFlashAttribute("message", "공지사항이 등록되었습니다.");
-                return "redirect:/notice";
-            } else {
-                redirectAttributes.addFlashAttribute("error", "공지사항 등록에 실패했습니다.");
-                return "redirect:/community/notice-write";
+            log.debug("공지사항 등록 시도: userId={}, writer={}, subject={}, important={}, isnew={}", 
+                    notice.getUserId(), 
+                    notice.getNoticeWriter(),
+                    notice.getNoticeSubject(),
+                    notice.getNoticeImportant(),
+                    notice.getNoticeIsnew());
+                
+                int result = noticeService.createNotice(notice);
+                
+                if (result > 0) {
+                    redirectAttributes.addFlashAttribute("message", "공지사항이 등록되었습니다.");
+                    return "redirect:/community/notice";
+                } else {
+                    redirectAttributes.addFlashAttribute("error", "공지사항 등록에 실패했습니다.");
+                    return "redirect:/community/notice/write";
+                }
+                
+            } catch (Exception e) {
+                log.error("공지사항 등록 실패: ", e);
+                redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다: " + e.getMessage());
+                return "redirect:/community/notice/write";
             }
-            
-        } catch (Exception e) {
-            log.error("공지사항 등록 실패: ", e);
-            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다: " + e.getMessage());
-            return "redirect:/community/notice-write";
         }
-    }
     
     // 공지사항 수정 페이지
-    @GetMapping("/edit/{noticeNo}")
+    @GetMapping("/notice-update/{noticeNo}")
     public String noticeEditForm(@PathVariable Integer noticeNo,
                                 HttpSession session,
                                 Model model,
@@ -150,25 +155,19 @@ public class NoticeController {
         try {
             Notice notice = noticeService.getNoticeById(noticeNo);
             
-            // 작성자 본인 확인
-            if (notice != null && !notice.getUserId().equals(loginUser.getUserId())) {
-                redirectAttributes.addFlashAttribute("error", "수정 권한이 없습니다.");
-                return "redirect:/community/notice/" + noticeNo;
-            }
-            
             model.addAttribute("notice", notice);
             
         } catch (Exception e) {
             log.error("공지사항 조회 실패: ", e);
             redirectAttributes.addFlashAttribute("error", "공지사항을 불러올 수 없습니다.");
-            return "redirect:/community/notice";
+            return "redirect:/admin/content-management";
         }
         
-        return "community/notice/edit";
+        return "community/notice-update";
     }
     
     // 공지사항 수정 처리
-    @PostMapping("/edit/{noticeNo}")
+    @PostMapping("/notice-update/{noticeNo}")
     public String noticeEdit(@PathVariable Integer noticeNo,
                            @ModelAttribute Notice notice,
                            @RequestParam(value = "noticeImportant", defaultValue = "N") String noticeImportant,
@@ -189,7 +188,6 @@ public class NoticeController {
             notice.setNoticeIsnew(noticeIsnew);
             
             int result = noticeService.updateNotice(notice);
-            
             if (result > 0) {
                 redirectAttributes.addFlashAttribute("message", "공지사항이 수정되었습니다.");
             } else {
@@ -205,7 +203,7 @@ public class NoticeController {
     }
     
     // 공지사항 삭제
-    @PostMapping("/delete/{noticeNo}")
+    @PostMapping("/notice/delete/{noticeNo}")
     public String noticeDelete(@PathVariable Integer noticeNo,
                               HttpSession session,
                               RedirectAttributes redirectAttributes) {
