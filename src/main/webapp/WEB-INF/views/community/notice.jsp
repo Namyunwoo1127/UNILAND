@@ -185,9 +185,9 @@
         </div>
         
         <!-- 작성 버튼 -->
-        <c:if test="${not empty sessionScope.loginUser}">
+        <c:if test="${not empty sessionScope.loginUser && (sessionScope.loginUser.userId == 'admin')}">
             <div class="btn-area">
-                <a href="${pageContext.request.contextPath}/community/notice/write" class="btn-write">공지사항 작성</a>
+                <a href="${pageContext.request.contextPath}/community/notice-write" class="btn-write">공지사항 작성</a>
             </div>
         </c:if>
     </div>
