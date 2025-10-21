@@ -44,14 +44,18 @@
             font-size: 24px;
             font-weight: bold;
             color: #2d3748;
-            text-decoration: none;
         }
 
-        .logo img {
-            width: 140px;
-            height: auto;
-            object-fit: contain;
-            display: block;
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
         }
 
         .user-info {
@@ -495,23 +499,38 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <div class="logo-icon">
-                <a href="${pageContext.request.contextPath}/realtor/realtor-dashboard" class="logo">
-                		<img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
-            		</a>
-         	</div>
-            <div class="user-info">
-                <span class="user-name">${sessionScope.loginRealtor.realtorName} 중개사님</span>
-                <button class="btn-logout" onclick="alert('로그아웃되었습니다.'); location.href='${pageContext.request.contextPath}/auth/logout';">
-                    로그아웃
-                </button>
-            </div>
+<header>
+    <div class="header-container">
+        <div class="logo">
+            <div class="logo-icon">🏠</div>
+            <span>UNILAND</span>
+        </div>
+        <div class="user-info">
+            <span class="user-name">${sessionScope.LOGIN_REALTOR_NAME != null ? sessionScope.LOGIN_REALTOR_NAME : '김부동산 중개사님'}</span>
+            <button class="btn-logout" onclick="location.href='${pageContext.request.contextPath}/auth/logout'">로그아웃</button>
+        </div>
+    </div>
+</header>
+
+<div class="main-layout">
+    <aside class="sidebar">
+        <div class="sidebar-title">중개사 메뉴</div>
+        <ul class="sidebar-menu">
+            <li><a href="${pageContext.request.contextPath}/realtor/realtor-dashboard"><span class="menu-icon">📊</span>대시보드</a></li>
+            <li><a href="${pageContext.request.contextPath}/realtor/property-management"><span class="menu-icon">🏢</span>매물 관리</a></li>
+            <li><a href="#" class="active"><span class="menu-icon">➕</span>매물 등록</a></li>
+            <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management"><span class="menu-icon">💬</span>받은 문의</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>매물 등록</h1>
+            <p>새로운 매물 정보를 등록하세요</p>
         </div>
 
         <form class="form-container"
-              action="${pageContext.request.contextPath}/property/regiset"
+              action="${pageContext.request.contextPath}/property/register"
               method="post"
               enctype="multipart/form-data"
               id="propertyForm">
@@ -634,60 +653,60 @@
             
             <!-- api에서 받아올 위도&경도 등등 -->
             <input type="hidden" name="province"  id="province">
-		    <input type="hidden" name="district"  id="district">
-		    <input type="hidden" name="latitude"  id="latitude">
-		    <input type="hidden" name="longitude" id="longitude">
+          <input type="hidden" name="district"  id="district">
+          <input type="hidden" name="latitude"  id="latitude">
+          <input type="hidden" name="longitude" id="longitude">
             
 
-			<!-- 옵션 정보 -->
-			<div class="form-section">
-			  <h2 class="section-title"><span class="section-icon">✨</span>옵션 정보</h2>
-			
-			  <!-- 냉난방 -->
-			  <div class="form-group">
-			    <label class="form-label">냉난방</label>
-			    <div class="option-grid">
-			      <input type="checkbox" id="opt1" class="option-checkbox" name="optAc" value="Y"><label for="opt1" class="option-label">에어컨</label>
-			      <input type="checkbox" id="opt2" class="option-checkbox" name="optHeater" value="Y"><label for="opt2" class="option-label">히터</label>
-			    </div>
-			  </div>
-			
-			  <!-- 주방 -->
-			  <div class="form-group" style="margin-top:20px;">
-			    <label class="form-label">주방</label>
-			    <div class="option-grid">
-			      <input type="checkbox" id="opt3" class="option-checkbox" name="optFridge" value="Y"><label for="opt3" class="option-label">냉장고</label>
-			      <input type="checkbox" id="opt4" class="option-checkbox" name="optMicrowave" value="Y"><label for="opt4" class="option-label">전자레인지</label>
-			      <input type="checkbox" id="opt5" class="option-checkbox" name="optInduction" value="Y"><label for="opt5" class="option-label">인덕션</label>
-			      <input type="checkbox" id="opt6" class="option-checkbox" name="optGasRange" value="Y"><label for="opt6" class="option-label">가스레인지</label>
-			    </div>
-			  </div>
-			
-			  <!-- 가구/가전 -->
-			  <div class="form-group" style="margin-top:20px;">
-			    <label class="form-label">가구/가전</label>
-			    <div class="option-grid">
-			      <input type="checkbox" id="opt7"  class="option-checkbox" name="optWasher" value="Y"><label for="opt7" class="option-label">세탁기</label>
-			      <input type="checkbox" id="opt8"  class="option-checkbox" name="optDryer" value="Y"><label for="opt8" class="option-label">건조기</label>
-			      <input type="checkbox" id="opt9"  class="option-checkbox" name="optBed" value="Y"><label for="opt9" class="option-label">침대</label>
-			      <input type="checkbox" id="opt10" class="option-checkbox" name="optDesk" value="Y"><label for="opt10" class="option-label">책상</label>
-			      <input type="checkbox" id="opt11" class="option-checkbox" name="optWardrobe" value="Y"><label for="opt11" class="option-label">옷장</label>
-			      <input type="checkbox" id="opt12" class="option-checkbox" name="optShoecloset" value="Y"><label for="opt12" class="option-label">신발장</label>
-			      <input type="checkbox" id="opt13" class="option-checkbox" name="optTv" value="Y"><label for="opt13" class="option-label">TV</label>
-			    </div>
-			  </div>
-			
-			  <!-- 시설 -->
-			  <div class="form-group" style="margin-top:20px;">
-			    <label class="form-label">시설</label>
-			    <div class="option-grid">
-			      <input type="checkbox" id="opt14" class="option-checkbox" name="facParking" value="Y"><label for="opt14" class="option-label">주차 가능</label>
-			      <input type="checkbox" id="opt15" class="option-checkbox" name="facElevator" value="Y"><label for="opt15" class="option-label">엘리베이터</label>
-			      <input type="checkbox" id="opt16" class="option-checkbox" name="facSecurity" value="Y"><label for="opt16" class="option-label">보안시스템</label>
-			      <input type="checkbox" id="opt17" class="option-checkbox" name="facPet" value="Y"><label for="opt17" class="option-label">반려동물</label>
-			    </div>
-			  </div>
-			</div>
+         <!-- 옵션 정보 -->
+         <div class="form-section">
+           <h2 class="section-title"><span class="section-icon">✨</span>옵션 정보</h2>
+         
+           <!-- 냉난방 -->
+           <div class="form-group">
+             <label class="form-label">냉난방</label>
+             <div class="option-grid">
+               <input type="checkbox" id="opt1" class="option-checkbox" name="optAc" value="Y"><label for="opt1" class="option-label">에어컨</label>
+               <input type="checkbox" id="opt2" class="option-checkbox" name="optHeater" value="Y"><label for="opt2" class="option-label">히터</label>
+             </div>
+           </div>
+         
+           <!-- 주방 -->
+           <div class="form-group" style="margin-top:20px;">
+             <label class="form-label">주방</label>
+             <div class="option-grid">
+               <input type="checkbox" id="opt3" class="option-checkbox" name="optFridge" value="Y"><label for="opt3" class="option-label">냉장고</label>
+               <input type="checkbox" id="opt4" class="option-checkbox" name="optMicrowave" value="Y"><label for="opt4" class="option-label">전자레인지</label>
+               <input type="checkbox" id="opt5" class="option-checkbox" name="optInduction" value="Y"><label for="opt5" class="option-label">인덕션</label>
+               <input type="checkbox" id="opt6" class="option-checkbox" name="optGasRange" value="Y"><label for="opt6" class="option-label">가스레인지</label>
+             </div>
+           </div>
+         
+           <!-- 가구/가전 -->
+           <div class="form-group" style="margin-top:20px;">
+             <label class="form-label">가구/가전</label>
+             <div class="option-grid">
+               <input type="checkbox" id="opt7"  class="option-checkbox" name="optWasher" value="Y"><label for="opt7" class="option-label">세탁기</label>
+               <input type="checkbox" id="opt8"  class="option-checkbox" name="optDryer" value="Y"><label for="opt8" class="option-label">건조기</label>
+               <input type="checkbox" id="opt9"  class="option-checkbox" name="optBed" value="Y"><label for="opt9" class="option-label">침대</label>
+               <input type="checkbox" id="opt10" class="option-checkbox" name="optDesk" value="Y"><label for="opt10" class="option-label">책상</label>
+               <input type="checkbox" id="opt11" class="option-checkbox" name="optWardrobe" value="Y"><label for="opt11" class="option-label">옷장</label>
+               <input type="checkbox" id="opt12" class="option-checkbox" name="optShoecloset" value="Y"><label for="opt12" class="option-label">신발장</label>
+               <input type="checkbox" id="opt13" class="option-checkbox" name="optTv" value="Y"><label for="opt13" class="option-label">TV</label>
+             </div>
+           </div>
+         
+           <!-- 시설 -->
+           <div class="form-group" style="margin-top:20px;">
+             <label class="form-label">시설</label>
+             <div class="option-grid">
+               <input type="checkbox" id="opt14" class="option-checkbox" name="facParking" value="Y"><label for="opt14" class="option-label">주차 가능</label>
+               <input type="checkbox" id="opt15" class="option-checkbox" name="facElevator" value="Y"><label for="opt15" class="option-label">엘리베이터</label>
+               <input type="checkbox" id="opt16" class="option-checkbox" name="facSecurity" value="Y"><label for="opt16" class="option-label">보안시스템</label>
+               <input type="checkbox" id="opt17" class="option-checkbox" name="facPet" value="Y"><label for="opt17" class="option-label">반려동물</label>
+             </div>
+           </div>
+         </div>
 
             <!-- 매물 설명 -->
             <div class="form-section">
@@ -732,7 +751,7 @@
             charCount.textContent = this.value.length + ' / 1000';
         });
     </script>
-	<!-- 주소검색/지도 SDK는 그대로 유지 -->
+   <!-- 주소검색/지도 SDK는 그대로 유지 -->
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7daf28f562c53c0e3ac5048836758f12&libraries=services"></script>
 
@@ -817,29 +836,29 @@
   
   
   /*  이미지 업로드용도        */
- 	const photoInput = document.getElementById('photoInput');
-  	const previewGrid = document.getElementById('previewGrid');
-  	
-  	photoInput.addEventListener('change',function() {
-  		previewGrid.innerHTML = '';// 미리보기 초기화용
-  		const files = Array.from(this.files);
-  		
-  		if(files.length > 0 ){
-  			previewGrid.style.display = 'grid';
-  			files.forEach(file => {
-  				if(!file.type.startsWith('image/')) return; // 이미지 파일만 받게
-  				const reader = new FileReader();
-  				reader.onload = e => {
-  					const img = document.createElement('img');
-  					img.src = e.target.result;
-  					previewGrid.appendChild(img);
-  				};
-  				reader.readAsDataURL(file);
-  			});
-  		}else {
-  			previewGrid.style.display = 'none';
-  		}
-  	});
+    const photoInput = document.getElementById('photoInput');
+     const previewGrid = document.getElementById('previewGrid');
+     
+     photoInput.addEventListener('change',function() {
+        previewGrid.innerHTML = '';// 미리보기 초기화용
+        const files = Array.from(this.files);
+        
+        if(files.length > 0 ){
+           previewGrid.style.display = 'grid';
+           files.forEach(file => {
+              if(!file.type.startsWith('image/')) return; // 이미지 파일만 받게
+              const reader = new FileReader();
+              reader.onload = e => {
+                 const img = document.createElement('img');
+                 img.src = e.target.result;
+                 previewGrid.appendChild(img);
+              };
+              reader.readAsDataURL(file);
+           });
+        }else {
+           previewGrid.style.display = 'none';
+        }
+     });
 </script>
 </body>
 </html>
