@@ -44,18 +44,14 @@
             font-size: 24px;
             font-weight: bold;
             color: #2d3748;
+            text-decoration: none;
         }
 
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
+        .logo img {
+            width: 140px;
+            height: auto;
+            object-fit: contain;
+            display: block;
         }
 
         .user-info {
@@ -499,34 +495,19 @@
     </style>
 </head>
 <body>
-<header>
-    <div class="header-container">
-        <div class="logo">
-            <div class="logo-icon">🏠</div>
-            <span>UNILAND</span>
-        </div>
-        <div class="user-info">
-            <span class="user-name">${sessionScope.LOGIN_REALTOR_NAME != null ? sessionScope.LOGIN_REALTOR_NAME : '김부동산 중개사님'}</span>
-            <button class="btn-logout" onclick="location.href='${pageContext.request.contextPath}/auth/logout'">로그아웃</button>
-        </div>
-    </div>
-</header>
-
-<div class="main-layout">
-    <aside class="sidebar">
-        <div class="sidebar-title">중개사 메뉴</div>
-        <ul class="sidebar-menu">
-            <li><a href="${pageContext.request.contextPath}/realtor/realtor-dashboard"><span class="menu-icon">📊</span>대시보드</a></li>
-            <li><a href="${pageContext.request.contextPath}/realtor/property-management"><span class="menu-icon">🏢</span>매물 관리</a></li>
-            <li><a href="#" class="active"><span class="menu-icon">➕</span>매물 등록</a></li>
-            <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management"><span class="menu-icon">💬</span>받은 문의</a></li>
-        </ul>
-    </aside>
-
-    <main class="main-content">
-        <div class="page-header">
-            <h1>매물 등록</h1>
-            <p>새로운 매물 정보를 등록하세요</p>
+    <header>
+        <div class="header-container">
+            <div class="logo-icon">
+                <a href="${pageContext.request.contextPath}/realtor/realtor-dashboard" class="logo">
+                		<img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
+            		</a>
+         	</div>
+            <div class="user-info">
+                <span class="user-name">${sessionScope.loginRealtor.realtorName} 중개사님</span>
+                <button class="btn-logout" onclick="alert('로그아웃되었습니다.'); location.href='${pageContext.request.contextPath}/auth/logout';">
+                    로그아웃
+                </button>
+            </div>
         </div>
 
         <form class="form-container"

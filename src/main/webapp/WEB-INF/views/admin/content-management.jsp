@@ -201,6 +201,24 @@
       justify-content: center;
       gap: 6px;
     }
+    
+    .badge {
+    	display: inline-block;
+    	padding: 4px 8px;
+    	border-radius: 4px;
+    	font-size: 11px;
+     	font-weight: 600;
+    }
+        
+    .badge-important {
+    	background: #f56565;
+      	color: white;
+    }
+        
+    .badge-new {
+    	background: #48bb78;
+    	color: white;
+    }
 
     .btn-edit, .btn-delete {
       border: none;
@@ -210,6 +228,16 @@
       font-size: 13px;
       font-weight: 600;
     }
+
+	.notice-title a {
+  		text-decoration: none;
+  		color: #1a1a1a; /* 링크 색상 통일 (필요 시 조정) */
+  		transition: color 0.2s;
+	}
+
+	.notice-title a:hover {
+  		color: #667eea; /* 마우스 오버 시 포인트 컬러 */
+	}
 
     .btn-edit { background: #48bb78; color: white; }
     .btn-delete { background: #e53e3e; color: white; }
@@ -259,7 +287,9 @@
     <main class="main-content">
       <div class="page-header">
         <h2>공지사항관리</h2>
-        <button class="btn-create"><i class="fa-solid fa-pen"></i> 공지 작성</button>
+        <button class="btn-create" onclick="location.href='/uniland/community/notice-write'">
+			<i class="fa-solid fa-pen"></i> 공지 작성
+		</button>
       </div>
 
       <!-- 검색 박스 -->
@@ -287,45 +317,42 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>3</td>
-            <td>10월 서버 점검 안내</td>
-            <td>관리자</td>
-            <td>2025-10-08</td>
-            <td>128</td>
-            <td>
-              <div class="manage-btn">
-                <button class="btn-edit"><i class="fa-solid fa-pen"></i> 수정</button>
-                <button class="btn-delete"><i class="fa-solid fa-trash"></i> 삭제</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>추석 연휴 고객센터 휴무 안내</td>
-            <td>운영팀</td>
-            <td>2025-09-13</td>
-            <td>412</td>
-            <td>
-              <div class="manage-btn">
-                <button class="btn-edit"><i class="fa-solid fa-pen"></i> 수정</button>
-                <button class="btn-delete"><i class="fa-solid fa-trash"></i> 삭제</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>UNILAND 관리자 페이지 오픈 안내</td>
-            <td>관리자</td>
-            <td>2025-08-25</td>
-            <td>550</td>
-            <td>
-              <div class="manage-btn">
-                <button class="btn-edit"><i class="fa-solid fa-pen"></i> 수정</button>
-                <button class="btn-delete"><i class="fa-solid fa-trash"></i> 삭제</button>
-              </div>
-            </td>
-          </tr>
+          	<c:forEach var="notice" items="${noticeList}">
+            <tr>
+              <td>${notice.noticeNo}</td>
+              <td class="notice-title">
+                <a href="${pageContext.request.contextPath}/community/notice/${notice.noticeNo}">
+                	<c:if test="${notice.noticeImportant == 'Y'}">
+                    	<span class="badge badge-important">중요</span>
+                    </c:if>
+                    <c:if test="${notice.noticeIsnew == 'Y'}">
+                        <span class="badge badge-new">NEW</span>
+                    </c:if>
+                  	${notice.noticeSubject}
+                </a>
+              </td>
+              <td>${notice.noticeWriter}</td>
+              <td><fmt:formatDate value="${notice.noticeCreateat}" pattern="yyyy-MM-dd" /></td>
+              <td>${notice.viewCount}</td>
+              <td>
+                <div class="manage-btn">
+                  <button class="btn-edit" onclick="location.href='${pageContext.request.contextPath}/community/notice-update/${notice.noticeNo}'">
+                    <i class="fa-solid fa-pen"></i> 수정
+                  </button>
+                  <form action="${pageContext.request.contextPath}/community/notice/delete/${notice.noticeNo}" method="post" style="display:inline;">
+                    <button type="submit" class="btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">
+                      <i class="fa-solid fa-trash"></i> 삭제
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          </c:forEach>
+          <c:if test="${empty noticeList}">
+            <tr>
+              <td colspan="6">등록된 공지사항이 없습니다.</td>
+            </tr>
+          </c:if>
         </tbody>
       </table>
     </main>

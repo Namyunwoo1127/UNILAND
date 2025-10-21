@@ -48,18 +48,14 @@
             font-size: 24px;
             font-weight: bold;
             color: #2d3748;
+            text-decoration: none;
         }
 
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
+        .logo img {
+            width: 140px;
+            height: auto;
+            object-fit: contain;
+            display: block;
         }
 
         .user-info {
@@ -287,7 +283,6 @@
             color: #5568d3;
         }
 
-        /* 최근 매물 테이블 */
         .property-table {
             width: 100%;
             border-collapse: collapse;
@@ -399,7 +394,6 @@
             background: #e53e3e;
         }
 
-        /* 최근 문의 리스트 */
         .inquiry-list {
             list-style: none;
         }
@@ -478,7 +472,6 @@
             line-height: 1.6;
         }
 
-        /* 빠른 액션 버튼 */
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -524,6 +517,7 @@
             font-size: 14px;
             color: #718096;
         }
+        
     </style>
 </head>
 <body>
@@ -531,12 +525,17 @@
     <header>
         <div class="header-container">
             <div class="logo">
-                <div class="logo-icon">🏠</div>
-                <span>UNILAND</span>
+                <div class="logo-icon">
+	                <a href="${pageContext.request.contextPath}/realtor/realtor-dashboard" class="logo">
+	                		<img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
+	            		</a>
+            		</div>
             </div>
             <div class="user-info">
-                <span class="user-name">김부동산 중개사님</span>
-                <button class="btn-logout">로그아웃</button>
+                <span class="user-name">${sessionScope.loginRealtor.realtorName} 중개사님</span>
+                <button class="btn-logout" onclick="alert('로그아웃되었습니다.'); location.href='${pageContext.request.contextPath}/auth/logout';">
+                    로그아웃
+                </button>
             </div>
         </div>
     </header>
@@ -617,144 +616,6 @@
                         <p class="action-desc">대기 중인 문의 12건</p>
                     </div>
                 </div>
-            </div>
-
-            <!-- 최근 등록 매물 -->
-            <div class="content-section">
-                <div class="section-header">
-                    <h2 class="section-title">최근 등록 매물</h2>
-                    <span class="view-all" onclick="location.href='${pageContext.request.contextPath}/realtor/property-management'">전체보기 →</span>
-                </div>
-                <table class="property-table">
-                    <thead>
-                        <tr>
-                            <th>매물</th>
-                            <th>위치</th>
-                            <th>가격</th>
-                            <th>상태</th>
-                            <th>조회수</th>
-                            <th>등록일</th>
-                            <th>관리</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div class="property-thumb">🏠</div>
-                                    <div>
-                                        <div class="property-title">신촌역 5분거리 풀옵션 원룸</div>
-                                        <div class="property-location">원룸 · 20㎡</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>서대문구 창천동</td>
-                            <td class="property-price">500/55</td>
-                            <td><span class="status-badge active">판매중</span></td>
-                            <td>142</td>
-                            <td>2024.01.15</td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="btn-table btn-edit" onclick="location.href='${pageContext.request.contextPath}/realtor/property-edit'">수정</button>
-                                    <button class="btn-table btn-delete">삭제</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div class="property-thumb">🏢</div>
-                                    <div>
-                                        <div class="property-title">혜화역 도보 7분 깨끗한 오피스텔</div>
-                                        <div class="property-location">오피스텔 · 25㎡</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>종로구 명륜동</td>
-                            <td class="property-price">1000/60</td>
-                            <td><span class="status-badge reserved">예약중</span></td>
-                            <td>89</td>
-                            <td>2024.01.12</td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="btn-table btn-edit" onclick="location.href='${pageContext.request.contextPath}/realtor/property-edit'">수정</button>
-                                    <button class="btn-table btn-delete">삭제</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div class="property-thumb">🏡</div>
-                                    <div>
-                                        <div class="property-title">홍대 캠퍼스 앞 저렴한 원룸</div>
-                                        <div class="property-location">원룸 · 18㎡</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>마포구 서교동</td>
-                            <td class="property-price">300/45</td>
-                            <td><span class="status-badge completed">거래완료</span></td>
-                            <td>203</td>
-                            <td>2024.01.08</td>
-                            <td>
-                                <div class="table-actions">
-                                    <button class="btn-table btn-edit" onclick="location.href='${pageContext.request.contextPath}/realtor/property-edit'">수정</button>
-                                    <button class="btn-table btn-delete">삭제</button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- 최근 문의 -->
-            <div class="content-section">
-                <div class="section-header">
-                    <h2 class="section-title">최근 받은 문의</h2>
-                    <span class="view-all" onclick="location.href='${pageContext.request.contextPath}/realtor/inquiry-management'">전체보기 →</span>
-                </div>
-                <ul class="inquiry-list">
-                    <li class="inquiry-item">
-                        <div class="inquiry-header">
-                            <div class="inquiry-user">
-                                <div class="inquiry-avatar">김</div>
-                                <div class="inquiry-info">
-                                    <h4>김대학 님 - 신촌역 5분거리 풀옵션 원룸</h4>
-                                    <span class="inquiry-date">2024.01.16 14:30</span>
-                                </div>
-                            </div>
-                            <span class="inquiry-badge new">새 문의</span>
-                        </div>
-                        <p class="inquiry-content">이번 주 주말에 방문 가능할까요? 학교에서 가까운 곳을 찾고 있습니다.</p>
-                    </li>
-                    <li class="inquiry-item">
-                        <div class="inquiry-header">
-                            <div class="inquiry-user">
-                                <div class="inquiry-avatar">이</div>
-                                <div class="inquiry-info">
-                                    <h4>이학생 님 - 혜화역 도보 7분 깨끗한 오피스텔</h4>
-                                    <span class="inquiry-date">2024.01.16 11:20</span>
-                                </div>
-                            </div>
-                            <span class="inquiry-badge replied">답변완료</span>
-                        </div>
-                        <p class="inquiry-content">주차 가능한가요? 그리고 관리비에 포함되는 항목이 궁금합니다.</p>
-                    </li>
-                    <li class="inquiry-item">
-                        <div class="inquiry-header">
-                            <div class="inquiry-user">
-                                <div class="inquiry-avatar">박</div>
-                                <div class="inquiry-info">
-                                    <h4>박연세 님 - 홍대 캠퍼스 앞 저렴한 원룸</h4>
-                                    <span class="inquiry-date">2024.01.15 18:45</span>
-                                </div>
-                            </div>
-                            <span class="inquiry-badge new">새 문의</span>
-                        </div>
-                        <p class="inquiry-content">3월 초에 입주 가능한가요? 계약 조건이 궁금합니다.</p>
-                    </li>
-                </ul>
             </div>
         </main>
     </div>

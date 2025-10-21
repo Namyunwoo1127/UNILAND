@@ -76,8 +76,6 @@
             <h1 class="page-title">중개사 회원가입</h1>
             <div class="form-wrapper">
                 <form id="realtorSignupForm">
-
-                    <!-- ✅ 추가된 부분 : 아이디 -->
                     <div class="form-row">
                         <label class="form-label"><span class="required">*</span>아이디</label>
                         <div class="form-input-group">
@@ -85,15 +83,13 @@
                         </div>
                     </div>
 
-                    <!-- ✅ 추가된 부분 : 비밀번호 -->
                     <div class="form-row">
                         <label class="form-label"><span class="required">*</span>비밀번호</label>
                         <div class="form-input-group">
-                            <input type="password" class="input-field password-input" id="realtorPassword" name="realtorPassword" placeholder="비밀번호를 입력하세요" required>
+                            <input type="password" class="input-field" id="realtorPassword" name="realtorPassword" placeholder="비밀번호를 입력하세요" required>
                         </div>
                     </div>
 
-                    <!-- 기존 입력 필드들 -->
                     <div class="form-row">
                         <label class="form-label"><span class="required">*</span>중개 사무소 이름</label>
                         <div class="form-input-group">
@@ -145,7 +141,7 @@
             </div>
 
             <div class="signup-footer">
-                <a href="${pageContext.request.contextPath}/auth/login">로그인</a>
+                <a href="${pageContext.request.contextPath}/auth/realtor-login">로그인</a>
                 <span class="divider">|</span>
                 <a href="${pageContext.request.contextPath}/auth/signup">일반 회원가입</a>
             </div>
@@ -160,7 +156,6 @@
         const businessNumInput = document.getElementById('businessNum');
         const verificationMsg = document.getElementById('verificationMsg');
 
-        // ✅ 아이디, 비밀번호 필드 추가
         const fields = {
             realtorId: document.getElementById('realtorId'),
             realtorPassword: document.getElementById('realtorPassword'),
@@ -174,14 +169,12 @@
 
         let isBusinessNumVerified = false;
 
-        // 전화번호 입력 유효성 검사
-        fields.realtorPhone.addEventListener('input', function(e) {
+        fields.realtorPhone.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
             checkFormValidity();
         });
 
-        // 사업자등록번호 입력 유효성 검사
-        businessNumInput.addEventListener('input', function(e) {
+        businessNumInput.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
             isBusinessNumVerified = false;
             verificationMsg.classList.remove('success', 'error');
@@ -189,15 +182,13 @@
             checkFormValidity();
         });
 
-        // 입력 필드 변경 시 유효성 검사
-        Object.values(fields).forEach(field => {
-            if (field !== fields.realtorPhone && field !== businessNumInput) {
-                field.addEventListener('input', checkFormValidity);
+        Object.values(fields).forEach(f => {
+            if (f !== fields.realtorPhone && f !== businessNumInput) {
+                f.addEventListener('input', checkFormValidity);
             }
         });
 
-        // 사업자등록번호 인증
-        verifyBtn.addEventListener('click', function(e) {
+        verifyBtn.addEventListener('click', e => {
             e.preventDefault();
             const businessNum = businessNumInput.value.trim();
             if (!businessNum) {
@@ -212,7 +203,7 @@
             }
             verifyBtn.disabled = true;
             verifyBtn.textContent = '확인 중...';
-            fetch(contextPath + '/realtor/api/check-business-num', {
+            fetch(contextPath + '/realtor/check-business-num', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ businessNum })
@@ -236,14 +227,12 @@
             });
         });
 
-        // 유효성 검사
         function checkFormValidity() {
             const allFilled = Object.values(fields).every(f => f.value.trim() !== '');
             submitBtn.disabled = !(allFilled && isBusinessNumVerified);
         }
 
-        // 폼 제출
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', e => {
             e.preventDefault();
             if (!isBusinessNumVerified) {
                 alert('사업자 등록번호 인증을 완료해주세요.');
@@ -264,7 +253,7 @@
             submitBtn.disabled = true;
             submitBtn.textContent = '처리 중...';
 
-            fetch(contextPath + '/realtor/api/register', {
+            fetch(contextPath + '/realtor/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -273,7 +262,7 @@
             .then(data => {
                 if (data.success) {
                     alert('회원가입이 완료되었습니다.');
-                    window.location.href = contextPath + '/auth/login';
+                    window.location.href = contextPath + '/auth/realtor-login';
                 } else {
                     alert('회원가입 실패: ' + (data.message || ''));
                 }
