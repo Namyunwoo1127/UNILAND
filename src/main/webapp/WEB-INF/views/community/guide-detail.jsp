@@ -806,7 +806,7 @@
             return true;
         }
 
-        // 댓글 삭제
+     	// 댓글 삭제
         function deleteComment(commentId) {
             if (!confirm('댓글을 삭제하시겠습니까?')) {
                 return;
@@ -819,6 +819,16 @@
             .then(data => {
                 if (data.success) {
                     alert('댓글이 삭제되었습니다.');
+                    
+                    // ⭐ 댓글 수 실시간 업데이트
+                    const commentCountElem = document.querySelector('.comment-count');
+                    const statsComment = document.querySelector('.post-stats span:nth-child(3)');
+                    if (commentCountElem && statsComment) {
+                        let currentCount = parseInt(commentCountElem.textContent);
+                        commentCountElem.textContent = currentCount - 1;
+                        statsComment.innerHTML = '<i class="fa-solid fa-comment"></i> ' + (currentCount - 1);
+                    }
+                    
                     location.reload();
                 } else {
                     alert('댓글 삭제에 실패했습니다.');
