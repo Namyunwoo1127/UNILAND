@@ -172,4 +172,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE ROWNUM = 1
 </select>
 
+<!-- 좋아요 개수를 GUIDE_TBL에 동기화 -->
+<update id="updateLikeCount">
+    UPDATE GUIDE_TBL
+    SET LIKE_COUNT = (SELECT COUNT(*) FROM GUIDE_LIKE_TBL WHERE GUIDE_NO = #{guideNo})
+    WHERE GUIDE_NO = #{guideNo}
+</update>
+
 </mapper>

@@ -1,12 +1,23 @@
 package com.elon.boot.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.elon.boot.domain.community.notice.model.service.NoticeService;
+import com.elon.boot.domain.community.notice.model.vo.Notice;
+
+import lombok.RequiredArgsConstructor;
+
 @Controller
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController {
+	
+	private final NoticeService noticeService;
 
     // 대시보드
     @GetMapping("/dashboard")
@@ -28,7 +39,9 @@ public class AdminController {
 
     // 공지사항관리
     @GetMapping("/content-management")
-    public String contentManagement() {
+    public String contentManagement(Model model) {
+    	List<Notice> noticeList = noticeService.getAllNotices(); // DB에서 공지 가져오기
+        model.addAttribute("noticeList", noticeList);
         return "admin/content-management";
     }
 
