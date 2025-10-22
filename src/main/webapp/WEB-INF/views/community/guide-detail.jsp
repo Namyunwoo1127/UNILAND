@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -417,6 +418,24 @@
             color: #667eea;
         }
 
+        /* 가이드 댓글 좋아요 버튼 활성화 스타일 */
+        .btn-comment-action.guide-comment-like.liked {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .btn-comment-action.guide-comment-like.liked i {
+            color: #667eea;
+        }
+
+        .btn-comment-action.guide-comment-like:hover {
+            color: #667eea;
+        }
+
+        .btn-comment-action.guide-comment-like i {
+            transition: color 0.2s;
+        }
+
         .comment-body {
             font-size: 14px;
             color: #333;
@@ -523,21 +542,134 @@
                 margin-top: 10px;
             }
         }
+        
+        /* ✅ 공유하기 모달 CSS 추가 */
+        .modal-overlay {
+            display: none; /* 기본 숨김 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 24px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            animation: modal-fade-in 0.3s ease-out;
+        }
+        
+        @keyframes modal-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-align: center;
+            color: #1a1a1a;
+        }
+        
+        .modal-content p {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .share-url-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .share-url-container input[type="text"] {
+            flex-grow: 1;
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #f7fafc;
+            color: #333;
+        }
+        
+        .share-url-container input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .share-url-container button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0; /* 버튼 크기 고정 */
+        }
+        
+        .share-url-container button:hover {
+            background: #5a6dcb;
+        }
+        
+        .share-url-container button:disabled {
+            background: #c6f6d5;
+            color: #22543d;
+            cursor: default;
+        }
+        /* ✅ 공유하기 모달 CSS 끝 */
     </style>
 </head>
 <body>
 	<!-- 헤더 포함 -->
-    <jsp:include page="/WEB-INF/views/common/header.jsp"/>
+	<jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
 	<!-- 메인 컨테이너 -->
-    <div class="main-container">
+	<div class="main-container">
 		<!-- 뒤로가기 버튼 -->
-        <button class="btn-back" onclick="location.href='${pageContext.request.contextPath}/community/guide'">
+		<button class="btn-back" onclick="location.href='${pageContext.request.contextPath}/community/guide'">
             <i class="fa-solid fa-arrow-left"></i> 목록으로
         </button>
         
 		<!-- 게시글 헤더 -->
-        <div class="post-header">
+		<div class="post-header">
 		    <c:choose>
 		        <c:when test="${guide.guideCategory eq 'contract'}">
 		            <span class="post-category contract">
@@ -594,14 +726,14 @@
 		</div>
 
 		<!-- 게시글 내용 -->
-        <div class="post-content">
+		<div class="post-content">
             <div class="post-body">
                 ${guide.guideContent}
             </div>
         </div>
 
 		<!-- 액션 버튼 -->
-        <div class="post-actions">
+		<div class="post-actions">
             <button class="btn-action btn-like ${isLiked ? 'active' : ''}" onclick="toggleLike()">
                 <i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
                 <span id="likeText">좋아요 (${likeCount})</span>
@@ -613,14 +745,14 @@
         </div>
 
 		<!-- 댓글 섹션 -->
-        <div class="comments-section">
+		<div class="comments-section">
             <h3 class="comments-header">
                 <i class="fa-solid fa-comments"></i>
                 댓글 <span class="comment-count">${guide.commentCount}</span>
             </h3>
-
+            
 			<!-- 댓글 작성 -->
-            <div class="comment-form">
+			<div class="comment-form">
                 <form action="${pageContext.request.contextPath}/community/guide/${guide.guideNo}/comment" method="post">
                     <textarea class="comment-textarea" name="content" placeholder="댓글을 입력하세요..." id="commentInput"></textarea>
                     <div class="comment-form-footer">
@@ -642,33 +774,33 @@
             </div>
 
 			<!-- 댓글 리스트 -->
-            <ul class="comment-list">
+			<ul class="comment-list">
                 <c:choose>
                     <c:when test="${not empty comments}">
                         <c:forEach var="comment" items="${comments}">
                             <li class="comment-item">
                                 <div class="comment-header">
                                     <div class="comment-author-info">
-                                        <%-- [수정됨] authorNickname -> userId --%>
                                         <div class="comment-avatar">${comment.userId.substring(0, 1)}</div>
                                         <div>
-                                            <%-- [수정됨] authorNickname -> userId --%>
                                             <span class="comment-author">${comment.userId}</span>
                                             <span class="comment-date"><fmt:formatDate value="${comment.createdAt}" pattern="yyyy.MM.dd HH:mm"/></span>
                                         </div>
                                     </div>
                                     <div class="comment-actions">
-                                        <button class="btn-comment-action">
-                                            <i class="fa-regular fa-heart"></i> 좋아요
+										<!-- 수정된 가이드 댓글 좋아요 버튼 -->
+                                        <button class="btn-comment-action guide-comment-like ${comment.liked ? 'liked' : ''}" 
+                                                data-comment-id="${comment.commentId}"
+                                                onclick="toggleGuideCommentLike(event)">
+                                            <i class="${comment.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> 
+                                            좋아요 <span class="guide-comment-like-count" data-comment-id="${comment.commentId}">(${comment.likeCount})</span>
                                         </button>
                                         <c:if test="${sessionScope.loginUser.userId == comment.userId}">
                                             <button class="btn-comment-action" onclick="deleteComment(${comment.commentId})">삭제</button>
                                         </c:if>
                                     </div>
                                 </div>
-                                <div class="comment-body">
-                                    ${comment.content}
-                                </div>
+                                <div class="comment-body" style="white-space: pre-line;"><c:out value="${comment.content}"/></div>
                             </li>
                         </c:forEach>
                     </c:when>
@@ -682,7 +814,7 @@
         </div>
 
 		<!-- 이전/다음 글 -->
-        <c:if test="${not empty prevGuide || not empty nextGuide}">
+		<c:if test="${not empty prevGuide || not empty nextGuide}">
             <div class="post-navigation">
                 <h3 class="nav-title">다른 글 보기</h3>
                 <c:if test="${not empty prevGuide}">
@@ -705,13 +837,24 @@
         </c:if>
 
 		<!-- 목록 버튼 -->
-        <button class="btn-list" onclick="location.href='${pageContext.request.contextPath}/community/guide'">
+		<button class="btn-list" onclick="location.href='${pageContext.request.contextPath}/community/guide'">
             <i class="fa-solid fa-list"></i> 목록으로 돌아가기
         </button>
     </div>
 
-	<!-- 푸터 포함 -->
-    <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
+    <div id="shareModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h3>링크 공유하기</h3>
+            <p>이 링크를 복사해서 공유하세요.</p>
+            <div class="share-url-container">
+                <input type="text" id="shareUrlInput" value="" readonly>
+                <button id="copyUrlButton">복사</button>
+            </div>
+        </div>
+    </div>
+
+	<jsp:include page="/WEB-INF/views/common/footer.jsp"/>
 
     <script>
         // 좋아요 토글
@@ -723,7 +866,7 @@
 
             if (!isLoggedIn) {
                 if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
-                    window.location.href = '${pageContext.request.contextPath}/login';
+                    window.location.href = '${pageContext.request.contextPath}/auth/login';
                 }
                 return;
             }
@@ -732,7 +875,7 @@
             const icon = btn.querySelector('i');
             const text = document.getElementById('likeText');
 
-            // AJAX로 좋아요 처리
+			// AJAX로 좋아요 처리
             fetch('${pageContext.request.contextPath}/community/guide/${guide.guideNo}/like', {
                 method: 'POST',
                 headers: {
@@ -754,7 +897,7 @@
                     }
                     text.textContent = '좋아요 (' + likeCount + ')';
                     
-                 // ⭐ 상단 post-stats의 좋아요 수 실시간 업데이트
+					// 상단 post-stats의 좋아요 수 실시간 업데이트
                     const statsHeart = document.querySelector('.post-stats span:nth-child(2)');
                     if (statsHeart) {
                         statsHeart.innerHTML = '<i class="fa-solid fa-heart"></i> ' + likeCount;
@@ -764,24 +907,104 @@
             .catch(err => console.error('좋아요 처리 실패:', err));
         }
 
+        // ✅ 수정된 가이드 댓글 좋아요 토글 함수
+        function toggleGuideCommentLike(event) {
+            const isLoggedIn = ${not empty sessionScope.loginUser};
+            
+            if (!isLoggedIn) {
+                if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
+                    window.location.href = '${pageContext.request.contextPath}/auth/login';
+                }
+                return;
+            }
+            
+            // 버튼에서 commentId 가져오기
+            const btn = event.target.closest('.btn-comment-action');
+            const commentId = btn.getAttribute('data-comment-id');
+            
+            // commentId 검증
+            if (!commentId || commentId === 'undefined' || commentId === 'null') {
+                console.error('commentId가 유효하지 않습니다:', commentId);
+                alert('댓글 정보를 찾을 수 없습니다.');
+                return;
+            }
+            
+            fetch('${pageContext.request.contextPath}/community/guide/comment/' + commentId + '/like', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 좋아요 수 업데이트
+                    const likeCountSpan = document.querySelector('.guide-comment-like-count[data-comment-id="' + commentId + '"]');
+                    if (likeCountSpan) {
+                        likeCountSpan.textContent = '(' + data.likeCount + ')';
+                    }
+                    
+                    // 버튼 스타일 변경
+                    const icon = btn.querySelector('i');
+                    
+                    if (data.isLiked) {
+                        icon.className = 'fa-solid fa-heart';
+                        btn.classList.add('liked');
+                    } else {
+                        icon.className = 'fa-regular fa-heart';
+                        btn.classList.remove('liked');
+                    }
+                } else {
+                    alert(data.message || '가이드 댓글 좋아요 처리에 실패했습니다.');
+                }
+            })
+            .catch(err => {
+                console.error('가이드 댓글 좋아요 처리 실패:', err);
+                alert('가이드 댓글 좋아요 처리 중 오류가 발생했습니다.');
+            });
+        }
+
+        // ✅ 공유하기 함수를 새 모달창을 띄우는 코드로 교체
         // 공유하기
         function sharePost() {
             const url = window.location.href;
-            const title = document.querySelector('.post-title').textContent;
-
-            if (navigator.share) {
-                navigator.share({
-                    title: title,
-                    text: 'UNILAND 자취 가이드',
-                    url: url
-                }).catch(err => console.log('공유 실패:', err));
-            } else {
-                // Fallback: URL 복사
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('링크가 복사되었습니다!');
-                });
-            }
+            
+            // 1. 모달 안의 input에 URL 설정
+            const urlInput = document.getElementById('shareUrlInput');
+            urlInput.value = url;
+            
+            // 2. 모달 보이기
+            document.getElementById('shareModal').classList.add('show');
+            
+            // 3. 버튼 텍스트 초기화
+            const copyBtn = document.getElementById('copyUrlButton');
+            copyBtn.textContent = '복사';
+            copyBtn.disabled = false;
         }
+
+        // ✅ 공유 모달을 위한 새 함수 2개 추가
+        // 모달 닫기
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.remove('show');
+        }
+
+        // 모달 안의 '복사' 버튼 클릭 시
+        function copyUrlFromModal() {
+            const urlInput = document.getElementById('shareUrlInput');
+            const copyBtn = document.getElementById('copyUrlButton');
+
+            // input의 텍스트를 클립보드로 복사
+            navigator.clipboard.writeText(urlInput.value).then(() => {
+                // 성공 피드백
+                copyBtn.textContent = '복사 완료!';
+                copyBtn.disabled = true;
+
+            }).catch(err => {
+                console.error('URL 복사 실패:', err);
+                alert('URL 복사에 실패했습니다.');
+            });
+        }
+
 
         // 댓글 작성
         function submitComment() {
@@ -790,7 +1013,7 @@
 
             if (!isLoggedIn) {
                 if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
-                    window.location.href = '${pageContext.request.contextPath}/login';
+                    window.location.href = '${pageContext.request.contextPath}/auth/login';
                 }
                 return false;
             }
@@ -806,7 +1029,7 @@
             return true;
         }
 
-     	// 댓글 삭제
+        // 댓글 삭제
         function deleteComment(commentId) {
             if (!confirm('댓글을 삭제하시겠습니까?')) {
                 return;
@@ -820,7 +1043,7 @@
                 if (data.success) {
                     alert('댓글이 삭제되었습니다.');
                     
-                    // ⭐ 댓글 수 실시간 업데이트
+					// 댓글 수 실시간 업데이트
                     const commentCountElem = document.querySelector('.comment-count');
                     const statsComment = document.querySelector('.post-stats span:nth-child(3)');
                     if (commentCountElem && statsComment) {
@@ -844,6 +1067,25 @@
                 if (submitComment()) {
                     document.querySelector('.comment-form form').submit();
                 }
+            }
+        });
+        
+        // ✅ 공유 모달 이벤트 리스너 추가
+        const modal = document.getElementById('shareModal');
+        const closeBtn = document.querySelector('.modal-close');
+        const copyBtn = document.getElementById('copyUrlButton');
+
+        // 'X' 버튼 클릭 시 닫기
+        closeBtn.addEventListener('click', closeShareModal);
+        
+        // '복사' 버튼 클릭 시 복사
+        copyBtn.addEventListener('click', copyUrlFromModal);
+
+        // 모달 배경 클릭 시 닫기
+        modal.addEventListener('click', function(e) {
+            // 클릭된 요소가 modal-overlay 자신일 때만 닫기
+            if (e.target === modal) {
+                closeShareModal();
             }
         });
     </script>
