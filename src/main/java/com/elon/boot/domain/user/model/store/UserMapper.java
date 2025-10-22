@@ -1,6 +1,8 @@
 package com.elon.boot.domain.user.model.store;
 
 import org.apache.ibatis.annotations.Mapper;
+
+import com.elon.boot.controller.dto.user.UserModRequest;
 import com.elon.boot.domain.user.model.vo.User;
 
 @Mapper
@@ -22,7 +24,7 @@ public interface UserMapper {
     int insertUser(User user);
 
     // 회원정보 수정
-    int updateUser(User user);
+    int updateUser(UserModRequest user);
 
     // 회원 탈퇴 (DELETE_YN = 'Y'로 변경)
     int deleteUser(String userId);

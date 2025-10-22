@@ -58,9 +58,12 @@
     <!-- 회원정보 수정 -->
     <update id="updateUser">
         UPDATE USER_TBL SET
-            USER_EMAIL = #{userEmail},
-            USER_PHONE = #{userPhone},
-            USER_REGION = #{userRegion},
+        	USER_NAME 	= #{userName},
+        	USER_AGE	= #{userAge},
+            USER_GENDER	= #{userGender},
+            USER_PHONE 	= #{userPhone},
+            USER_EMAIL 	= #{userEmail},
+            USER_REGION	= #{userRegion},
             USER_SCHOOL = #{userSchool},
             UPDATED_AT = SYSTIMESTAMP
         WHERE USER_ID = #{userId}

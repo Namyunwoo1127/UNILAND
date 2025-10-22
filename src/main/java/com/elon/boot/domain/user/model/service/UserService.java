@@ -1,6 +1,9 @@
 package com.elon.boot.domain.user.model.service;
 
+import com.elon.boot.controller.dto.user.UserModRequest;
 import com.elon.boot.domain.user.model.vo.User;
+
+import jakarta.servlet.http.HttpSession;
 
 public interface UserService {
 
@@ -20,11 +23,13 @@ public interface UserService {
     int signUp(User user);
 
     // 회원정보 수정
-    int updateUser(User user);
+    int updateUser(UserModRequest userModiReq);
 
     // 회원 탈퇴
     int deleteUser(String userId);
 
     // ID 중복 체크
     boolean checkDuplicateId(String userId);
+
+
 }
