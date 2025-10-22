@@ -13,15 +13,24 @@
         <result property="realtorPhone" column="REALTOR_PHONE"/>
         <result property="realtorEmail" column="REALTOR_EMAIL"/>
         <result property="businessNum" column="BUSINESS_NUM"/>
+        <result property="realtorImage" column="REALTOR_IMAGE"/>
+        <result property="realtorRegNum" column="REALTOR_REG_NUM"/>
         <result property="createdAt" column="CREATED_AT"/>
         <result property="updatedAt" column="UPDATED_AT"/>
-        <result property="deleteYn" column="DELETE_YN"/>       <result property="approvalStatus" column="APPROVAL_STATUS"/>
+        <result property="deleteYn" column="DELETE_YN"/>
+        <result property="approvalStatus" column="APPROVAL_STATUS"/>
     </resultMap>
 
     <select id="countByBusinessNum" resultType="int">
 	    SELECT COUNT(*)
 	    FROM REALTOR_TBL
 	    WHERE BUSINESS_NUM = #{businessNum, jdbcType=VARCHAR}
+	</select>
+    
+    <select id="countByRealtorRegNum" resultType="int">
+	    SELECT COUNT(*)
+	    FROM REALTOR_TBL
+	    WHERE REALTOR_REG_NUM = #{realtorRegNum}
 	</select>
 
 
@@ -35,9 +44,11 @@
 	        REALTOR_PHONE,
 	        REALTOR_EMAIL,
 	        BUSINESS_NUM,
-	        CREATED_AT,
+            REALTOR_REG_NUM,                 REALTOR_IMAGE,                   
+            CREATED_AT,
             UPDATED_AT,
-	        DELETE_YN,                 APPROVAL_STATUS
+	        DELETE_YN,
+            APPROVAL_STATUS
 	    ) VALUES (
 	        #{realtorId, jdbcType=VARCHAR},
 	        #{realtorPassword, jdbcType=VARCHAR},
@@ -47,9 +58,11 @@
 	        #{realtorPhone, jdbcType=VARCHAR},
 	        #{realtorEmail, jdbcType=VARCHAR},
 	        #{businessNum, jdbcType=VARCHAR},
-	        CURRENT_TIMESTAMP,
+            #{realtorRegNum, jdbcType=VARCHAR},      NULL,                          
             CURRENT_TIMESTAMP,
-	        'N',                       'PENDING'
+            CURRENT_TIMESTAMP,
+	        'N',
+            'PENDING'
 	    )
     </insert>
 
@@ -59,7 +72,8 @@
         WHERE REALTOR_ID = #{realtorId}
           AND REALTOR_PASSWORD = #{password}
           AND BUSINESS_NUM = #{businessNumber}
-          AND DELETE_YN = 'N'              </select>
+          AND DELETE_YN = 'N'
+    </select>
 
     <select id="findById" resultMap="realtorResultMap">
         SELECT *
@@ -78,12 +92,23 @@
             UPDATED_AT = CURRENT_TIMESTAMP
         WHERE REALTOR_ID = #{realtorId}
     </update>
+    
+    <update id="updateRealtorImage" parameterType="map">
+        UPDATE REALTOR_TBL
+        SET 
+            REALTOR_IMAGE = #{realtorImage},
+            UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE 
+            REALTOR_ID = #{realtorId}
+    </update>
 
     <update id="deleteRealtor" parameterType="string">
         UPDATE REALTOR_TBL
         SET
-            DELETE_YN = 'Y',              UPDATED_AT = CURRENT_TIMESTAMP
+            DELETE_YN = 'Y',
+            UPDATED_AT = CURRENT_TIMESTAMP
         WHERE REALTOR_ID = #{realtorId}
-          AND DELETE_YN = 'N'             </update>
+          AND DELETE_YN = 'N'
+    </update>
 
 </mapper>

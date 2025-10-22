@@ -14,11 +14,15 @@ public class Realtor {
     private String realtorEmail;
     private String businessNum;
     
-    // private String profileImage; // 주석 처리 유지
+    // ✅ 추가: 프로필 이미지 파일명을 저장할 필드
+    private String realtorImage; 
+    
+    // ⭐ 추가: 중개사 등록번호 필드
+    private String realtorRegNum; 
 
     private Timestamp createdAt;
     private Timestamp updatedAt;
-    // private String status; // ⚠️ 삭제
-    private String deleteYn;       // ✅ 추가: DELETE_YN 컬럼 매핑
+    
+    private String deleteYn;
     private String approvalStatus;
 }

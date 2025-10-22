@@ -1,5 +1,8 @@
 package com.elon.boot.domain.realtor.model.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +20,12 @@ public class RealtorServiceImpl implements RealtorService {
     @Override
     public boolean isBusinessNumDuplicate(String businessNum) {
         return realtorMapper.countByBusinessNum(businessNum) > 0;
+    }
+    
+    // ⭐ 추가 구현: 중개사 등록번호 중복 확인
+    @Override
+    public boolean isRealtorRegNumDuplicate(String realtorRegNum) {
+        return realtorMapper.countByRealtorRegNum(realtorRegNum) > 0;
     }
 
     @Override
@@ -54,5 +63,19 @@ public class RealtorServiceImpl implements RealtorService {
         // Mapper의 deleteRealtor 메서드를 호출하여 삭제(또는 상태 변경)된 행의 개수를 반환받음
         int result = realtorMapper.deleteRealtor(realtorId);
         return result > 0; // 1개 이상의 행이 처리되었다면 true 반환
+    }
+    
+    // ⭐ 추가 구현: 프로필 이미지 파일명 업데이트
+    @Override
+    @Transactional // DB 변경 작업이므로 트랜잭션 처리 적용
+    public boolean updateRealtorImage(String realtorId, String savedFileName) {
+        // 1. Map을 사용하여 ID와 파일명을 매퍼로 전달
+        Map<String, Object> params = new HashMap<>();
+        params.put("realtorId", realtorId);
+        params.put("realtorImage", savedFileName);
+        
+        // 2. Mapper를 호출하여 업데이트하고, 결과(수정된 행 수)를 boolean으로 변환하여 반환
+        int result = realtorMapper.updateRealtorImage(params);
+        return result > 0;
     }
 }
