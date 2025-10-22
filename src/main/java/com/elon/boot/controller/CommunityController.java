@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.elon.boot.domain.community.guide.model.service.GuideCommentLikeService;
 import com.elon.boot.domain.community.guide.model.service.GuideCommentService;
 import com.elon.boot.domain.community.guide.model.service.GuideLikeService;
 import com.elon.boot.domain.community.guide.model.service.GuideService;
@@ -32,6 +33,7 @@ public class CommunityController {
    private final GuideService gService;
    private final GuideCommentService cService;
    private final GuideLikeService lService;
+   private final GuideCommentLikeService clService;
 
     // 가이드 목록
     @GetMapping("/guide")
@@ -120,6 +122,14 @@ public class CommunityController {
             
             // 댓글 목록 조회
             List<GuideComment> comments = cService.getCommentsByGuideNo(guideNo);
+            
+         // 각 가이드 댓글의 좋아요 상태 설정
+            if (currentUserId != null && comments != null && !comments.isEmpty()) {
+                for (GuideComment comment : comments) {
+                    boolean commentLiked = clService.isGuideCommentLikedByUser(comment.getCommentId(), currentUserId);
+                    comment.setLiked(commentLiked);  // setIsLiked → setLiked
+                }
+            }
             
             // 좋아요 정보 조회
             int likeCount = lService.getLikeCount(guideNo);
@@ -279,6 +289,42 @@ public class CommunityController {
 
         // return String.format("{\"success\": %b}", result);
 
+        return response;
+    }
+    
+ // 가이드 댓글 좋아요
+    @PostMapping("/guide/comment/{commentId}/like")
+    @ResponseBody
+    public Map<String, Object> toggleGuideCommentLike(
+            @PathVariable("commentId") int commentId,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            User loginUser = (User) session.getAttribute("loginUser");
+            if (loginUser == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return response;
+            }
+            
+            String userId = loginUser.getUserId();
+            
+            // 가이드 댓글 좋아요 토글
+            boolean isLiked = clService.toggleGuideCommentLike(commentId, userId);
+            int likeCount = clService.getGuideCommentLikeCount(commentId);
+            
+            response.put("success", true);
+            response.put("isLiked", isLiked);
+            response.put("likeCount", likeCount);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "가이드 댓글 좋아요 처리 중 오류가 발생했습니다.");
+        }
+        
         return response;
     }
 }
