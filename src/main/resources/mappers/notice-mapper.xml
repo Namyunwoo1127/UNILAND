@@ -17,6 +17,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result column="VIEW_COUNT" property="viewCount"/>
         <result column="DELETE_YN" property="deleteYn"/>
     </resultMap>
+    
+    <!-- 홈페이지용 최근 공지사항 조회 -->
+    <select id="selectRecentNotices" resultType="Notice">
+	    SELECT *
+	    FROM (
+		    SELECT 
+	            *
+	        FROM NOTICE_TBL
+	        WHERE delete_yn = 'N'
+	        ORDER BY NOTICE_IMPORTANT DESC, NOTICE_CREATEAT DESC
+	    )
+	    WHERE ROWNUM &lt;= #{limit}
+	</select>
 
     <!-- 전체 공지사항 조회 -->
     <select id="selectAllNotices" resultMap="NoticeResultMap">

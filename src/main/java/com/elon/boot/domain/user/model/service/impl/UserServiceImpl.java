@@ -2,6 +2,7 @@ package com.elon.boot.domain.user.model.service.impl;
 
 import org.springframework.stereotype.Service;
 
+import com.elon.boot.controller.dto.user.UserModRequest;
 import com.elon.boot.domain.user.model.service.UserService;
 import com.elon.boot.domain.user.model.store.UserMapper;
 import com.elon.boot.domain.user.model.vo.User;
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int updateUser(User user) {
+    public int updateUser(UserModRequest user) {
         return userMapper.updateUser(user);
     }
 

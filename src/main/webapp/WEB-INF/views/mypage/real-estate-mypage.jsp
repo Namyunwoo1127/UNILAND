@@ -439,40 +439,40 @@
             <div class="content-section active" id="mypage">
                 <div class="section-title">마이페이지</div>
                 <div class="profile-section">
-                    <div class="profile-image">
-                        <c:choose>
+                    <div class="profile-image">프로필 사진
+<%--                         <c:choose>
                             <c:when test="${not empty user.profileImage}">
                                 <img src="${pageContext.request.contextPath}${user.profileImage}" alt="프로필" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                            </c:when>
+                            </c:when>   임시로 프로필 이미지 비활성화
                             <c:otherwise>
                                 프로필 사진
                             </c:otherwise>
-                        </c:choose>
+                        </c:choose>--%> 
                     </div>
                     <div class="profile-info">
                         <div class="info-row">
                             <div class="info-label">아이디</div>
-                            <div class="info-value">${user.username != null ? user.username : 'user_123'}</div>
+                            <div class="info-value">${user.userId != null ? user.userId : 'user_123'}</div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">이름</div>
-                            <div class="info-value">${user.name != null ? user.name : '홍길동'}</div>
+                            <div class="info-value">${user.userName != null ? user.userName : '홍길동'}</div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">나이</div>
-                            <div class="info-value">${user.age != null ? user.age : '34'}세</div>
+                            <div class="info-value">${user.userAge != null ? user.userAge : '34'}세</div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">성별</div>
-                            <div class="info-value">${user.gender == 'M' ? '남성' : (user.gender == 'F' ? '여성' : '남성')}</div>
+                            <div class="info-value">${user.userGender == 'M' ? '남성' : (user.userGender == 'F' ? '여성' : '남성')}</div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">연락처</div>
-                            <div class="info-value">${user.phone != null ? user.phone : '010-1234-5678'}</div>
+                            <div class="info-value">${user.userPhone != null ? user.userPhone : '010-1234-5678'}</div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">이메일</div>
-                            <div class="info-value">${user.email != null ? user.email : 'example@email.com'}</div>
+                            <div class="info-value">${user.userEmail != null ? user.userEmail : 'example@email.com'}</div>
                         </div>
                         <div class="edit-btn-container">
                             <button class="btn-edit" onclick="openEditModal()">회원 정보 수정</button>
@@ -740,32 +740,43 @@
             <div class="modal-title">회원 정보 수정</div>
 
             <form action="${pageContext.request.contextPath}/mypage/update" method="post" id="updateForm">
+            	<input type="hidden" name="userId" value="${user.userId}">
                 <div class="form-group">
                     <label class="form-label">이름</label>
-                    <input type="text" name="name" class="form-input" value="${user.name != null ? user.name : '홍길동'}" placeholder="이름을 입력하세요">
+                    <input type="text" name="userName" class="form-input" value="${user.userName != null ? user.userName : '홍길동'}" placeholder="이름을 입력하세요">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">나이</label>
-                    <input type="number" name="age" class="form-input" value="${user.age != null ? user.age : '34'}" placeholder="나이를 입력하세요">
+                    <input type="number" name="userAge" class="form-input" value="${user.userAge != null ? user.userAge : '34'}" placeholder="나이를 입력하세요">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">성별</label>
-                    <select name="gender" class="form-input">
-                        <option value="M" ${user.gender == 'M' ? 'selected' : ''}>남성</option>
-                        <option value="F" ${user.gender == 'F' ? 'selected' : ''}>여성</option>
+                    <select name="userGender" class="form-input">
+                        <option value="M" ${user.userGender == 'M' ? 'selected' : ''}>남성</option>
+                        <option value="F" ${user.userGender == 'F' ? 'selected' : ''}>여성</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">연락처</label>
-                    <input type="tel" name="phone" class="form-input" value="${user.phone != null ? user.phone : '010-1234-5678'}" placeholder="연락처를 입력하세요">
+                    <input type="tel" name="userPhone" class="form-input" value="${user.userPhone != null ? user.userPhone : '010-1234-5678'}" placeholder="연락처를 입력하세요">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">이메일</label>
-                    <input type="email" name="email" class="form-input" value="${user.email != null ? user.email : 'example@email.com'}" placeholder="이메일을 입력하세요">
+                    <input type="email" name="userEmail" class="form-input" value="${user.userEmail != null ? user.userEmail : 'example@email.com'}" placeholder="이메일을 입력하세요">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">지역</label>
+                    <input type="text" name="userRegion" class="form-input" value="${user.userRegion != null ? user.userRegion : '서울특별시'}" placeholder="지역을 입력하세요">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">학교</label>
+                    <input type="text" name="userSchool" class="form-input" value="${user.userSchool != null ? user.userSchool : 'KH대학교'}" placeholder="대학교를 입력하세요">
                 </div>
 
                 <div class="modal-buttons">

@@ -678,19 +678,22 @@
             </div>
 
             <div class="info-card">
-                <div class="info-card-header">
-                    <div class="info-card-icon"><i class="fa-solid fa-bullhorn"></i></div>
-                    <h3>공지사항</h3>
-                </div>
-                <ul class="info-list">
-                    <li onclick="location.href='${pageContext.request.contextPath}/community/notice'">UNILAND 정식 오픈 안내</li>
-                    <li onclick="location.href='${pageContext.request.contextPath}/community/notice'">AI 검색 기능 업데이트</li>
-                    <li onclick="location.href='${pageContext.request.contextPath}/community/notice'">신입생 특별 이벤트</li>
-                    <li onclick="location.href='${pageContext.request.contextPath}/community/notice'">모바일 앱 출시 예정</li>
-                    <li onclick="location.href='${pageContext.request.contextPath}/community/notice'">사기 매물 주의 안내</li>
-                </ul>
-                <span class="view-more" onclick="location.href='${pageContext.request.contextPath}/community/notice'">더보기 →</span>
-            </div>
+		    <div class="info-card-header">
+		        <div class="info-card-icon"><i class="fa-solid fa-bullhorn"></i></div>
+		        <h3>공지사항</h3>
+		    </div>
+		    <ul class="info-list">
+		        <c:forEach var="notice" items="${noticeList}" begin="0" end="4">
+		            <li onclick="location.href='${pageContext.request.contextPath}/community/notice/${notice.noticeNo}'">
+		                ${notice.noticeSubject}
+		            </li>
+		        </c:forEach>
+		        <c:if test="${empty noticeList}">
+		            <li style="color: #999; cursor: default;">등록된 공지사항이 없습니다.</li>
+		        </c:if>
+		    </ul>
+		    <span class="view-more" onclick="location.href='${pageContext.request.contextPath}/community/notice'">더보기 →</span>
+		</div>
         </div>
     </div>
 

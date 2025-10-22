@@ -604,7 +604,7 @@
 
             if (!isLoggedIn) {
                 if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
-                    window.location.href = '${pageContext.request.contextPath}/login';
+                    window.location.href = '${pageContext.request.contextPath}/auth/login';
                 }
                 return;
             }

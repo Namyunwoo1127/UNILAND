@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>매물 등록 - UNILAND</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -19,62 +20,15 @@
             background-color: #f8f9fa;
         }
 
-        header {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .logo img {
-            width: 140px;
-            height: auto;
-            object-fit: contain;
-            display: block;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .btn-logout {
-            padding: 8px 20px;
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: #f7fafc;
-        }
-
+        /* ---------------------------------------------------- */
+        /* 헤더 관련 CSS는 별도의 파일(realtorHeader.jsp 내부)에 있다고 가정하고 제거되었습니다. */
+        /* ---------------------------------------------------- */
+        
         .main-layout {
             display: flex;
             max-width: 1400px;
             margin: 0 auto;
-            min-height: calc(100vh - 80px);
+            min-height: calc(100vh - 80px); /* 헤더 높이에 맞게 조정이 필요할 수 있습니다. */
         }
 
         .sidebar {
@@ -485,23 +439,12 @@
     </style>
 </head>
 <body>
-<header>
-    <div class="header-container">
-        <div class="logo">
-            <div class="logo-icon">
-                 <a href="${pageContext.request.contextPath}/realtor/realtor-dashboard" class="logo">
-                     <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
-               </a>
-               </div>
-        </div>
-        <div class="user-info">
-            <span class="user-name">${sessionScope.loginRealtor.realtorName} 중개사님</span>
-            <button class="btn-logout" onclick="alert('로그아웃되었습니다.'); location.href='${pageContext.request.contextPath}/auth/logout';">
-                로그아웃
-            </button>
-        </div>
-    </div>
-</header>
+<%-- 
+    ✅ 외부 파일(realtorHeader.jsp)을 포함하여 헤더를 추가합니다. 
+    실제 파일 경로는 프로젝트 구조에 맞게 수정해야 합니다. 
+    일반적인 경로 예시를 사용했습니다.
+--%>
+<jsp:include page="/WEB-INF/views/common/realtor-header.jsp" />
 
 <div class="main-layout">
     <aside class="sidebar">
@@ -899,3 +842,5 @@
 </script>
 </body>
 </html>
+
+
