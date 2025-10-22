@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -36,9 +37,10 @@
       padding: 0 24px;
     }
     .logo img {
-      height: 50px;
-      object-fit: contain;
-      cursor: pointer;
+      	height: 60px;
+        object-fit: contain;
+        object-position: center;
+      	cursor: pointer;
     }
     .btn-login {
       background: #667eea;
@@ -168,6 +170,10 @@
     }
     .badge.active { background: #48bb78; }
     .badge.inactive { background: #e53e3e; }
+    .badge.PENDING {background: gray;}
+    .badge.APPROVED { background: #48bb78;}
+    .badge.REJECTED {background: #e53e3e;}
+    
 
     /* 버튼 */
     .action-btns button {
@@ -204,7 +210,7 @@
         <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND 관리자">
       </div>
       <div class="auth-buttons">
-        <button class="btn-login"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
+        <button class="btn-login" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
       </div>
     </div>
   </header>
@@ -242,7 +248,10 @@
         <button class="btn-search" onclick="searchMember()">검색</button>
       </div>
 
-      <!-- 회원 테이블 -->
+      <!-- 일반 회원 목록 -->
+      <h3 class="section-title">
+        <i class="fa-solid fa-user"></i> 일반 회원 목록
+      </h3>
       <table>
         <thead>
           <tr>
@@ -250,60 +259,116 @@
             <th>이름</th>
             <th>아이디</th>
             <th>이메일</th>
-            <th>회원구분</th>
+            <th>회원유형</th>
             <th>상태</th>
             <th>가입일</th>
             <th>관리</th>
           </tr>
         </thead>
         <tbody id="memberTable">
-          <tr>
-            <td>1</td>
-            <td>김재훈</td>
-            <td>jaehoon12</td>
-            <td>jaehoon12@example.com</td>
-            <td>일반회원</td>
-            <td><span class="badge active">활성</span></td>
-            <td>2025-08-22</td>
-            <td class="action-btns">
-              <button class="btn-edit"><i class="fa-solid fa-pen"></i> 수정</button>
-              <button class="btn-delete"><i class="fa-solid fa-user-xmark"></i> 탈퇴</button>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>이민지</td>
-            <td>minji_lee</td>
-            <td>minji_lee@example.com</td>
-            <td>중개사</td>
-            <td><span class="badge active">활성</span></td>
-            <td>2025-09-02</td>
-            <td class="action-btns">
-              <button class="btn-edit"><i class="fa-solid fa-pen"></i> 수정</button>
-              <button class="btn-delete"><i class="fa-solid fa-user-xmark"></i> 탈퇴</button>
-            </td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>박성우</td>
-            <td>psw2025</td>
-            <td>psw2025@example.com</td>
-            <td>일반회원</td>
-            <td><span class="badge inactive">탈퇴</span></td>
-            <td>2025-10-01</td>
-            <td class="action-btns">
-              <button class="btn-edit"><i class="fa-solid fa-pen"></i> 수정</button>
-              <button class="btn-delete"><i class="fa-solid fa-user-xmark"></i> 탈퇴</button>
-            </td>
-          </tr>
+          <c:forEach var="user" items="${userList}" varStatus="status">
+            <c:if test="${user.adminYn == 'N'}">
+              <tr>
+                <td>${status.count}</td>
+                <td>${user.userName}</td>
+                <td>${user.userId}</td>
+                <td>${user.userEmail}</td>
+                <td>일반회원</td>
+                <td>
+                  <span class="badge ${user.deleteYn == 'N' ? 'active' : 'inactive'}">
+                    ${user.deleteYn == 'N' ? '활성' : '탈퇴'}
+                  </span>
+                </td>
+                <td>
+                  <c:choose>
+                    <c:when test="${not empty user.createdAt}">
+                      <fmt:formatDate value="${user.createdAt}" pattern="yyyy-MM-dd"/>
+                    </c:when>
+                    <c:otherwise>-</c:otherwise>
+                  </c:choose>
+                </td>
+                <td class="action-btns">
+                  <form action="${pageContext.request.contextPath}/admin/user-delete/${user.userId}"
+                        method="post" style="display:inline;">
+                    <button type="submit" class="btn-delete"
+                            onclick="return confirm('정말 탈퇴 처리하시겠습니까?')">
+                      <i class="fa-solid fa-user-xmark"></i> 탈퇴
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            </c:if>
+          </c:forEach>
+          <c:if test="${empty userList}">
+            <tr>
+              <td colspan="8">등록된 회원이 없습니다.</td>
+            </tr>
+          </c:if>
         </tbody>
       </table>
-    </main>
-  </div>
+      
+      <br>
 
-  <!-- 푸터 -->
-  <footer>
-    © 2025 UNILAND Admin. All rights reserved.
+      <!-- 중개사 회원 목록 -->
+      <h3 class="section-title">
+        <i class="fa-solid fa-building"></i> 중개사 회원 목록
+      </h3>
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>중개인 이름</th>
+            <th>아이디</th>
+            <th>사무소명</th>
+            <th>연락처</th>
+            <th>승인상태</th>
+            <th>가입일</th>
+            <th>관리</th>
+          </tr>
+        </thead>
+        <tbody id="realtorTable">
+          <c:forEach var="realtor" items="${realtorList}" varStatus="status">
+            <tr>
+              <td>${status.count}</td>
+              <td>${realtor.realtorName}</td>
+              <td>${realtor.realtorId}</td>
+              <td>${realtor.officeName}</td>
+              <td>${realtor.realtorPhone}</td>
+              <td>
+                <c:choose>
+                  <c:when test="${realtor.approvalStatus == 'APPROVED'}">
+                    <span class="badge ${realtor.approvalStatus }" >승인완료</span>
+                  </c:when>
+                  <c:when test="${realtor.approvalStatus == 'PENDING'}">
+                    <span class="badge ${realtor.approvalStatus }" >승인대기</span>
+                  </c:when>
+                  <c:when test="${realtor.approvalStatus == 'REJECTED'}">
+                    <span class="badge ${realtor.approvalStatus }" >반려</span>
+                  </c:when>
+                  <c:otherwise>
+                    <span class="badge_inactive">-</span>
+                  </c:otherwise>
+                </c:choose>
+              </td>
+              <td>
+                <c:choose>
+                  <c:when test="${not empty realtor.createdAt}">
+                    <fmt:formatDate value="${realtor.createdAt}" pattern="yyyy-MM-dd"/>
+                  </c:when>
+                  <c:otherwise>-</c:otherwise>
+                </c:choose>
+              </td>
+              <td class="action-btns">
+                <form action="${pageContext.request.contextPath}/admin/realtor-delete/${realtor.realtorId}"
+                      method="post" style="display:inline;">
+                  <button type="submit" class="btn-delete"
+                          onclick="return confirm('정말 탈퇴하시겠습니까?')">
+                    <i class="fa-solid fa-trash"></i> 탈퇴
+                  </button>
+                </form>
+              </td>
+            </tr>
+          </c:forEach>
   </footer>
 
   <script>
@@ -344,7 +409,7 @@
     document.querySelector('.btn-login').addEventListener('click', function() {
       if (confirm('로그아웃 하시겠습니까?')) {
         alert('로그아웃되었습니다.');
-        window.location.href = '${pageContext.request.contextPath}/auth/login';
+        window.location.href = '${pageContext.request.contextPath}/auth/logout';
       }
     });
 
@@ -355,13 +420,6 @@
       });
     });
 
-    document.querySelectorAll('.btn-delete').forEach(btn => {
-      btn.addEventListener('click', function() {
-        if (confirm('정말 탈퇴 처리하시겠습니까?')) {
-          alert('탈퇴 처리되었습니다.');
-        }
-      });
-    });
   </script>
 </body>
 </html>
