@@ -39,7 +39,14 @@ public class PropertyServiceImpl implements PropertyService {
         p.setLatitude(r.getLatitude());
         p.setLongitude(r.getLongitude());
         p.setContractArea(r.getContractArea());
+        p.setRoom(r.getRoom());
+        p.setBathroom(r.getBathroom());
         p.setFloor(r.getFloor());
+        p.setTotalFloor(r.getTotalFloor());
+        p.setConstructionYear(r.getConstructionYear());
+        p.setAvailableDate(r.getAvailableDate());
+        p.setStudentPref(yn(r.getStudentPref()));
+        p.setShortCont(yn(r.getShortCont()));
         p.setDescription(r.getDescription());
         p.setStatus("ACTIVE");
 

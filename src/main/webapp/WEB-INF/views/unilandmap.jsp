@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -107,6 +108,51 @@
         }
 
         .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info a, .user-info button {
+            padding: 9px 20px;
+            background: none;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #555;
+        }
+
+        .user-info a:hover, .user-info button:hover {
+            color: #667eea;
+            background: #f5f5f5;
+        }
+
+        .btn-mypage,
+        .btn-dashboard {
+            color: #667eea;
+        }
+
+        .btn-login {
+            color: #555;
+        }
+
+        .btn-logout {
+            color: #f56565;
+        }
+
+        .btn-logout:hover {
+            color: #e53e3e;
+            background: #fee;
+        }
+
+        .login-prompt {
             color: #4a5568;
             font-size: 14px;
         }
@@ -1011,7 +1057,30 @@
                 </button>
             </div>
             <div class="user-info">
-                로그인하여 더 많은 기능 이용하기
+                <c:choose>
+                    <c:when test="${not empty sessionScope.loginUser}">
+                        <a href="${pageContext.request.contextPath}/mypage" class="btn-mypage">
+                            <i class="fa-solid fa-user"></i> ${sessionScope.loginUser.userName}님
+                        </a>
+                        <button class="btn-logout" onclick="logout()">
+                            <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
+                        </button>
+                    </c:when>
+                    <c:when test="${not empty sessionScope.loginRealtor}">
+                        <a href="${pageContext.request.contextPath}/realtor/realtor-dashboard" class="btn-dashboard">
+                            <i class="fa-solid fa-chart-line"></i> ${sessionScope.loginRealtor.realtorName} 중개사님
+                        </a>
+                        <button class="btn-logout" onclick="logout()">
+                            <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
+                        </button>
+                    </c:when>
+                    <c:otherwise>
+                        <span class="login-prompt">로그인하여 더 많은 기능 이용하기</span>
+                        <a href="${pageContext.request.contextPath}/auth/login" class="btn-login">
+                            <i class="fa-solid fa-right-to-bracket"></i> 로그인
+                        </a>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </header>
@@ -1580,9 +1649,16 @@
         function toggleFilter() {
             var filter = document.getElementById('accordionFilter');
             var btn = document.querySelector('.filter-toggle-btn');
-            
+
             filter.classList.toggle('active');
             btn.classList.toggle('active');
+        }
+
+        // 로그아웃
+        function logout() {
+            if(confirm('로그아웃 하시겠습니까?')) {
+                location.href = '${pageContext.request.contextPath}/auth/logout';
+            }
         }
 
         // 필터 버튼 토글 (직방 스타일)

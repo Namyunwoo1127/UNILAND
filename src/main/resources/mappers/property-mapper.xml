@@ -37,15 +37,19 @@
   INSERT INTO PROPERTY_TBL (
     PROPERTY_NO, REALTOR_ID,
     PROPERTY_NAME, PROPERTY_TYPE,
+    ROOM, BATHROOM, FLOOR, TOTAL_FLOOR,
+    CONSTRUCTION_YEAR, AVAILABLE_DATE, STUDENT_PREF, SHORT_CONT,
     PRICE_TYPE, DEPOSIT, MONTHLY_RENT, MAINTENANCE_FEE, MAINTENANCE_INCL,
     ROAD_ADDRESS, ADDRESS_DETAIL, PROVINCE, DISTRICT, LATITUDE, LONGITUDE,
-    CONTRACT_AREA, FLOOR, DESCRIPTION, STATUS, CREATED_AT
+    CONTRACT_AREA, DESCRIPTION, STATUS, CREATED_AT
   ) VALUES (
     #{propertyNo}, #{realtorId},
     #{propertyName}, #{propertyType},
+    #{room}, #{bathroom}, #{floor}, #{totalFloor},
+    #{constructionYear}, #{availableDate}, #{studentPref}, #{shortCont},
     #{priceType}, #{deposit}, #{monthlyRent}, #{maintenanceFee}, #{maintenanceIncl},
     #{roadAddress}, #{addressDetail}, #{province}, #{district}, #{latitude}, #{longitude},
-    #{contractArea}, #{floor}, #{description}, 'ACTIVE', SYSTIMESTAMP
+    #{contractArea}, #{description}, 'ACTIVE', SYSTIMESTAMP
   )
 </insert>
 </mapper>

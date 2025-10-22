@@ -32,7 +32,14 @@ public class Property {
     private Double longitude;
 
     private Double contractArea;
+    private Integer room;
+    private Integer bathroom;
     private Integer floor;
+    private Integer totalFloor;
+    private String constructionYear;
+    private String availableDate;
+    private String studentPref;     // Y/N
+    private String shortCont;       // Y/N
 
     private String options;
     private String images;
