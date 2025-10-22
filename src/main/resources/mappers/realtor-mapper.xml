@@ -4,7 +4,20 @@
 
 <mapper namespace="com.elon.boot.domain.realtor.model.store.RealtorMapper">
 
-    <!-- ✅ 사업자등록번호 중복 확인 -->
+    <resultMap id="realtorResultMap" type="com.elon.boot.domain.realtor.model.vo.Realtor">
+        <id property="realtorId" column="REALTOR_ID"/>
+        <result property="realtorPassword" column="REALTOR_PASSWORD"/>
+        <result property="officeName" column="OFFICE_NAME"/>
+        <result property="realtorName" column="REALTOR_NAME"/>
+        <result property="realtorAddress" column="REALTOR_ADDRESS"/>
+        <result property="realtorPhone" column="REALTOR_PHONE"/>
+        <result property="realtorEmail" column="REALTOR_EMAIL"/>
+        <result property="businessNum" column="BUSINESS_NUM"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+        <result property="deleteYn" column="DELETE_YN"/>       <result property="approvalStatus" column="APPROVAL_STATUS"/>
+    </resultMap>
+
     <select id="countByBusinessNum" resultType="int">
 	    SELECT COUNT(*)
 	    FROM REALTOR_TBL
@@ -12,7 +25,6 @@
 	</select>
 
 
-    <!-- ✅ 회원 등록 -->
     <insert id="insertRealtor" parameterType="com.elon.boot.domain.realtor.model.vo.Realtor">
         INSERT INTO REALTOR_TBL (
 	        REALTOR_ID,
@@ -24,8 +36,8 @@
 	        REALTOR_EMAIL,
 	        BUSINESS_NUM,
 	        CREATED_AT,
-	        STATUS,
-	        APPROVAL_STATUS
+            UPDATED_AT,
+	        DELETE_YN,                 APPROVAL_STATUS
 	    ) VALUES (
 	        #{realtorId, jdbcType=VARCHAR},
 	        #{realtorPassword, jdbcType=VARCHAR},
@@ -36,19 +48,42 @@
 	        #{realtorEmail, jdbcType=VARCHAR},
 	        #{businessNum, jdbcType=VARCHAR},
 	        CURRENT_TIMESTAMP,
-	        'ACTIVE',
-	        'PENDING'
+            CURRENT_TIMESTAMP,
+	        'N',                       'PENDING'
 	    )
     </insert>
 
-    <!-- ✅ 로그인 정보로 중개사 조회 -->
-    <select id="findByLoginInfo" resultType="com.elon.boot.domain.realtor.model.vo.Realtor">
+    <select id="findByLoginInfo" resultMap="realtorResultMap">
         SELECT *
         FROM REALTOR_TBL
         WHERE REALTOR_ID = #{realtorId}
           AND REALTOR_PASSWORD = #{password}
           AND BUSINESS_NUM = #{businessNumber}
-          AND STATUS = 'ACTIVE'
+          AND DELETE_YN = 'N'              </select>
+
+    <select id="findById" resultMap="realtorResultMap">
+        SELECT *
+        FROM REALTOR_TBL
+        WHERE REALTOR_ID = #{realtorId}
     </select>
+
+    <update id="updateRealtor" parameterType="com.elon.boot.domain.realtor.model.vo.Realtor">
+        UPDATE REALTOR_TBL
+        SET
+            OFFICE_NAME = #{officeName},
+            REALTOR_NAME = #{realtorName},
+            REALTOR_ADDRESS = #{realtorAddress},
+            REALTOR_PHONE = #{realtorPhone},
+            REALTOR_EMAIL = #{realtorEmail},
+            UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE REALTOR_ID = #{realtorId}
+    </update>
+
+    <update id="deleteRealtor" parameterType="string">
+        UPDATE REALTOR_TBL
+        SET
+            DELETE_YN = 'Y',              UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE REALTOR_ID = #{realtorId}
+          AND DELETE_YN = 'N'             </update>
 
 </mapper>
