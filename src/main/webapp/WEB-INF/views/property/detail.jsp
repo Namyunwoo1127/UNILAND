@@ -666,9 +666,21 @@
                 <!-- 기본 정보 -->
                 <div class="content-card">
                     <div class="property-header">
-                        <span class="property-type-badge">
-                            <i class="fa-solid fa-home"></i> ${property.propertyType != null ? property.propertyType : '원룸'}
-                        </span>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                            <span class="property-type-badge">
+                                <i class="fa-solid fa-home"></i> ${property.propertyType != null ? property.propertyType : '원룸'}
+                            </span>
+                            <c:if test="${property.studentPref == 'Y'}">
+                                <span class="property-type-badge" style="background: #fef3c7; color: #d97706;">
+                                    <i class="fa-solid fa-graduation-cap"></i> 학생 우대
+                                </span>
+                            </c:if>
+                            <c:if test="${property.shortCont == 'Y'}">
+                                <span class="property-type-badge" style="background: #dbeafe; color: #2563eb;">
+                                    <i class="fa-solid fa-calendar-check"></i> 단기 계약 가능
+                                </span>
+                            </c:if>
+                        </div>
                         <h1 class="property-title">${property.title != null ? property.title : '신촌역 5분거리 풀옵션 원룸'}</h1>
                         <div class="property-location">
                             <i class="fa-solid fa-location-dot"></i>
@@ -710,8 +722,18 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">주차</span>
-                            <span class="info-value">${property.parking != null ? (property.parking ? '가능' : '불가') : '불가'}</span>
+                            <span class="info-value">${property.facParking != null ? (property.facParking == 'Y' ? '가능' : '불가') : '불가'}</span>
                         </div>
+                        <c:if test="${property.studentPref == 'Y' or property.shortCont == 'Y'}">
+                            <div class="info-item">
+                                <span class="info-label">추가 옵션</span>
+                                <span class="info-value">
+                                    <c:if test="${property.studentPref == 'Y'}">학생 우대</c:if>
+                                    <c:if test="${property.studentPref == 'Y' and property.shortCont == 'Y'}"> / </c:if>
+                                    <c:if test="${property.shortCont == 'Y'}">단기 계약 가능</c:if>
+                                </span>
+                            </div>
+                        </c:if>
                     </div>
                 </div>
 
@@ -720,29 +742,100 @@
                     <h2 class="section-title">
                         <i class="fa-solid fa-star"></i> 옵션
                     </h2>
-                    <div class="option-grid">
-                        <c:choose>
-                            <c:when test="${not empty property.options}">
-                                <c:forEach var="option" items="${property.options}">
-                                    <div class="option-badge">${option}</div>
-                                </c:forEach>
-                            </c:when>
-                            <c:otherwise>
-                                <div class="option-badge">❄️ 에어컨</div>
-                                <div class="option-badge">🌡️ 히터</div>
-                                <div class="option-badge">🧊 냉장고</div>
-                                <div class="option-badge">🍳 인덕션</div>
-                                <div class="option-badge">🧺 세탁기</div>
-                                <div class="option-badge">🛏️ 침대</div>
-                                <div class="option-badge">📚 책상</div>
-                                <div class="option-badge">👔 옷장</div>
-                                <div class="option-badge">👞 신발장</div>
-                                <div class="option-badge">📺 TV</div>
-                                <div class="option-badge">🏢 엘리베이터</div>
-                                <div class="option-badge">🔒 보안시스템</div>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
+
+                    <!-- 냉난방 -->
+                    <c:if test="${property.optAc == 'Y' or property.optHeater == 'Y'}">
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">냉난방</div>
+                            <div class="option-grid">
+                                <c:if test="${property.optAc == 'Y'}">
+                                    <div class="option-badge">❄️ 에어컨</div>
+                                </c:if>
+                                <c:if test="${property.optHeater == 'Y'}">
+                                    <div class="option-badge">🌡️ 히터</div>
+                                </c:if>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <!-- 주방 -->
+                    <c:if test="${property.optFridge == 'Y' or property.optMicrowave == 'Y' or property.optInduction == 'Y' or property.optGasRange == 'Y'}">
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">주방</div>
+                            <div class="option-grid">
+                                <c:if test="${property.optFridge == 'Y'}">
+                                    <div class="option-badge">🧊 냉장고</div>
+                                </c:if>
+                                <c:if test="${property.optMicrowave == 'Y'}">
+                                    <div class="option-badge">📻 전자레인지</div>
+                                </c:if>
+                                <c:if test="${property.optInduction == 'Y'}">
+                                    <div class="option-badge">🍳 인덕션</div>
+                                </c:if>
+                                <c:if test="${property.optGasRange == 'Y'}">
+                                    <div class="option-badge">🔥 가스레인지</div>
+                                </c:if>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <!-- 가구/가전 -->
+                    <c:if test="${property.optWasher == 'Y' or property.optDryer == 'Y' or property.optBed == 'Y' or property.optDesk == 'Y' or property.optWardrobe == 'Y' or property.optShoecloset == 'Y' or property.optTv == 'Y'}">
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">가구/가전</div>
+                            <div class="option-grid">
+                                <c:if test="${property.optWasher == 'Y'}">
+                                    <div class="option-badge">🧺 세탁기</div>
+                                </c:if>
+                                <c:if test="${property.optDryer == 'Y'}">
+                                    <div class="option-badge">💨 건조기</div>
+                                </c:if>
+                                <c:if test="${property.optBed == 'Y'}">
+                                    <div class="option-badge">🛏️ 침대</div>
+                                </c:if>
+                                <c:if test="${property.optDesk == 'Y'}">
+                                    <div class="option-badge">📚 책상</div>
+                                </c:if>
+                                <c:if test="${property.optWardrobe == 'Y'}">
+                                    <div class="option-badge">👔 옷장</div>
+                                </c:if>
+                                <c:if test="${property.optShoecloset == 'Y'}">
+                                    <div class="option-badge">👞 신발장</div>
+                                </c:if>
+                                <c:if test="${property.optTv == 'Y'}">
+                                    <div class="option-badge">📺 TV</div>
+                                </c:if>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <!-- 시설 -->
+                    <c:if test="${property.facParking == 'Y' or property.facElevator == 'Y' or property.facSecurity == 'Y' or property.facPet == 'Y'}">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">시설</div>
+                            <div class="option-grid">
+                                <c:if test="${property.facParking == 'Y'}">
+                                    <div class="option-badge">🚗 주차 가능</div>
+                                </c:if>
+                                <c:if test="${property.facElevator == 'Y'}">
+                                    <div class="option-badge">🏢 엘리베이터</div>
+                                </c:if>
+                                <c:if test="${property.facSecurity == 'Y'}">
+                                    <div class="option-badge">🔒 보안시스템</div>
+                                </c:if>
+                                <c:if test="${property.facPet == 'Y'}">
+                                    <div class="option-badge">🐾 반려동물</div>
+                                </c:if>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <!-- 옵션이 없는 경우 -->
+                    <c:if test="${property.optAc != 'Y' and property.optHeater != 'Y' and property.optFridge != 'Y' and property.optMicrowave != 'Y' and property.optInduction != 'Y' and property.optGasRange != 'Y' and property.optWasher != 'Y' and property.optDryer != 'Y' and property.optBed != 'Y' and property.optDesk != 'Y' and property.optWardrobe != 'Y' and property.optShoecloset != 'Y' and property.optTv != 'Y' and property.facParking != 'Y' and property.facElevator != 'Y' and property.facSecurity != 'Y' and property.facPet != 'Y'}">
+                        <div style="text-align: center; padding: 40px; color: #999;">
+                            등록된 옵션이 없습니다.
+                        </div>
+                    </c:if>
                 </div>
 
                 <!-- 상세 설명 -->
@@ -854,6 +947,11 @@
                         <div>
                             <div class="price-detail-item">관리비</div>
                             <div class="price-detail-value">${property.maintenanceFee != null ? property.maintenanceFee : 5}만원</div>
+                            <c:if test="${not empty property.maintenanceItems}">
+                                <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                                    (${property.maintenanceItems} 포함)
+                                </div>
+                            </c:if>
                         </div>
                         <div>
                             <div class="price-detail-item">총 월 비용</div>

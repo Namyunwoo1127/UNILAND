@@ -27,37 +27,21 @@ public class PropertyController {
         return "property/detail";
     }
 
-//    @PostMapping("/register")
-//    public String register(PropertyAddRequest req, HttpSession session) {
-//        Realtor realtor = (Realtor) session.getAttribute("loginRealtor");
-//        if (realtor == null || realtor.getRealtorId() == null || realtor.getRealtorId().isBlank()) {
-//            return "redirect:/realtor/realtor-dashboard";
-//        }
-//        propertyService.register(req, realtor.getRealtorId());
-//        return "redirect:/realtor/property-management";
-//    }
-    
     @PostMapping("/register")
     public String register(PropertyAddRequest req, HttpSession session) {
-
         Realtor realtor = (Realtor) session.getAttribute("loginRealtor");
-
-        if (realtor == null || realtor.getRealtorId() == null) {
-            return "redirect:/auth/login";
+        if (realtor == null || realtor.getRealtorId() == null || realtor.getRealtorId().isBlank()) {
+            return "redirect:/realtor/realtor-dashboard";
         }
-
-        req.setRealtorId(realtor.getRealtorId());
-
         propertyService.register(req, realtor.getRealtorId());
-
         return "redirect:/realtor/property-management";
     }
-    
     
 //    임시로 사용할 테스트용 하드코딩 / 중개사 회원 로그인 기능 완성되면 지우고 위의 코딩을 사용해야함 
 //    @PostMapping("/regiset")
 //    public String register(PropertyAddRequest propReq, HttpSession session) {
 //        String realtorId = "realtor_0001";
+//
 //        
 //        propertyService.register(propReq, realtorId);
 //

@@ -29,7 +29,14 @@ public class PropertyAddRequest {
     private Double longitude;
 
     private Double contractArea;
+    private Integer room;
+    private Integer bathroom;
     private Integer floor;
+    private Integer totalFloor;
+    private String constructionYear;
+    private String availableDate;
+    private String studentPref;     // "Y" or null
+    private String shortCont;       // "Y" or null
 
     private String description;
 
