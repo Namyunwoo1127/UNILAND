@@ -41,7 +41,7 @@ public class PropertyAddRequest {
     private String description;
 
     // 이미지
-    private List<MultipartFile> images;
+//    private List<MultipartFile> images;
 
     // ===== 옵션(체크박스) - 체크시 "Y", 미체크 null =====
     private String optAc;

@@ -5,9 +5,13 @@ import com.elon.boot.domain.property.model.service.PropertyService;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/property")
@@ -28,12 +32,16 @@ public class PropertyController {
     }
 
     @PostMapping("/register")
-    public String register(PropertyAddRequest req, HttpSession session) {
+    public String register(PropertyAddRequest req
+    		, HttpSession session
+    		,@RequestParam (value="images",required=false)List<MultipartFile> images) {
         Realtor realtor = (Realtor) session.getAttribute("loginRealtor");
         if (realtor == null || realtor.getRealtorId() == null || realtor.getRealtorId().isBlank()) {
             return "redirect:/realtor/realtor-dashboard";
         }
-        propertyService.register(req, realtor.getRealtorId());
+        
+        propertyService.register(req,images, realtor.getRealtorId());
+        
         return "redirect:/realtor/property-management";
     }
     

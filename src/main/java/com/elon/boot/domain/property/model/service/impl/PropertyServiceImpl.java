@@ -6,12 +6,16 @@ import com.elon.boot.domain.property.model.store.OptionMapper;
 import com.elon.boot.domain.property.model.store.PropertyMapper;
 import com.elon.boot.domain.property.model.vo.Property;
 import com.elon.boot.domain.property.model.vo.PropertyOption;
+import com.elon.boot.domain.property.model.vo.Propertyimg;
+import com.elon.boot.util.Util;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDate;
@@ -33,7 +37,7 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Transactional
     @Override
-    public Long register(PropertyAddRequest r, String realtorId) {
+    public Long register(PropertyAddRequest r,List<MultipartFile> images,String realtorId) {
         // ===============================
         // 1️⃣ PROPERTY_TBL 매물 저장
         // ===============================
@@ -98,59 +102,88 @@ public class PropertyServiceImpl implements PropertyService {
         // ===============================
         // 3️⃣ PROPERTIES_IMG_TBL 이미지 저장 추가
         // ===============================
-        if (r.getImages() != null && !r.getImages().isEmpty()) {
-            saveImages(p.getPropertyNo(), r.getImages());
+        List<Propertyimg> imgList = new ArrayList<Propertyimg>();
+        Long propNo = p.getPropertyNo();
+        for(int i = 0; i < images.size(); i++) {
+        	if(images.get(i).getSize() >0) {
+        		Propertyimg img = new Propertyimg();
+        		img.setImgOrder(i);
+        		MultipartFile image = images.get(i);
+        		String fileName = image.getOriginalFilename();
+        		String fileRename = Util.fileRename(fileName);
+        		String filePath ="/image/property/";
+				img.setImgOriginalName(fileName);
+				img.setImgRename(fileRename);
+				img.setImgPath(filePath+fileRename);
+				img.setImgeFile(image);
+				img.setPropertyNo(propNo);
+				imgList.add(img);
+        	}
         }
-
+        if(!imgList.isEmpty()) {
+        	int result =  propertyMapper.insertPropertyImages(imgList);
+        	for(Propertyimg img : imgList) {
+        		try {
+					img.getImgeFile().transferTo(new File("C:/UploadImage/property/"+img.getImgRename()));
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	}
+        }
+//        	필요에 따라 getPropertyNo 반환 or result 반환 해야함
         return p.getPropertyNo();
     }
 
     // ===================================
     // 🖼 이미지 저장 로직
     // ===================================
-    private void saveImages(Long propertyNo, List<MultipartFile> images) {
-        String dateFolder = LocalDate.now().toString().replace("-", "");
-        Path dir = Paths.get(uploadRoot, "property", dateFolder);
-
-        try {
-            Files.createDirectories(dir);
-        } catch (IOException e) {
-            throw new RuntimeException("이미지 저장 폴더 생성 실패: " + dir, e);
-        }
-
-        List<Map<String, Object>> rows = new ArrayList<>();
-        int order = 0;
-
-        for (MultipartFile file : images) {
-            if (file.isEmpty()) continue;
-
-            String original = file.getOriginalFilename();
-            String ext = original != null && original.contains(".")
-                    ? original.substring(original.lastIndexOf("."))
-                    : "";
-
-            String rename = System.currentTimeMillis() + "_" + UUID.randomUUID() + ext;
-            Path savePath = dir.resolve(rename);
-
-            try {
-                file.transferTo(savePath.toFile());
-            } catch (IOException e) {
-                throw new RuntimeException("이미지 저장 실패: " + savePath, e);
-            }
-
-            String webPath = "/images/property/" + dateFolder + "/" + rename;
-
-            Map<String, Object> imgData = new HashMap<>();
-            imgData.put("propertyNo", propertyNo);
-            imgData.put("imgPath", webPath);
-            imgData.put("imgRename", rename);
-            imgData.put("imgOriginalName", original);
-            imgData.put("imgOrder", order++);
-            rows.add(imgData);
-        }
-
-        if (!rows.isEmpty()) {
-            propertyMapper.insertPropertyImages(rows);
-        }
-    }
+//    private void saveImages(Long propertyNo, List<MultipartFile> images) {
+//        String dateFolder = LocalDate.now().toString().replace("-", "");
+//        Path dir = Paths.get(uploadRoot, "property", dateFolder);
+//
+//        try {
+//            Files.createDirectories(dir);
+//        } catch (IOException e) {
+//            throw new RuntimeException("이미지 저장 폴더 생성 실패: " + dir, e);
+//        }
+//
+//        List<Map<String, Object>> rows = new ArrayList<>();
+//        int order = 0;
+//
+//        for (MultipartFile file : images) {
+//            if (file.isEmpty()) continue;
+//
+//            String original = file.getOriginalFilename();
+//            String ext = original != null && original.contains(".")
+//                    ? original.substring(original.lastIndexOf("."))
+//                    : "";
+//
+//            String rename = System.currentTimeMillis() + "_" + UUID.randomUUID() + ext;
+//            Path savePath = dir.resolve(rename);
+//
+//            try {
+//                file.transferTo(savePath.toFile());
+//            } catch (IOException e) {
+//                throw new RuntimeException("이미지 저장 실패: " + savePath, e);
+//            }
+//
+//            String webPath = "/images/property/" + dateFolder + "/" + rename;
+//
+//            Map<String, Object> imgData = new HashMap<>();
+//            imgData.put("propertyNo", propertyNo);
+//            imgData.put("imgPath", webPath);
+//            imgData.put("imgRename", rename);
+//            imgData.put("imgOriginalName", original);
+//            imgData.put("imgOrder", order++);
+//            rows.add(imgData);
+//        }
+//
+//        if (!rows.isEmpty()) {
+//            propertyMapper.insertPropertyImages(rows);
+//        }
+//    }
 }

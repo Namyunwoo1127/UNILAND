@@ -52,4 +52,34 @@
     #{contractArea}, #{description}, 'ACTIVE', SYSTIMESTAMP
   )
 </insert>
+
+<!-- 이미지 삽입 -->
+<insert id="insertPropertyImages">
+  INSERT INTO PROPERTIES_IMG_TBL 
+  SELECT SEQ_PROPERTIES_IMG_NO.NEXTVAL , BI.*
+  FROM (
+  	<foreach collection="list" item="img" separator=" UNION ALL ">
+  	SELECT 	#{img.propertyNo} 		PROPERTY_NO,
+  			#{img.imgPath}			IMG_PATH,
+  			#{img.imgRename}		IMG_RENAME,
+  			#{img.imgOriginalName}	IMG_ORIGINAL_NAME,
+  			#{img.imgOrder}			IMG_ORDER
+		FROM DUAL
+  </foreach>
+  )BI
+</insert>
+<!-- <insert id="insertPropertyImages">
+  INSERT INTO PROPERTIES_IMG_TBL (
+    IMG_NO, PROPERTY_NO, IMG_PATH, IMG_RENAME, IMG_ORIGINAL_NAME, IMG_ORDER
+  )
+  <foreach collection="list" item="img" separator=" UNION ALL ">
+    SELECT SEQ_PROPERTIES_IMG_NO.NEXTVAL,
+           #{img.propertyNo},
+           #{img.imgPath},
+           #{img.imgRename},
+           #{img.imgOriginalName},
+           #{img.imgOrder}
+    FROM DUAL
+  </foreach>
+</insert> -->
 </mapper>
