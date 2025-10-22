@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>받은 문의 관리 - UNILAND</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -19,72 +20,16 @@
             background-color: #f8f9fa;
         }
 
-        header {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #2d3748;
-            text-decoration: none;
-        }
-
-        .logo img {
-            width: 140px;
-            height: auto;
-            object-fit: contain;
-            display: block;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .btn-logout {
-            padding: 8px 20px;
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: #f7fafc;
-        }
-
+        /* ---------------------------------------------------- */
+        /* [삭제] 기존 헤더(header) 태그 관련 CSS 모두 제거되었습니다. */
+        /* ---------------------------------------------------- */
+        
         .main-layout {
             display: flex;
             max-width: 1400px;
             margin: 0 auto;
-            min-height: calc(100vh - 80px);
+            /* 헤더가 외부에서 포함되므로 min-height 계산 시 헤더 높이에 맞게 조정이 필요할 수 있습니다. */
+            min-height: calc(100vh - 80px); 
         }
 
         .sidebar {
@@ -591,23 +536,11 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <div class="logo">
-                <div class="logo-icon">
-	                <a href="${pageContext.request.contextPath}/realtor/realtor-dashboard" class="logo">
-	                		<img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
-	            		</a>
-            		</div>
-            </div>
-            <div class="user-info">
-                <span class="user-name">${sessionScope.loginRealtor.realtorName} 중개사님</span>
-                <button class="btn-logout" onclick="alert('로그아웃되었습니다.'); location.href='${pageContext.request.contextPath}/auth/logout';">
-                    로그아웃
-                </button>
-            </div>
-        </div>
-    </header>
+    <%-- 
+        ✅ 기존의 <header> 태그를 삭제하고, realtor-header.jsp 파일을 포함하도록 수정했습니다.
+        이 파일이 실제 헤더 내용을 담당하며, 관련 CSS는 해당 파일에 정의되어 있어야 합니다.
+    --%>
+    <jsp:include page="/WEB-INF/views/common/realtor-header.jsp" />
 
     <div class="main-layout">
         <aside class="sidebar">
@@ -627,7 +560,6 @@
             </div>
 
             <div class="content-section">
-                <!-- 통계 바 -->
                 <div class="stats-bar">
                     <div class="stat-item">
                         <div class="stat-number">12</div>
@@ -647,7 +579,6 @@
                     </div>
                 </div>
 
-                <!-- 필터 섹션 -->
                 <div class="filter-section">
                     <div class="filter-group">
                         <span class="filter-label">상태</span>
@@ -681,9 +612,7 @@
                     </div>
                 </div>
 
-                <!-- 문의 리스트 -->
                 <ul class="inquiry-list">
-                    <!-- 새 문의 1 -->
                     <li class="inquiry-item new" onclick="toggleInquiry(this)">
                         <div class="inquiry-header">
                             <div class="inquiry-left">
@@ -722,7 +651,6 @@
                         </div>
                     </li>
 
-                    <!-- 새 문의 2 -->
                     <li class="inquiry-item new">
                         <div class="inquiry-header" onclick="toggleInquiry(this.parentElement)">
                             <div class="inquiry-left">
@@ -761,7 +689,6 @@
                         </div>
                     </li>
 
-                    <!-- 답변 완료 문의 -->
                     <li class="inquiry-item">
                         <div class="inquiry-header" onclick="toggleInquiry(this.parentElement)">
                             <div class="inquiry-left">
@@ -803,7 +730,6 @@
                         </div>
                     </li>
 
-                    <!-- 새 문의 3 -->
                     <li class="inquiry-item new">
                         <div class="inquiry-header" onclick="toggleInquiry(this.parentElement)">
                             <div class="inquiry-left">
@@ -842,7 +768,6 @@
                         </div>
                     </li>
 
-                    <!-- 답변 완료 문의 2 -->
                     <li class="inquiry-item">
                         <div class="inquiry-header" onclick="toggleInquiry(this.parentElement)">
                             <div class="inquiry-left">
@@ -885,7 +810,6 @@
                         </div>
                     </li>
 
-                    <!-- 새 문의 4 -->
                     <li class="inquiry-item new">
                         <div class="inquiry-header" onclick="toggleInquiry(this.parentElement)">
                             <div class="inquiry-left">
@@ -925,7 +849,6 @@
                     </li>
                 </ul>
 
-                <!-- 페이지네이션 -->
                 <div class="pagination">
                     <button disabled>← 이전</button>
                     <button class="active">1</button>
