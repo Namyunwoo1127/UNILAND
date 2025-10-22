@@ -8,6 +8,9 @@ import com.elon.boot.domain.community.notice.model.vo.Notice;
 
 public interface NoticeService {
 	
+	// 홈페이지용 최근 공지사항 조회
+	List<Notice> getRecentNotices(int limit);
+
 	// 전체 공지사항 조회
     List<Notice> getAllNotices();
     
@@ -25,4 +28,6 @@ public interface NoticeService {
     
     // 공지사항 삭제
     int deleteNotice(Integer noticeNo);
+
+    
 }

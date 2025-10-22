@@ -38,9 +38,10 @@
       padding: 0 24px;
     }
     .logo img {
-      height: 50px;
-      object-fit: contain;
-      cursor: pointer;
+      	height: 60px;
+        object-fit: contain;
+        object-position: center;
+        cursor: pointer;
     }
     .btn-login {
       background: #667eea;
@@ -217,7 +218,7 @@
         <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND 관리자">
       </div>
       <div class="auth-buttons">
-        <button class="btn-login"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
+        <button class="btn-login" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
       </div>
     </div>
   </header>
@@ -350,7 +351,7 @@
     document.querySelector('.btn-login').addEventListener('click', function() {
       if (confirm('로그아웃 하시겠습니까?')) {
         alert('로그아웃되었습니다.');
-        window.location.href = '${pageContext.request.contextPath}/auth/login';
+        window.location.href = '${pageContext.request.contextPath}/auth/logout';
       }
     });
   </script>

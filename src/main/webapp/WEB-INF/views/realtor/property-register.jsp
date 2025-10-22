@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>매물 등록 - UNILAND</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -19,76 +20,15 @@
             background-color: #f8f9fa;
         }
 
-        header {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #2d3748;
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .btn-logout {
-            padding: 8px 20px;
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: #f7fafc;
-        }
-
+        /* ---------------------------------------------------- */
+        /* 헤더 관련 CSS는 별도의 파일(realtorHeader.jsp 내부)에 있다고 가정하고 제거되었습니다. */
+        /* ---------------------------------------------------- */
+        
         .main-layout {
             display: flex;
             max-width: 1400px;
             margin: 0 auto;
-            min-height: calc(100vh - 80px);
+            min-height: calc(100vh - 80px); /* 헤더 높이에 맞게 조정이 필요할 수 있습니다. */
         }
 
         .sidebar {
@@ -499,18 +439,12 @@
     </style>
 </head>
 <body>
-<header>
-    <div class="header-container">
-        <div class="logo">
-            <div class="logo-icon">🏠</div>
-            <span>UNILAND</span>
-        </div>
-        <div class="user-info">
-            <span class="user-name">${sessionScope.LOGIN_REALTOR_NAME != null ? sessionScope.LOGIN_REALTOR_NAME : '김부동산 중개사님'}</span>
-            <button class="btn-logout" onclick="location.href='${pageContext.request.contextPath}/auth/logout'">로그아웃</button>
-        </div>
-    </div>
-</header>
+<%-- 
+    ✅ 외부 파일(realtorHeader.jsp)을 포함하여 헤더를 추가합니다. 
+    실제 파일 경로는 프로젝트 구조에 맞게 수정해야 합니다. 
+    일반적인 경로 예시를 사용했습니다.
+--%>
+<jsp:include page="/WEB-INF/views/common/realtor-header.jsp" />
 
 <div class="main-layout">
     <aside class="sidebar">
@@ -575,14 +509,14 @@
                     <div class="form-group">
                         <label class="form-label">보증금<span class="required">*</span></label>
                         <div class="input-suffix">
-                            <input type="number" class="form-input" name="deposit" placeholder="500" required>
+                            <input type="number" class="form-input" name="deposit" placeholder="500" step="100" required>
                             <span class="suffix-text">만원</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">월세<span class="required">*</span></label>
                         <div class="input-suffix">
-                            <input type="number" class="form-input" name="monthlyRent" placeholder="55" required>
+                            <input type="number" class="form-input" name="monthlyRent" placeholder="55" step="5" required>
                             <span class="suffix-text">만원</span>
                         </div>
                     </div>
@@ -591,24 +525,29 @@
                     <div class="form-group">
                         <label class="form-label">관리비</label>
                         <div class="input-suffix">
-                            <input type="number" class="form-input" name="maintenanceFee" placeholder="5">
+                            <input type="number" class="form-input" name="maintenanceFee" placeholder="5" id="maintenanceFeeInput">
                             <span class="suffix-text">만원</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">관리비 포함 항목</label>
-                        <select class="form-select" multiple style="height:100px;" id="maintenanceItemsSelect">
-                            <option value="수도">수도</option>
-                            <option value="전기">전기</option>
-                            <option value="가스">가스</option>
-                            <option value="인터넷">인터넷</option>
-                        </select>
-                        <span class="form-hint">Ctrl 또는 Cmd 키로 다중 선택</span>
+                        <label class="form-label">
+                            <input type="checkbox" id="maintenanceInclCheck" style="margin-right:5px;">
+                            관리비 있음
+                        </label>
+                        <div id="maintenanceItemsContainer" style="display:none; margin-top:10px;">
+                            <div class="option-grid" style="grid-template-columns: repeat(2, 1fr);">
+                                <input type="checkbox" id="maint1" class="option-checkbox" name="maintenanceItems" value="수도">
+                                <label for="maint1" class="option-label">수도</label>
+                                <input type="checkbox" id="maint2" class="option-checkbox" name="maintenanceItems" value="전기">
+                                <label for="maint2" class="option-label">전기</label>
+                                <input type="checkbox" id="maint3" class="option-checkbox" name="maintenanceItems" value="가스">
+                                <label for="maint3" class="option-label">가스</label>
+                                <input type="checkbox" id="maint4" class="option-checkbox" name="maintenanceItems" value="인터넷">
+                                <label for="maint4" class="option-label">인터넷</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <label style="margin-top:8px;display:inline-flex;gap:8px;align-items:center;">
-                    <input type="checkbox" id="maintenanceInclCheck"> 관리비 있음(포함여부 Y)
-                </label>
                 <input type="hidden" name="maintenanceIncl" id="maintenanceIncl" value="N">
             </div>
 
@@ -645,8 +584,47 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">층수<span class="required">*</span></label>
-                        <input type="number" class="form-input" name="floor" placeholder="1" required>
+                        <label class="form-label">방 개수<span class="required">*</span></label>
+                        <input type="number" class="form-input" name="room" placeholder="1" min="1" value="1" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">욕실 개수<span class="required">*</span></label>
+                        <input type="number" class="form-input" name="bathroom" placeholder="1" min="1" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">건축년도</label>
+                        <input type="text" class="form-input" name="constructionYear" placeholder="2020">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">현재 층<span class="required">*</span></label>
+                        <input type="number" class="form-input" name="floor" placeholder="3" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">총 층수<span class="required">*</span></label>
+                        <input type="number" class="form-input" name="totalFloor" placeholder="5" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">입주가능일</label>
+                        <input type="text" class="form-input" name="availableDate" placeholder="즉시입주 또는 2024-03-01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">추가 옵션</label>
+                        <div style="display: flex; gap: 15px; align-items: center; margin-top: 10px;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" name="studentPref" value="Y">
+                                <span>학생 우대</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" name="shortCont" value="Y">
+                                <span>단기 계약 가능</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -770,6 +748,7 @@
 
     const inclCheck   = document.getElementById('maintenanceInclCheck');
     const inclHidden  = document.getElementById('maintenanceIncl');
+    const maintenanceItemsContainer = document.getElementById('maintenanceItemsContainer');
     const form        = document.getElementById('propertyForm');
 
     // 안전장치: 필수 요소 못 찾으면 콘솔에 표시
@@ -778,10 +757,11 @@
       return;
     }
 
-    // 관리비 포함(Y/N) 동기화
-    if (inclCheck && inclHidden) {
+    // 관리비 포함(Y/N) 동기화 및 체크박스 표시/숨김
+    if (inclCheck && inclHidden && maintenanceItemsContainer) {
       inclCheck.addEventListener('change', () => {
         inclHidden.value = inclCheck.checked ? 'Y' : 'N';
+        maintenanceItemsContainer.style.display = inclCheck.checked ? 'block' : 'none';
       });
     }
 
@@ -862,3 +842,5 @@
 </script>
 </body>
 </html>
+
+

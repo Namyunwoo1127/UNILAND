@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>중개사 대시보드 - UNILAND</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -21,76 +22,17 @@
             overflow-x: auto;
         }
 
-        /* 헤더 */
-        header {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-container {
-            max-width: 1400px;
-            min-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #2d3748;
-            text-decoration: none;
-        }
-
-        .logo img {
-            width: 140px;
-            height: auto;
-            object-fit: contain;
-            display: block;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .btn-logout {
-            padding: 8px 20px;
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: #f7fafc;
-        }
-
+        /* ---------------------------------------------------- */
+        /* 헤더 관련 CSS는 외부 파일(realtor-header.jsp)에 있다고 가정하고 제거되었습니다. */
+        /* ---------------------------------------------------- */
+        
         /* 메인 레이아웃 */
         .main-layout {
             display: flex;
             max-width: 1400px;
             min-width: 1400px;
             margin: 0 auto;
-            min-height: calc(100vh - 80px);
+            min-height: calc(100vh - 80px); /* 헤더 높이에 맞게 조정이 필요할 수 있습니다. */
         }
 
         /* 사이드바 */
@@ -521,28 +463,13 @@
     </style>
 </head>
 <body>
-    <!-- 헤더 -->
-    <header>
-        <div class="header-container">
-            <div class="logo">
-                <div class="logo-icon">
-	                <a href="${pageContext.request.contextPath}/realtor/realtor-dashboard" class="logo">
-	                		<img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
-	            		</a>
-            		</div>
-            </div>
-            <div class="user-info">
-                <span class="user-name">${sessionScope.loginRealtor.realtorName} 중개사님</span>
-                <button class="btn-logout" onclick="alert('로그아웃되었습니다.'); location.href='${pageContext.request.contextPath}/auth/logout';">
-                    로그아웃
-                </button>
-            </div>
-        </div>
-    </header>
+    <%-- 
+        ✅ 외부 파일(realtor-header.jsp)을 포함하여 헤더를 추가합니다. 
+        원래 있던 <header> 태그와 관련 CSS는 모두 제거되었습니다. 
+    --%>
+    <jsp:include page="/WEB-INF/views/common/realtor-header.jsp" />
 
-    <!-- 메인 레이아웃 -->
     <div class="main-layout">
-        <!-- 사이드바 -->
         <aside class="sidebar">
             <div class="sidebar-title">중개사 메뉴</div>
             <ul class="sidebar-menu">
@@ -553,14 +480,12 @@
             </ul>
         </aside>
 
-        <!-- 메인 콘텐츠 -->
         <main class="main-content">
             <div class="page-header">
                 <h1>대시보드</h1>
                 <p>중개사 활동 현황을 한눈에 확인하세요</p>
             </div>
 
-            <!-- 통계 카드 -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-header">
@@ -599,7 +524,6 @@
                 </div>
             </div>
 
-            <!-- 빠른 액션 -->
             <div class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">빠른 액션</h2>
