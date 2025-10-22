@@ -11,6 +11,9 @@ import com.elon.boot.domain.community.notice.model.vo.Notice;
 
 @Mapper
 public interface NoticeMapper {
+	
+	// 홈페이지용 최근 공지사항 조회
+	List<Notice> selectRecentNotices(int limit);
     
 	// 전체 공지사항 조회
     List<Notice> selectAllNotices();
