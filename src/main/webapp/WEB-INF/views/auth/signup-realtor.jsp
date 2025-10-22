@@ -6,6 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>공인중개사 회원가입 - UNILAND</title>
+    
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
     <style>
         /* ⚠️ 기존 CSS는 전혀 수정하지 않음 */
         :root {
@@ -45,10 +48,15 @@
         .page-title { text-align: center; font-size: 22px; font-weight: 600; color: var(--text-primary); margin-bottom: var(--spacing-2xl); padding-bottom: var(--spacing-md); border-bottom: 2px solid var(--text-primary); }
         .form-wrapper { max-width: 450px; margin: 0 auto; }
         .form-row { display: flex; align-items: center; margin-bottom: var(--spacing-md); }
-        .form-label { width: 120px; font-size: var(--font-md); color: var(--text-primary); flex-shrink: 0; }
+        /* ⭐ 수정: 라벨 너비를 140px로 확장 및 줄바꿈 방지 */
+        .form-label { width: 140px; font-size: var(--font-md); color: var(--text-primary); flex-shrink: 0; white-space: nowrap; } 
         .form-label .required { color: var(--badge-urgent); margin-right: 4px; }
         .form-input-group { position: relative; flex: 1; display: flex; gap: var(--spacing-sm); align-items: center; }
-        .input-field { width: 100%; padding: 12px; border: 1px solid var(--border-medium); border-radius: var(--radius-md); font-size: var(--font-md); outline: none; background-color: var(--bg-white); transition: border-color 0.3s; }
+        .form-input-group .input-field { 
+            flex: 1;
+            width: auto;
+            padding: 12px; border: 1px solid var(--border-medium); border-radius: var(--radius-md); font-size: var(--font-md); outline: none; background-color: var(--bg-white); transition: border-color 0.3s; 
+        }
         .input-field:focus { border-color: var(--primary-purple); }
         .password-toggle-icon { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); cursor: pointer; color: var(--text-light); user-select: none; display: none; }
         .btn-check { padding: 12px 16px; background: var(--bg-white); border: 1px solid var(--border-medium); border-radius: var(--radius-md); color: var(--text-tertiary); font-size: var(--font-sm); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.2s; }
@@ -65,6 +73,12 @@
         .signup-footer a { color: var(--text-tertiary); text-decoration: none; }
         .signup-footer a:hover { color: var(--primary-purple); }
         .signup-footer .divider { color: var(--border-light); }
+        
+        /* 주소 상세 입력 줄의 간격 제거 */
+        .form-wrapper .form-row.address-detail-row {
+            margin-bottom: var(--spacing-md); 
+            margin-top: var(--spacing-sm); 
+        }
     </style>
 </head>
 <body>
@@ -107,32 +121,51 @@
                     <div class="form-row">
                         <label class="form-label"><span class="required">*</span>주소</label>
                         <div class="form-input-group">
-                            <input type="text" class="input-field" id="realtorAddress" name="realtorAddress" required>
+                            <input type="text" class="input-field" id="realtorAddressBase" placeholder="주소 검색을 클릭하세요" readonly required>
+                            <button type="button" class="btn-check" id="searchAddressBtn">주소 검색</button>
                         </div>
                     </div>
+                    <div class="form-row address-detail-row">
+                        <label class="form-label"></label>
+                        <div class="form-input-group">
+                             <input type="text" class="input-field" id="realtorAddressDetail" placeholder="나머지 상세 주소 입력 (예: 건물명, 동/호수)">
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="realtorAddress" name="realtorAddress">
 
                     <div class="form-row">
-                        <label class="form-label"><span class="required">*</span>대표 공인중개사 연락처</label>
+                        <label class="form-label"><span class="required">*</span>공인중개사 연락처</label>
                         <div class="form-input-group">
                             <input type="tel" class="input-field" id="realtorPhone" name="realtorPhone" placeholder="'-' 없이 숫자만 입력" required>
                         </div>
                     </div>
 
                     <div class="form-row">
-                        <label class="form-label"><span class="required">*</span>대표 공인중개사 이메일</label>
+                        <label class="form-label"><span class="required">*</span>공인중개사 이메일</label>
                         <div class="form-input-group">
                             <input type="email" class="input-field" id="realtorEmail" name="realtorEmail" required>
                         </div>
                     </div>
-
+                    
+                    <div class="form-row">
+                        <label class="form-label"><span class="required">*</span>중개사 등록번호</label>
+                        <div class="form-input-group">
+                            <input type="text" class="input-field" id="realtorRegNum" name="realtorRegNum" 
+                                   placeholder="'-' 없이 숫자만 입력" 
+                                   maxlength="16" required> <button type="button" class="btn-check" id="verifyRegNumBtn">중복확인</button>
+                        </div>
+                    </div>
+                    <div class="verification-message" id="verificationRegNumMsg"></div>
+                    
                     <div class="form-row">
                         <label class="form-label"><span class="required">*</span>사업자 등록번호</label>
                         <div class="form-input-group">
                             <input type="text" class="input-field" id="businessNum" name="businessNum" placeholder="'-' 없이 숫자만 입력" required>
-                            <button type="button" class="btn-check" id="verifyBtn">인증</button>
+                            <button type="button" class="btn-check" id="verifyBusinessNumBtn">인증</button>
                         </div>
                     </div>
-                    <div class="verification-message" id="verificationMsg"></div>
+                    <div class="verification-message" id="verificationBusinessNumMsg"></div>
 
                     <div class="submit-section">
                         <button type="submit" class="submit-btn" id="submitBtn" disabled>회원가입 신청</button>
@@ -151,58 +184,168 @@
     <script>
         const contextPath = '${pageContext.request.contextPath}';
         const form = document.getElementById('realtorSignupForm');
-        const verifyBtn = document.getElementById('verifyBtn');
+        
+        // 버튼 및 메시지 요소
+        const verifyBusinessNumBtn = document.getElementById('verifyBusinessNumBtn');
+        const verifyRegNumBtn = document.getElementById('verifyRegNumBtn');
         const submitBtn = document.getElementById('submitBtn');
-        const businessNumInput = document.getElementById('businessNum');
-        const verificationMsg = document.getElementById('verificationMsg');
+        const searchAddressBtn = document.getElementById('searchAddressBtn');
+        const verificationBusinessNumMsg = document.getElementById('verificationBusinessNumMsg');
+        const verificationRegNumMsg = document.getElementById('verificationRegNumMsg');
 
+        // 입력 필드 요소
         const fields = {
             realtorId: document.getElementById('realtorId'),
             realtorPassword: document.getElementById('realtorPassword'),
             officeName: document.getElementById('officeName'),
             realtorName: document.getElementById('realtorName'),
-            realtorAddress: document.getElementById('realtorAddress'),
+            realtorAddress: document.getElementById('realtorAddress'), 
+            realtorAddressBase: document.getElementById('realtorAddressBase'),
+            realtorAddressDetail: document.getElementById('realtorAddressDetail'),
             realtorPhone: document.getElementById('realtorPhone'),
             realtorEmail: document.getElementById('realtorEmail'),
-            businessNum: businessNumInput
+            realtorRegNum: document.getElementById('realtorRegNum'),
+            businessNum: document.getElementById('businessNum')
         };
 
+        // 인증 상태 플래그
         let isBusinessNumVerified = false;
+        let isRegNumVerified = false; 
 
+        // ----------------------- 1. 주소 검색 함수 -----------------------
+        searchAddressBtn.addEventListener('click', () => {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    let fullAddress = data.roadAddress || data.jibunAddress;
+                    let extraRoadAddr = '';
+
+                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraRoadAddr += data.bname;
+                    }
+                    if (data.buildingName !== '' && data.apartment === 'Y') {
+                        extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    if (extraRoadAddr !== '') {
+                        fullAddress += ' (' + extraRoadAddr + ')';
+                    }
+
+                    // 1. 기본 주소 필드에 주소 정보 입력
+                    fields.realtorAddressBase.value = fullAddress;
+                    
+                    // 2. 상세 주소 필드에 포커스
+                    fields.realtorAddressDetail.focus();
+                    
+                    // 3. 폼 유효성 체크 트리거
+                    checkFormValidity();
+                }
+            }).open();
+        });
+
+
+        // ----------------------- 2. 입력 필드 이벤트 처리 -----------------------
+
+        // 연락처: 숫자만 입력 허용
         fields.realtorPhone.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
             checkFormValidity();
         });
 
-        businessNumInput.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
+        // 사업자 등록번호: 숫자만 입력 허용 및 인증 초기화
+        fields.businessNum.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, ''); 
             isBusinessNumVerified = false;
-            verificationMsg.classList.remove('success', 'error');
-            verificationMsg.textContent = '';
+            verificationBusinessNumMsg.classList.remove('success', 'error');
+            verificationBusinessNumMsg.textContent = '';
             checkFormValidity();
         });
+        
+        // 중개사 등록번호: 입력 시 인증 초기화
+        fields.realtorRegNum.addEventListener('input', function() {
+            isRegNumVerified = false;
+            verificationRegNumMsg.classList.remove('success', 'error');
+            verificationRegNumMsg.textContent = '';
+            checkFormValidity();
+        });
+        
+        // 주소 상세 입력 시 유효성 체크
+        fields.realtorAddressDetail.addEventListener('input', checkFormValidity);
 
+        // 기타 필드: 입력 시 폼 유효성 체크
         Object.values(fields).forEach(f => {
-            if (f !== fields.realtorPhone && f !== businessNumInput) {
+            if (f !== fields.realtorPhone && f !== fields.businessNum && f !== fields.realtorRegNum && f !== fields.realtorAddressDetail) {
                 f.addEventListener('input', checkFormValidity);
             }
         });
 
-        verifyBtn.addEventListener('click', e => {
+        // ----------------------- 3. 중복 확인/인증 이벤트 처리 -----------------------
+
+        // 중개사 등록번호 중복 확인
+        verifyRegNumBtn.addEventListener('click', e => {
             e.preventDefault();
-            const businessNum = businessNumInput.value.trim();
+            const regNum = fields.realtorRegNum.value.trim();
+            
+            if (!regNum) {
+                verificationRegNumMsg.classList.add('error');
+                verificationRegNumMsg.textContent = '중개사 등록번호를 입력해주세요.';
+                return;
+            }
+            
+            // 하이픈 제거 후 14자리 검사
+            const cleanRegNum = regNum.replace(/[^0-9]/g, '');
+            if (cleanRegNum.length !== 14) {
+                 verificationRegNumMsg.classList.add('error');
+                 verificationRegNumMsg.textContent = '중개사 등록번호는 14자리 숫자(하이픈 포함 가능)여야 합니다.';
+                 return;
+            }
+
+            verifyRegNumBtn.disabled = true;
+            verifyRegNumBtn.textContent = '확인 중...';
+            
+            fetch(contextPath + '/realtor/check-realtor-reg-num', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                // 서버에는 하이픈 제거된 클린한 값 전송
+                body: JSON.stringify({ realtorRegNum: cleanRegNum })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.isDuplicate) {
+                    verificationRegNumMsg.classList.add('error');
+                    verificationRegNumMsg.textContent = '이미 등록된 중개사 등록번호입니다.';
+                    isRegNumVerified = false;
+                } else {
+                    verificationRegNumMsg.classList.add('success');
+                    verificationRegNumMsg.textContent = '사용 가능한 중개사 등록번호입니다.';
+                    isRegNumVerified = true;
+                }
+                checkFormValidity();
+            })
+            .finally(() => {
+                verifyRegNumBtn.disabled = false;
+                verifyRegNumBtn.textContent = '중복확인';
+            });
+        });
+
+
+        // 사업자 등록번호 인증
+        verifyBusinessNumBtn.addEventListener('click', e => {
+            e.preventDefault();
+            const businessNum = fields.businessNum.value.trim();
             if (!businessNum) {
-                verificationMsg.classList.add('error');
-                verificationMsg.textContent = '사업자 등록번호를 입력해주세요.';
+                verificationBusinessNumMsg.classList.add('error');
+                verificationBusinessNumMsg.textContent = '사업자 등록번호를 입력해주세요.';
                 return;
             }
+            // 사업자등록번호는 10자리 숫자만 유효성 검증
             if (!/^\d{10}$/.test(businessNum)) {
-                verificationMsg.classList.add('error');
-                verificationMsg.textContent = '사업자 등록번호는 10자리 숫자여야 합니다.';
+                verificationBusinessNumMsg.classList.add('error');
+                verificationBusinessNumMsg.textContent = '사업자 등록번호는 10자리 숫자여야 합니다.';
                 return;
             }
-            verifyBtn.disabled = true;
-            verifyBtn.textContent = '확인 중...';
+            
+            verifyBusinessNumBtn.disabled = true;
+            verifyBusinessNumBtn.textContent = '확인 중...';
+            
             fetch(contextPath + '/realtor/check-business-num', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -211,43 +354,67 @@
             .then(res => res.json())
             .then(data => {
                 if (data.isDuplicate) {
-                    verificationMsg.classList.add('error');
-                    verificationMsg.textContent = '이미 등록된 사업자 등록번호입니다.';
+                    verificationBusinessNumMsg.classList.add('error');
+                    verificationBusinessNumMsg.textContent = '이미 등록된 사업자 등록번호입니다.';
                     isBusinessNumVerified = false;
                 } else {
-                    verificationMsg.classList.add('success');
-                    verificationMsg.textContent = '사용 가능한 사업자 등록번호입니다.';
+                    verificationBusinessNumMsg.classList.add('success');
+                    verificationBusinessNumMsg.textContent = '사용 가능한 사업자 등록번호입니다.';
                     isBusinessNumVerified = true;
                 }
                 checkFormValidity();
             })
             .finally(() => {
-                verifyBtn.disabled = false;
-                verifyBtn.textContent = '인증';
+                verifyBusinessNumBtn.disabled = false;
+                verifyBusinessNumBtn.textContent = '인증';
             });
         });
 
+        // ----------------------- 4. 최종 유효성 검사 및 제출 -----------------------
+
         function checkFormValidity() {
-            const allFilled = Object.values(fields).every(f => f.value.trim() !== '');
-            submitBtn.disabled = !(allFilled && isBusinessNumVerified);
+            // 모든 필드가 채워져야 함
+            const allFields = [
+                fields.realtorId, fields.realtorPassword, fields.officeName, 
+                fields.realtorName, fields.realtorPhone, fields.realtorEmail,
+                fields.realtorRegNum, fields.businessNum,
+                fields.realtorAddressBase, fields.realtorAddressDetail
+            ];
+            
+            const allFilled = allFields.every(f => f.value.trim() !== '');
+            
+            // 두 가지 인증이 모두 완료되어야 함
+            submitBtn.disabled = !(allFilled && isBusinessNumVerified && isRegNumVerified);
         }
 
         form.addEventListener('submit', e => {
             e.preventDefault();
-            if (!isBusinessNumVerified) {
-                alert('사업자 등록번호 인증을 완료해주세요.');
+            
+            // 폼 제출 직전에 통합 주소 필드 값 설정
+            const baseAddress = fields.realtorAddressBase.value.trim();
+            const detailAddress = fields.realtorAddressDetail.value.trim();
+            fields.realtorAddress.value = baseAddress + (detailAddress ? ' ' + detailAddress : '');
+            
+            if (!isBusinessNumVerified || !isRegNumVerified) {
+                alert('모든 필수 필드를 채우고 사업자 등록번호 및 중개사 등록번호 인증을 완료해주세요.');
                 return;
             }
+            
+            // 전송 직전에 등록번호와 사업자번호의 하이픈 제거 (서버의 DB 형식에 맞춤)
+            const finalRealtorRegNum = fields.realtorRegNum.value.trim().replace(/[^0-9]/g, '');
+            const finalBusinessNum = fields.businessNum.value.trim().replace(/[^0-9]/g, '');
+            const finalRealtorPhone = fields.realtorPhone.value.trim().replace(/[^0-9]/g, '');
 
             const formData = {
                 realtorId: fields.realtorId.value.trim(),
                 realtorPassword: fields.realtorPassword.value.trim(),
                 officeName: fields.officeName.value.trim(),
                 realtorName: fields.realtorName.value.trim(),
-                realtorAddress: fields.realtorAddress.value.trim(),
-                realtorPhone: fields.realtorPhone.value.trim(),
+                realtorAddress: fields.realtorAddress.value.trim(), 
+                realtorPhone: finalRealtorPhone, // 클린한 값 전송
                 realtorEmail: fields.realtorEmail.value.trim(),
-                businessNum: businessNumInput.value.trim()
+                realtorRegNum: finalRealtorRegNum,
+                businessNum: finalBusinessNum
             };
 
             submitBtn.disabled = true;
@@ -261,15 +428,15 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert('회원가입이 완료되었습니다.');
+                    alert('회원가입 신청이 완료되었습니다.');
                     window.location.href = contextPath + '/auth/realtor-login';
                 } else {
-                    alert('회원가입 실패: ' + (data.message || ''));
+                    alert('회원가입 실패: ' + (data.message || '알 수 없는 오류'));
                 }
             })
             .catch(err => {
                 console.error('Error:', err);
-                alert('회원가입 중 오류가 발생했습니다.');
+                alert('회원가입 중 네트워크 오류가 발생했습니다.');
             })
             .finally(() => {
                 submitBtn.disabled = false;
