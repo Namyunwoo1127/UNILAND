@@ -24,7 +24,8 @@ public class AuthController {
 
     // 로그인 페이지
     @GetMapping("/login")
-    public String loginPage() {
+    public String loginPage(@RequestParam(required = false) String redirectUrl, Model model) {
+        model.addAttribute("redirectUrl", redirectUrl);
         return "auth/login";
     }
 
@@ -32,6 +33,7 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@RequestParam String userId,
                        @RequestParam String userPassword,
+                       @RequestParam(required = false) String redirectUrl,
                        HttpSession session,
                        RedirectAttributes redirectAttributes) {
         User user = userService.login(userId, userPassword);
@@ -39,10 +41,18 @@ public class AuthController {
         if (user != null) {
             // 로그인 성공
             session.setAttribute("loginUser", user);
+            // redirectUrl이 있으면 해당 페이지로, 없으면 메인으로
+            if (redirectUrl != null && !redirectUrl.isEmpty()) {
+                return "redirect:" + redirectUrl;
+            }
             return "redirect:/";
         } else {
             // 로그인 실패
             redirectAttributes.addFlashAttribute("errorMsg", "아이디 또는 비밀번호가 일치하지 않습니다.");
+            // 로그인 실패 시에도 redirectUrl 유지
+            if (redirectUrl != null && !redirectUrl.isEmpty()) {
+                return "redirect:/auth/login?redirectUrl=" + redirectUrl;
+            }
             return "redirect:/auth/login";
         }
     }

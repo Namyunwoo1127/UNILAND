@@ -1,5 +1,6 @@
-  <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -36,13 +37,13 @@
       padding: 0 24px;
     }
     .logo img {
-      	height: 60px;
-        object-fit: contain;
-        object-position: center;
-        cursor: pointer;
+      height: 60px;
+      object-fit: contain;
+      object-position: center;
+      cursor: pointer;
     }
     .btn-login {
-      background: #667eea;
+      background: linear-gradient(90deg, #667eea, #764ba2);
       color: white;
       border: none;
       padding: 10px 18px;
@@ -50,9 +51,12 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
+      transition: all 0.3s;
     }
-    .btn-login:hover { background: #5a67d8; transform: translateY(-2px); }
+    .btn-login:hover { 
+      background: linear-gradient(90deg, #5a67d8, #6b46c1);
+      transform: translateY(-2px); 
+    }
 
     /* 레이아웃 */
     .admin-container { flex: 1; display: flex; min-height: calc(100vh - 150px); }
@@ -104,37 +108,23 @@
       color: #1a1a1a;
     }
 
-    /* 검색창 */
-    .search-box {
-      background: white;
-      border: 1px solid #e5e5e5;
-      border-radius: 8px;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 30px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-    .search-box select, .search-box input {
-      padding: 10px;
-      border: 1px solid #ddd;
+    /* 알림 메시지 */
+    .alert {
+      padding: 12px 20px;
       border-radius: 6px;
+      margin-bottom: 20px;
       font-size: 14px;
     }
-    .search-box select { width: 130px; }
-    .search-box input { flex: 1; }
-    .btn-search {
-      background: #667eea;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease;
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
     }
-    .btn-search:hover { background: #5a67d8; }
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
 
     /* 테이블 */
     table {
@@ -168,32 +158,35 @@
       color: white;
     }
     .badge.pending { background: #f59e0b; }
-    .badge.active { background: #48bb78; }
-    .badge.inactive { background: #e53e3e; }
-
-    /* 추가 버튼 */
-    .btn-detail {
-      background: #667eea;
-      color: white;
-    }
-    .btn-detail:hover {
-      background: #5568d3;
-    }
+    .badge.approved { background: #48bb78; }
+    .badge.rejected { background: #e53e3e; }
 
     /* 버튼 */
-    .action-btns button {
+    .action-btns {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+    }
+    .action-btns button, .action-btns form {
+      display: inline-block;
+    }
+    .btn-detail, .btn-approve, .btn-reject, .btn-cancel {
       border: none;
       padding: 6px 12px;
       border-radius: 6px;
       cursor: pointer;
       font-size: 13px;
-      margin: 0 4px;
+      font-weight: 600;
       transition: all 0.2s;
     }
-    .btn-edit { background: #48bb78; color: white; }
-    .btn-edit:hover { background: #38a169; }
-    .btn-delete { background: #e53e3e; color: white; }
-    .btn-delete:hover { background: #c53030; }
+    .btn-detail { background: #667eea; color: white; }
+    .btn-detail:hover { background: #5568d3; }
+    .btn-approve { background: #48bb78; color: white; }
+    .btn-approve:hover { background: #38a169; }
+    .btn-reject { background: #e53e3e; color: white; }
+    .btn-reject:hover { background: #c53030; }
+    .btn-cancel { background: #f59e0b; color: white; }
+    .btn-cancel:hover { background: #d97706; }
 
     /* 푸터 */
     footer {
@@ -212,10 +205,10 @@
   <header>
     <div class="header-container">
       <div class="logo">
-        <img src="${pageContext.request.contextPath}/assets/images/logo.png"alt="UNILAND 관리자">
+        <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND 관리자">
       </div>
       <div class="auth-buttons">
-        <button class="btn-login" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
+        <button class="btn-login"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
       </div>
     </div>
   </header>
@@ -241,17 +234,17 @@
         <h2>중개사 승인 관리</h2>
       </div>
 
-      <!-- 검색 박스 -->
-      <div class="search-box">
-        <select id="searchCategory">
-          <option value="name">이름</option>
-          <option value="company">업체명</option>
-          <option value="license">등록번호</option>
-          <option value="status">상태</option>
-        </select>
-        <input type="text" id="searchInput" placeholder="검색어를 입력하세요">
-        <button class="btn-search" onclick="searchRealtor()">검색</button>
-      </div>
+      <!-- 알림 메시지 -->
+      <c:if test="${not empty message}">
+        <div class="alert alert-success">
+          <i class="fa-solid fa-circle-check"></i> ${message}
+        </div>
+      </c:if>
+      <c:if test="${not empty error}">
+        <div class="alert alert-error">
+          <i class="fa-solid fa-circle-exclamation"></i> ${error}
+        </div>
+      </c:if>
 
       <!-- 중개사 승인 테이블 -->
       <table>
@@ -261,7 +254,6 @@
             <th>신청자명</th>
             <th>업체명</th>
             <th>사업자등록번호</th>
-            <th>중개사등록번호</th>
             <th>연락처</th>
             <th>신청일</th>
             <th>상태</th>
@@ -269,49 +261,93 @@
           </tr>
         </thead>
         <tbody id="realtorTable">
-          <tr>
-            <td>3</td>
-            <td>김중개</td>
-            <td>신촌부동산중개사무소</td>
-            <td>123-45-67890</td>
-            <td>12345-2024-00001</td>
-            <td>02-1234-5678</td>
-            <td>2025-10-10</td>
-            <td><span class="badge pending">대기중</span></td>
-            <td class="action-btns">
-              <button class="btn-detail"><i class="fa-solid fa-file-lines"></i> 상세</button>
-              <button class="btn-edit"><i class="fa-solid fa-check"></i> 승인</button>
-              <button class="btn-delete"><i class="fa-solid fa-xmark"></i> 거부</button>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>이부동</td>
-            <td>홍대역 공인중개사</td>
-            <td>987-65-43210</td>
-            <td>54321-2024-00002</td>
-            <td>02-9876-5432</td>
-            <td>2025-10-05</td>
-            <td><span class="badge active">승인완료</span></td>
-            <td class="action-btns">
-              <button class="btn-detail"><i class="fa-solid fa-file-lines"></i> 상세</button>
-              <button class="btn-delete"><i class="fa-solid fa-ban"></i> 승인취소</button>
-            </td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>박중개</td>
-            <td>강남부동산</td>
-            <td>555-66-77888</td>
-            <td>99999-2024-00003</td>
-            <td>02-5555-6666</td>
-            <td>2025-09-28</td>
-            <td><span class="badge inactive">거부됨</span></td>
-            <td class="action-btns">
-              <button class="btn-detail"><i class="fa-solid fa-file-lines"></i> 상세</button>
-              <button class="btn-edit"><i class="fa-solid fa-rotate-right"></i> 재승인</button>
-            </td>
-          </tr>
+          <c:forEach var="realtor" items="${realtorList}" varStatus="status">
+            <tr>
+              <td>${status.count}</td>
+              <td>${realtor.realtorName}</td>
+              <td>${realtor.officeName}</td>
+              <td>${realtor.businessNum}</td>
+              <td>${realtor.realtorPhone}</td>
+              <td>
+                <c:choose>
+                  <c:when test="${not empty realtor.createdAt}">
+                    <fmt:formatDate value="${realtor.createdAt}" pattern="yyyy-MM-dd"/>
+                  </c:when>
+                  <c:otherwise>-</c:otherwise>
+                </c:choose>
+              </td>
+              <td>
+                <c:choose>
+                  <c:when test="${realtor.approvalStatus == 'PENDING'}">
+                    <span class="badge pending">승인대기</span>
+                  </c:when>
+                  <c:when test="${realtor.approvalStatus == 'APPROVAL'}">
+                    <span class="badge approved">승인완료</span>
+                  </c:when>
+                  <c:when test="${realtor.approvalStatus == 'REJECTED'}">
+                    <span class="badge rejected">거부됨</span>
+                  </c:when>
+                  <c:otherwise>
+                    <span class="badge pending">-</span>
+                  </c:otherwise>
+                </c:choose>
+              </td>
+              <td class="action-btns">
+                <!-- 상세보기 버튼 -->
+                <button class="btn-detail" 
+                        onclick="location.href='${pageContext.request.contextPath}/admin/realtor-detail/${realtor.realtorId}'">
+                  <i class="fa-solid fa-file-lines"></i> 상세
+                </button>
+                
+                <!-- 승인대기 상태 -->
+                <c:if test="${realtor.approvalStatus == 'PENDING'}">
+                  <form action="${pageContext.request.contextPath}/admin/realtor-approve/${realtor.realtorId}" 
+                        method="post" style="display:inline;">
+                    <button type="submit" class="btn-approve" 
+                            onclick="return confirm('중개사를 승인하시겠습니까?')">
+                      <i class="fa-solid fa-check"></i> 승인
+                    </button>
+                  </form>
+                  <form action="${pageContext.request.contextPath}/admin/realtor-reject/${realtor.realtorId}" 
+                        method="post" style="display:inline;">
+                    <button type="submit" class="btn-reject" 
+                            onclick="return confirm('중개사를 거부하시겠습니까?')">
+                      <i class="fa-solid fa-xmark"></i> 거부
+                    </button>
+                  </form>
+                </c:if>
+                
+                <!-- 승인완료 상태 -->
+                <c:if test="${realtor.approvalStatus == 'APPROVED'}">
+                  <form action="${pageContext.request.contextPath}/admin/realtor-cancel/${realtor.realtorId}" 
+                        method="post" style="display:inline;">
+                    <button type="submit" class="btn-reject" 
+                            onclick="return confirm('승인을 취소하시겠습니까?')">
+                      <i class="fa-solid fa-ban"></i> 승인취소
+                    </button>
+                  </form>
+                </c:if>
+                
+                <!-- 거부됨 상태 -->
+                <c:if test="${realtor.approvalStatus == 'REJECTED'}">
+                  <form action="${pageContext.request.contextPath}/admin/realtor-approve/${realtor.realtorId}" 
+                        method="post" style="display:inline;">
+                    <button type="submit" class="btn-cancel" 
+                            onclick="return confirm('재승인하시겠습니까?')">
+                      <i class="fa-solid fa-rotate-right"></i> 재승인
+                    </button>
+                  </form>
+                </c:if>
+              </td>
+            </tr>
+          </c:forEach>
+          <c:if test="${empty realtorList}">
+            <tr>
+              <td colspan="8" style="text-align: center; color: #999; padding: 40px;">
+                등록된 중개사가 없습니다.
+              </td>
+            </tr>
+          </c:if>
         </tbody>
       </table>
     </main>
@@ -323,28 +359,21 @@
   </footer>
 
   <script>
-    function searchRealtor() {
-      const category = document.getElementById('searchCategory').value;
-      const keyword = document.getElementById('searchInput').value.toLowerCase();
-      const rows = document.querySelectorAll('#realtorTable tr');
-      rows.forEach(row => {
-        const cells = row.getElementsByTagName('td');
-        let text = '';
-        if (category === 'name') text = cells[1].textContent;
-        else if (category === 'company') text = cells[2].textContent;
-        else if (category === 'license') text = cells[4].textContent;
-        else if (category === 'status') text = cells[7].textContent;
-        row.style.display = text.toLowerCase().includes(keyword) ? '' : 'none';
-      });
-    }
-
     // 사이드바 메뉴 클릭
     document.querySelectorAll('.sidebar li').forEach((item, index) => {
       item.addEventListener('click', function() {
         document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
         this.classList.add('active');
 
-        const pages = ['${pageContext.request.contextPath}/admin/dashboard', '${pageContext.request.contextPath}/admin/user-management', '${pageContext.request.contextPath}/admin/property-management', '${pageContext.request.contextPath}/admin/content-management', '${pageContext.request.contextPath}/admin/inquiry-management', '${pageContext.request.contextPath}/admin/realtor-approval'];
+        const pages = [
+          '${pageContext.request.contextPath}/admin/dashboard',
+          '${pageContext.request.contextPath}/admin/user-management',
+          '${pageContext.request.contextPath}/admin/property-management',
+          '${pageContext.request.contextPath}/admin/content-management',
+          '${pageContext.request.contextPath}/admin/inquiry-management',
+          '${pageContext.request.contextPath}/admin/realtor-approval'
+        ];
+        
         if (pages[index]) {
           window.location.href = pages[index];
         }
@@ -359,38 +388,19 @@
     // 로그아웃
     document.querySelector('.btn-login').addEventListener('click', function() {
       if (confirm('로그아웃 하시겠습니까?')) {
-        alert('로그아웃되었습니다.');
         window.location.href = '${pageContext.request.contextPath}/auth/logout';
       }
     });
 
-    // 상세 버튼
-    document.querySelectorAll('.btn-detail').forEach(btn => {
-      btn.addEventListener('click', function() {
-        alert('중개사 상세 정보 확인 기능은 준비중입니다.');
+    // 알림 메시지 자동 사라지기
+    setTimeout(function() {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        alert.style.transition = 'opacity 0.5s';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500);
       });
-    });
-
-    // 승인 버튼
-    document.querySelectorAll('.btn-edit').forEach(btn => {
-      btn.addEventListener('click', function() {
-        if (confirm('중개사 회원을 승인하시겠습니까?')) {
-          alert('승인되었습니다.');
-        }
-      });
-    });
-
-    // 거부 버튼
-    document.querySelectorAll('.btn-delete').forEach(btn => {
-      btn.addEventListener('click', function() {
-        if (confirm('중개사 회원을 거부하시겠습니까?')) {
-          const reason = prompt('거부 사유를 입력하세요:');
-          if (reason) {
-            alert('거부되었습니다.');
-          }
-        }
-      });
-    });
+    }, 3000);
   </script>
 </body>
 </html>

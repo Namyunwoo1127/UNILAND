@@ -19,5 +19,9 @@ public interface GuideCommentMapper {
 	GuideComment selectCommentById(@Param("commentId") int commentId);
 
 	void updateCommentCount(@Param("guideNo") int guideNo, @Param("increment") int increment);
+
+	int updateComment(@Param("commentId") int commentId,
+            @Param("userId") String userId,
+            @Param("content") String content);
 	
 }

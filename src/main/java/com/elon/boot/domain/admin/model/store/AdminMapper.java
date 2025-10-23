@@ -1,6 +1,7 @@
 package com.elon.boot.domain.admin.model.store;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -21,5 +22,20 @@ public interface AdminMapper {
 
 	int deleteRealtor(String realtorId);
 
+	int countTotalUsers();
+
+	int countTotalProperties();
+
+	List<Map<String, Object>> selectDailyUserStats(int i);
+
+	int countPendingInquiries();
+
+	List<Notice> selectRecentNotices(int i);
+
+	int countTotalRealtors();
+
+	List<Realtor> selectRealtorsByStatus(String string);
+
+	int updateRealtorApprovalStatus(Map<String, Object> params);
 
 }

@@ -4,11 +4,23 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.elon.boot.domain.realtor.model.vo.Realtor;
+import java.util.Map; // Map 타입을 사용하기 위해 추가
 
 @Mapper
 public interface RealtorMapper {
     int countByBusinessNum(@Param("businessNum") String businessNum);
+    
+    // ⭐ 추가: 중개사 등록번호 중복 확인
+    /**
+     * 중개사 등록번호가 DB에 존재하는지 개수를 셉니다.
+     * @param realtorRegNum 확인할 중개사 등록번호
+     * @return 개수 (0이면 중복 아님)
+     */
+    int countByRealtorRegNum(@Param("realtorRegNum") String realtorRegNum);
+
     int insertRealtor(Realtor realtor);
+    
+    // ⭐ 이 메소드의 XML 쿼리에 APPROVAL_STATUS를 포함해야 합니다.
     Realtor findByLoginInfo(@Param("realtorId") String realtorId,
                             @Param("password") String password,
                             @Param("businessNumber") String businessNumber);
@@ -19,7 +31,7 @@ public interface RealtorMapper {
      * @param realtorId 조회할 중개사의 ID
      * @return 해당 ID의 Realtor 객체
      */
-    Realtor findById(@Param("realtorId") String realtorId); // 메서드 이름은 findById로 가정
+    Realtor findById(@Param("realtorId") String realtorId);
 
     // ✅ 회원 정보 수정
     /**
@@ -36,4 +48,12 @@ public interface RealtorMapper {
      * @return 성공적으로 삭제(또는 변경)된 행의 개수 (1이면 성공)
      */
     int deleteRealtor(@Param("realtorId") String realtorId);
+    
+    // ⭐ 프로필 이미지 파일명 업데이트
+    /**
+     * 중개사의 프로필 이미지 파일명을 업데이트합니다.
+     * @param params realtorId와 realtorImage 파일명을 담은 Map
+     * @return 성공적으로 업데이트된 행의 개수 (1이면 성공)
+     */
+    int updateRealtorImage(Map<String, Object> params);
 }

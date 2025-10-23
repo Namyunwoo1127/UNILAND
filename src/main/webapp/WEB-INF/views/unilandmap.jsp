@@ -18,7 +18,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             color: #1a1a1a;
-            overflow: hidden;
+            overflow: hidden; 
         }
 
         /* 헤더 */
@@ -46,26 +46,6 @@
             display: flex;
             align-items: center;
             gap: 32px;
-        }
-
-        .back-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 18px;
-            background: white;
-            color: #667eea;
-            border: 1px solid #d0d0d0;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .back-btn:hover {
-            background: #fafafa;
-            border-color: #667eea;
         }
 
         .logo {
@@ -1045,10 +1025,7 @@
     <header>
         <div class="header-container">
             <div class="header-left">
-                <button class="back-btn" onclick="history.back()">
-                    <i class="fa-solid fa-arrow-left"></i> 뒤로가기
-                </button>
-                <div class="logo">
+                <div class="logo" onclick="location.href='${pageContext.request.contextPath}/'">
                     <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
                 </div>
                 <button class="filter-toggle-btn" onclick="toggleFilter()">
@@ -1076,7 +1053,7 @@
                     </c:when>
                     <c:otherwise>
                         <span class="login-prompt">로그인하여 더 많은 기능 이용하기</span>
-                        <a href="${pageContext.request.contextPath}/auth/login" class="btn-login">
+                        <a href="${pageContext.request.contextPath}/auth/login?redirectUrl=/map" class="btn-login">
                             <i class="fa-solid fa-right-to-bracket"></i> 로그인
                         </a>
                     </c:otherwise>
@@ -1445,7 +1422,7 @@
         </div>
         <div class="detail-actions">
             <button class="btn-favorite">♡ 찜하기</button>
-            <button class="btn-contact">문의하기</button>
+            <button class="btn-contact">중개사 문의하기</button>
             <button class="btn-detail" onclick="openDetailPage()">🔍 전체 상세보기</button>
         </div>
     </div>
@@ -1525,7 +1502,7 @@
                 selectedRegions.push(region);
             }
             updateSelectedRegions();
-            filterRegions();
+            filterRegions() ;
         }
 
         // 선택된 지역 표시
@@ -1582,6 +1559,26 @@
             if (!e.target.closest('.search-dropdown')) {
                 document.getElementById('regionDropdown').classList.remove('active');
                 document.getElementById('schoolDropdown').classList.remove('active');
+            }
+
+            // 필터 외부 클릭 시 닫기
+            if (!e.target.closest('.accordion-filter') && !e.target.closest('.filter-toggle-btn')) {
+                var filter = document.getElementById('accordionFilter');
+                var btn = document.querySelector('.filter-toggle-btn');
+                if (filter.classList.contains('active')) {
+                    filter.classList.remove('active');
+                    btn.classList.remove('active');
+                }
+            }
+
+            // 상세정보 슬라이드 외부 클릭 시 닫기
+            if (!e.target.closest('.detail-sidebar') && !e.target.closest('.property-card') && !e.target.closest('.custom-overlay')) {
+                var detailSidebar = document.getElementById('detailSidebar');
+                var overlay = document.getElementById('sidebarOverlay');
+                if (detailSidebar.classList.contains('active')) {
+                    detailSidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                }
             }
         });
 
@@ -1824,9 +1821,8 @@
         function openDetailPage() {
             // 현재 보고 있는 매물 ID 가져오기 (임시로 1번)
             const propertyId = 1; // 나중에 실제 매물 ID로 변경
-            // JSP에서 컨텍스트 경로를 포함하여 이동할 경우: 
-            // window.location.href = '<%= request.getContextPath() %>/property/detail.jsp?id=' + propertyId;
-            window.location.href = `property/detail.html?id=${propertyId}`;
+            // Spring Controller의 @GetMapping("/{id}") 패턴에 맞게 이동
+            window.location.href = '${pageContext.request.contextPath}/property/' + propertyId;
         }
     </script>
 </body>

@@ -1,5 +1,6 @@
 package com.elon.boot.controller;
 
+import com.elon.boot.domain.realtor.model.service.FileStorageService;
 import com.elon.boot.domain.realtor.model.service.RealtorService;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
 import jakarta.servlet.http.HttpSession;
@@ -7,19 +8,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/realtor") // ✅ 모든 중개사 관련 경로는 /realtor 하위
+@RequestMapping("/realtor") 
 public class RealtorController {
 
-    // 필요한 서비스 (RealtorService는 이미 주입되어 있음)
     @Autowired
     private RealtorService realtorService;
-    // // TODO: PropertyService, InquiryService 등 추가 주입 (필요시)
+    
+    // ⭐ FileStorageService가 주입된 상태로 유지
+    @Autowired
+    private FileStorageService fileStorageService; 
 
     /** ✅ 사업자등록번호 중복 확인 (AJAX) */
     @PostMapping("/check-business-num")
@@ -33,6 +37,21 @@ public class RealtorController {
         res.put("message", isDuplicate ? "이미 등록된 사업자등록번호입니다." : "사용 가능한 사업자등록번호입니다.");
         return res;
     }
+    
+    // ⭐ 추가: 중개사 등록번호 중복 확인 (AJAX)
+    /** 중개사 등록번호 중복 여부를 확인합니다. (AJAX) */
+    @PostMapping("/check-realtor-reg-num")
+    @ResponseBody
+    public Map<String, Object> checkRealtorRegNum(@RequestBody Map<String, String> req) {
+        String realtorRegNum = req.get("realtorRegNum");
+        boolean isDuplicate = realtorService.isRealtorRegNumDuplicate(realtorRegNum);
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("isDuplicate", isDuplicate);
+        res.put("message", isDuplicate ? "이미 등록된 중개사 등록번호입니다." : "사용 가능한 중개사 등록번호입니다.");
+        return res;
+    }
+
 
     /** ✅ 회원가입 폼 제출 처리 */
     @PostMapping("/register")
@@ -40,18 +59,27 @@ public class RealtorController {
     public Map<String, Object> registerRealtor(@RequestBody Realtor realtor) {
         Map<String, Object> res = new HashMap<>();
 
-        // 중복 체크
+        // 1. 사업자 등록번호 중복 체크
         if (realtorService.isBusinessNumDuplicate(realtor.getBusinessNum())) {
             res.put("success", false);
             res.put("message", "이미 등록된 사업자등록번호입니다.");
             return res;
         }
+        
+        // 2. ⭐ 중개사 등록번호 중복 체크
+        if (realtorService.isRealtorRegNumDuplicate(realtor.getRealtorRegNum())) {
+             res.put("success", false);
+             res.put("message", "이미 등록된 중개사 등록번호입니다.");
+             return res;
+        }
+
 
         // 회원가입 처리
         boolean success = realtorService.registerRealtor(realtor);
         if (success) {
+            // ⭐ 문구 수정: 관리자 승인 대기 상태임을 명시
             res.put("success", true);
-            res.put("message", "회원가입이 완료되었습니다. 로그인해주세요.");
+            res.put("message", "회원가입 신청이 완료되었습니다. 관리자 승인을 기다려주세요.");
         } else {
             res.put("success", false);
             res.put("message", "회원가입에 실패했습니다. 다시 시도해주세요.");
@@ -60,7 +88,10 @@ public class RealtorController {
         return res;
     }
 
-    /** ✅ 로그인 처리 */
+    // =========================================================================
+    // ⭐ 수정된 로그인 처리 메소드
+    // =========================================================================
+    /** ✅ 로그인 처리 (수정: APPROVAL_STATUS 확인, 대문자 비교) */
     @PostMapping("/realtor-login")
     public String realtorLogin(@RequestParam("realtorId") String realtorId,
                                @RequestParam("password") String password,
@@ -68,18 +99,45 @@ public class RealtorController {
                                HttpSession session,
                                Model model) {
 
+        // 1. 아이디, 비밀번호, 사업자등록번호로 중개사 정보 조회
         Realtor realtor = realtorService.getRealtorByLogin(realtorId, password, businessNumber);
 
         if (realtor != null) {
-            // 로그인 성공 → 세션 저장 및 대시보드로 이동
-            session.setAttribute("loginRealtor", realtor);
-            return "redirect:/realtor/realtor-dashboard";
+            // 2. 로그인 정보가 일치하는 경우, 승인 상태(APPROVAL_STATUS) 확인
+            // ⭐ Realtor 객체에 getApprovalStatus()가 있다고 가정하며, 값은 PENDING, APPROVAL, REJECTED
+            String status = realtor.getApprovalStatus(); 
+
+            if ("APPROVAL".equals(status)) { 
+                // 2-1. ✅ 승인된 상태 (로그인 성공)
+                session.setAttribute("loginRealtor", realtor);
+                return "redirect:/realtor/realtor-dashboard";
+
+            } else if ("PENDING".equals(status)) { 
+                // 2-2. ⏳ 승인 대기 상태
+                model.addAttribute("loginError", "회원가입 승인 대기 중입니다. 관리자의 승인을 기다려주세요.");
+                return "auth/realtor-login"; 
+
+            } else if ("REJECTED".equals(status)) { 
+                // 2-3. ❌ 승인 거절 상태
+                model.addAttribute("loginError", "죄송합니다. 회원가입 신청이 거절되었습니다. 고객센터에 문의해주세요.");
+                return "auth/realtor-login";
+
+            } else {
+                 // 2-4. 기타/알 수 없는 상태
+                model.addAttribute("loginError", "계정 상태를 확인할 수 없습니다. 고객센터에 문의해주세요.");
+                return "auth/realtor-login";
+            }
+            
         } else {
-            // 로그인 실패 → 에러 메시지를 모델에 담아 같은 페이지로 유지
+            // 3. 로그인 정보 불일치
             model.addAttribute("loginError", "아이디, 비밀번호 또는 사업자등록번호가 올바르지 않습니다.");
             return "auth/realtor-login";
         }
     }
+    // =========================================================================
+    // ⭐ 수정된 로그인 처리 메소드 끝
+    // =========================================================================
+
 
     /** ✅ 대시보드 페이지 */
     @GetMapping("/realtor-dashboard")
@@ -127,67 +185,58 @@ public class RealtorController {
      */
     @GetMapping("/realtor-mypage")
     public String showRealtorMypage(HttpSession session, Model model) {
-        // 세션에서 중개사 정보 가져오기 (로그인 시 저장된 "loginRealtor" 사용)
         Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
 
-        // 로그인 체크
         if (loginRealtor == null) {
             return "redirect:/realtor/realtor-login"; 
         }
 
-        // 최신 사용자 정보를 다시 조회 (업데이트 후 세션 갱신을 위해 필요)
+        // 최신 사용자 정보를 다시 조회 
         Realtor currentRealtor = realtorService.getRealtorById(loginRealtor.getRealtorId());
         
-        // 🚨 최신 정보를 다시 세션에 저장
         session.setAttribute("loginRealtor", currentRealtor);
-        
-        // 마이페이지에 필요한 데이터 조회
-        // TODO: 등록 매물 현황, 받은 문의 내역 등 데이터 조회 후 모델에 추가
-        
         model.addAttribute("realtor", currentRealtor);
-        // model.addAttribute("registeredProperties", propertyService.getPropertiesByRealtorId(loginRealtor.getRealtorId()));
 
         return "realtor/realtor-mypage";
     }
     
-    /** * ✅ 중개사 회원정보 수정 처리 (realtor/mypage/update)
-     */
+    /** * ✅ 중개사 회원정보 수정 처리 (realtor/mypage/update) */
     @PostMapping("/mypage/update")
     public String updateRealtorProfile(
             HttpSession session, 
             RedirectAttributes ra,
-            @RequestParam String officeName,    // 중개사무소 상호명
-            @RequestParam String realtorName,    // 대표 중개인 이름
-            @RequestParam String realtorAddress, // 사무소 주소
-            @RequestParam String realtorPhone,   // 연락처
-            @RequestParam String realtorEmail) {  // 이메일
+            @RequestParam String officeName,
+            @RequestParam String realtorName,
+            @RequestParam String realtorAddress,
+            @RequestParam String realtorPhone,
+            @RequestParam String realtorEmail) {
 
         Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
         
-        // 로그인 체크
         if (loginRealtor == null) {
             return "redirect:/realtor/realtor-login"; 
         }
 
         String realtorId = loginRealtor.getRealtorId();
-        String businessNum = loginRealtor.getBusinessNum(); // 수정 불가 필드는 세션에서 가져옴
+        String businessNum = loginRealtor.getBusinessNum();
+        // ⭐ realtorRegNum 필드 추가
+        String realtorRegNum = loginRealtor.getRealtorRegNum(); 
 
-        // 1. VO 객체에 수정할 정보 및 PK/BusinessNum 담기
+
         Realtor updatedRealtor = new Realtor();
         updatedRealtor.setRealtorId(realtorId); 
         updatedRealtor.setBusinessNum(businessNum); 
+        // ⭐ realtorRegNum 설정
+        updatedRealtor.setRealtorRegNum(realtorRegNum); 
         updatedRealtor.setOfficeName(officeName);
         updatedRealtor.setRealtorName(realtorName);
         updatedRealtor.setRealtorAddress(realtorAddress);
         updatedRealtor.setRealtorPhone(realtorPhone);
         updatedRealtor.setRealtorEmail(realtorEmail);
 
-        // 2. 서비스 호출하여 DB 업데이트
         boolean success = realtorService.updateRealtor(updatedRealtor);
 
-        // 3. DB 업데이트 성공 시 세션 정보 갱신 및 메시지 전달
         if (success) {
-             // 최신 정보를 다시 조회하여 세션 갱신
              Realtor currentRealtor = realtorService.getRealtorById(realtorId);
              session.setAttribute("loginRealtor", currentRealtor);
              ra.addFlashAttribute("message", "회원 정보가 성공적으로 수정되었습니다.");
@@ -198,31 +247,71 @@ public class RealtorController {
         return "redirect:/realtor/realtor-mypage";
     }
 
-    /** * ✅ 중개사 회원 탈퇴 처리 (realtor/mypage/delete)
-     * 실제로는 POST로 처리하고 비밀번호 확인이 필요하지만, 여기서는 GET 요청 그대로 사용합니다.
-     */
+    /** * ✅ 중개사 회원 탈퇴 처리 (realtor/mypage/delete) */
     @GetMapping("/mypage/delete")
     public String deleteRealtorAccount(HttpSession session, RedirectAttributes ra) {
         Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
         
-        // 로그인 체크
         if (loginRealtor == null) {
             return "redirect:/realtor/realtor-login"; 
         }
         
         String realtorId = loginRealtor.getRealtorId();
 
-        // 회원 탈퇴 처리
         boolean success = realtorService.deleteRealtor(realtorId);
 
         if (success) {
-            session.invalidate(); // 세션 무효화
+            session.invalidate();
             ra.addFlashAttribute("message", "성공적으로 탈퇴되었습니다. UNILAND를 이용해주셔서 감사합니다.");
-            return "redirect:/"; // 메인 페이지로 리다이렉트
+            return "redirect:/";
         } else {
             ra.addFlashAttribute("message", "탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
-            // 탈퇴 실패 시는 세션을 유지하고 마이페이지로 복귀 (원래는 POST/비번확인 후 처리)
             return "redirect:/realtor/realtor-mypage"; 
         }
+    }
+    
+    /** * ⭐ 수정/통합: 프로필 이미지 업데이트 처리 (realtor/profile/updateImage) */
+    @PostMapping("/profile/updateImage")
+    public String updateRealtorImage(
+        HttpSession session, // 세션 갱신을 위해 추가
+        @RequestParam("realtorImage") MultipartFile file,
+        RedirectAttributes ra) {
+        
+        Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+
+        if (loginRealtor == null) {
+            ra.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+            return "redirect:/realtor/realtor-login"; 
+        }
+        
+        String realtorId = loginRealtor.getRealtorId();
+        
+        if (file.isEmpty()) {
+             ra.addFlashAttribute("errorMessage", "업로드할 이미지를 선택해주세요.");
+             return "redirect:/realtor/realtor-mypage";
+        }
+        
+        try {
+            // 1. 파일 저장 처리 및 새 파일명 생성
+            String savedFileName = fileStorageService.saveProfileImage(file);
+            
+            // 2. DB에 파일명 업데이트
+            boolean success = realtorService.updateRealtorImage(realtorId, savedFileName);
+
+            if (success) {
+                // 3. ⭐ 세션 갱신: 최신 정보를 DB에서 다시 가져와 세션을 업데이트
+                Realtor currentRealtor = realtorService.getRealtorById(realtorId);
+                session.setAttribute("loginRealtor", currentRealtor);
+                
+                ra.addFlashAttribute("message", "프로필 이미지가 성공적으로 변경되었습니다.");
+            } else {
+                ra.addFlashAttribute("errorMessage", "DB 업데이트에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            // 파일 저장/DB 업데이트 중 발생한 예외 처리
+            ra.addFlashAttribute("errorMessage", "이미지 업로드 중 오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return "redirect:/realtor/realtor-mypage";
     }
 }

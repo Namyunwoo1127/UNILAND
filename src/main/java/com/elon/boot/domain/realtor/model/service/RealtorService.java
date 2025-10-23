@@ -4,7 +4,18 @@ import com.elon.boot.domain.realtor.model.vo.Realtor;
 
 public interface RealtorService {
     boolean isBusinessNumDuplicate(String businessNum);
+    
+    // ⭐ 추가: 중개사 등록번호 중복 확인 메서드
+    /**
+     * 중개사 등록번호의 중복 여부를 확인합니다.
+     * @param realtorRegNum 확인할 중개사 등록번호
+     * @return 중복되면 true, 아니면 false
+     */
+    boolean isRealtorRegNumDuplicate(String realtorRegNum);
+
     boolean registerRealtor(Realtor realtor);
+    
+    // ⭐ 이 메소드가 APPROVAL_STATUS를 포함한 Realtor 객체를 반환해야 함
     Realtor getRealtorByLogin(String realtorId, String password, String businessNumber);
 
     // ✅ 회원 정보 수정 메서드 추가
@@ -30,4 +41,13 @@ public interface RealtorService {
      * @return 해당 ID의 Realtor 객체
      */
     Realtor getRealtorById(String realtorId); 
+    
+    // ⭐ 추가: 프로필 이미지 파일명 업데이트 메서드
+    /**
+     * 중개사의 프로필 이미지 파일명을 업데이트합니다.
+     * @param realtorId 중개사 ID
+     * @param savedFileName 서버에 저장된 새 파일명
+     * @return 업데이트 성공 여부 (true/false)
+     */
+    boolean updateRealtorImage(String realtorId, String savedFileName);
 }

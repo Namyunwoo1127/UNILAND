@@ -35,4 +35,10 @@ public interface GuideMapper {
 	 Guide selectNextGuide(@Param("guideNo") int guideNo);
 	 
 	 void updateLikeCount(@Param("guideNo") int guideNo);
+	 
+	int insertGuide(Guide guide);
+	
+	int updateGuide(Guide guide);
+	
+	int deleteGuide(@Param("guideNo") int guideNo);
 }
