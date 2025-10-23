@@ -46,7 +46,37 @@
             APPROVAL_STATUS
         FROM REALTOR_TBL
         WHERE DELETE_YN = 'N'
+        AND APPROVAL_STATUS = 'APPROVAL'
         ORDER BY CREATED_AT, REALTOR_NAME DESC
+    </select>
+    
+    <!-- 총 일반 회원 수 -->
+    <select id="countTotalUsers" resultType="int">
+        SELECT COUNT(*)
+        FROM USER_TBL
+        WHERE delete_yn = 'N'
+    </select>
+    
+    <!-- 총 중개사 회원 수 -->
+    <select id="countTotalRealtors" resultType="int">
+        SELECT COUNT(*)
+        FROM REALTOR_TBL
+        WHERE delete_yn = 'N'
+        AND APPROVAL_STATUS = 'APPROVAL'
+    </select>
+    
+    <!-- 총 매물 수 -->
+    <select id="countTotalProperties" resultType="int">
+        SELECT COUNT(*)
+        FROM PROPERTY_TBL
+        WHERE status = 'ACTIVE'
+    </select>
+    
+    <!-- 미처리 문의 수 -->
+    <select id="countPendingInquiries" resultType="int">
+        SELECT COUNT(*)
+        FROM INQUIRY_TBL
+        WHERE status = 'PENDING'
     </select>
 
 	<!-- 회원 탈퇴 처리 -->
@@ -58,11 +88,49 @@
         WHERE user_id = #{userId}
     </update>
     
+    <!-- 중개사 탈퇴 처리 -->
     <update id="deleteRealtor">
         UPDATE REALTOR_TBL
         SET 
             DELETE_YN = 'Y',
             UPDATED_AT = SYSTIMESTAMP
+        WHERE REALTOR_ID = #{realtorId}
+    </update>
+    
+    <!-- 주별 신규 회원 통계 -->
+    <select id="selectDailyUserStats" resultType="map">
+        SELECT 
+	        TO_CHAR(created_at, 'YYYY-WW') as week,
+	        COUNT(*) as count
+	    FROM USER_TBL
+	    WHERE created_at >= SYSDATE - 30
+	      AND delete_yn = 'N'
+	    GROUP BY TO_CHAR(created_at, 'YYYY-WW')
+	    ORDER BY TO_CHAR(created_at, 'YYYY-WW')
+    </select>
+    
+    <!-- 상태별 중개사 조회 -->
+    <select id="selectRealtorsByStatus" resultType="Realtor">
+        SELECT 
+            REALTOR_ID,
+            OFFICE_NAME,
+            REALTOR_NAME,
+            REALTOR_ADDRESS,
+            REALTOR_PHONE,
+            REALTOR_EMAIL,
+            BUSINESS_NUM,
+            CREATED_AT,
+            APPROVAL_STATUS
+        FROM REALTOR_TBL
+        WHERE APPROVAL_STATUS = #{approvalStatus}
+        ORDER BY CREATED_AT DESC
+    </select>
+    
+    <!-- 중개사 승인 상태 변경 -->
+    <update id="updateRealtorApprovalStatus">
+        UPDATE REALTOR_TBL
+        SET 
+            APPROVAL_STATUS = #{approvalStatus}
         WHERE REALTOR_ID = #{realtorId}
     </update>
     

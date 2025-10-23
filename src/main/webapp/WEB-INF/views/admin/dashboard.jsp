@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -38,13 +39,13 @@
       padding: 0 24px;
     }
     .logo img {
-      	height: 60px;
-        object-fit: contain;
-        object-position: center;
-        cursor: pointer;
+      height: 60px;
+      object-fit: contain;
+      object-position: center;
+      cursor: pointer;
     }
     .btn-login {
-      background: #667eea;
+      background: linear-gradient(90deg, #667eea, #764ba2);
       color: white;
       border: none;
       padding: 10px 18px;
@@ -52,9 +53,12 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
+      transition: all 0.3s;
     }
-    .btn-login:hover { background: #5a67d8; transform: translateY(-2px); }
+    .btn-login:hover { 
+      background: linear-gradient(90deg, #5a67d8, #6b46c1);
+      transform: translateY(-2px); 
+    }
 
     /* 레이아웃 */
     .admin-container { flex: 1; display: flex; min-height: calc(100vh - 150px); }
@@ -196,6 +200,7 @@
 
     .notice-list tr:hover td {
       background: #f9faff;
+      cursor: pointer;
     }
 
     /* 푸터 */
@@ -218,7 +223,7 @@
         <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND 관리자">
       </div>
       <div class="auth-buttons">
-        <button class="btn-login" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
+        <button class="btn-login"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
       </div>
     </div>
   </header>
@@ -248,8 +253,16 @@
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-info">
-            <h4>총 회원 수</h4>
-            <p>1,245명</p>
+            <h4>총 일반 회원 수</h4>
+            <p>${dashboard.totalUsers}명</p>
+          </div>
+          <i class="fa-solid fa-user-group"></i>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-info">
+            <h4>총 중개사 회원 수</h4>
+            <p>${dashboard.totalRealtors}명</p>
           </div>
           <i class="fa-solid fa-user-group"></i>
         </div>
@@ -257,7 +270,7 @@
         <div class="stat-card">
           <div class="stat-info">
             <h4>등록 매물</h4>
-            <p>382건</p>
+            <p>${dashboard.totalProperties}건</p>
           </div>
           <i class="fa-solid fa-building"></i>
         </div>
@@ -265,7 +278,7 @@
         <div class="stat-card">
           <div class="stat-info">
             <h4>미처리 문의</h4>
-            <p>12건</p>
+            <p>${dashboard.pendingInquiries}건</p>
           </div>
           <i class="fa-solid fa-envelope-circle-check"></i>
         </div>
@@ -273,8 +286,8 @@
 
       <!-- 차트 -->
       <div class="chart-container">
-        <h3>일별 회원 증감 현황</h3>
-        <canvas id="userChart" height="100"></canvas>
+        <h3>일별 신규 회원 현황 (최근 30일)</h3>
+        <canvas id="userChart" height="80"></canvas>
       </div>
 
       <!-- 최근 공지사항 -->
@@ -289,11 +302,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>5</td><td>AI 매물 추천 기능 개선 안내</td><td>2025-10-10</td></tr>
-            <tr><td>4</td><td>신입생 이벤트 결과 발표</td><td>2025-09-28</td></tr>
-            <tr><td>3</td><td>중개사 회원가입 절차 변경</td><td>2025-09-20</td></tr>
-            <tr><td>2</td><td>모바일 앱 베타 서비스 오픈</td><td>2025-09-01</td></tr>
-            <tr><td>1</td><td>UNILAND 관리자 페이지 오픈</td><td>2025-08-15</td></tr>
+            <c:forEach var="notice" items="${noticeList}" varStatus="status">
+              <tr onclick="location.href='${pageContext.request.contextPath}/community/notice/${notice.noticeNo}'">
+                <td>${notice.noticeNo}</td>
+                <td>${notice.noticeSubject}</td>
+                <td><fmt:formatDate value="${notice.noticeCreateat}" pattern="yyyy-MM-dd"/></td>
+              </tr>
+            </c:forEach>
+            <c:if test="${empty noticeList}">
+		            <li style="color: #999; cursor: default;">등록된 공지사항이 없습니다.</li>
+		    </c:if>
           </tbody>
         </table>
       </div>
@@ -306,25 +324,64 @@
   </footer>
 
   <script>
+    // 차트 데이터 (서버에서 전달받은 데이터)
+    const dailyLabels = [
+      <c:forEach var="label" items="${dashboard.dailyLabels}" varStatus="status">
+        '${label}'<c:if test="${!status.last}">,</c:if>
+      </c:forEach>
+    ];
+    
+    const dailyData = [
+      <c:forEach var="data" items="${dashboard.dailyUserData}" varStatus="status">
+        ${data}<c:if test="${!status.last}">,</c:if>
+      </c:forEach>
+    ];
+
     // 회원 증감 차트
     const ctx = document.getElementById('userChart').getContext('2d');
     new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['10/1', '10/2', '10/3', '10/4', '10/5', '10/6', '10/7'],
+        labels: dailyLabels.length > 0 ? dailyLabels : ['데이터 없음'],
         datasets: [{
           label: '신규 회원 수',
-          data: [5, 12, 8, 15, 9, 14, 10],
+          data: dailyData.length > 0 ? dailyData : [0],
           borderColor: '#667eea',
           backgroundColor: 'rgba(102, 126, 234, 0.15)',
           fill: true,
-          tension: 0.3
+          tension: 0.3,
+          pointRadius: 2,          // 점 크기 축소
+          pointHoverRadius: 5      // 호버 시 점 크기
         }]
       },
       options: {
-        plugins: { legend: { display: false } },
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '신규 회원: ' + context.parsed.y + '명';
+              }
+            }
+          }
+        },
         scales: {
-          y: { beginAtZero: true, ticks: { stepSize: 5 } }
+          x: {
+            ticks: {
+              maxRotation: 45,     // 라벨 회전
+              minRotation: 45,
+              autoSkip: true,      // 자동으로 일부 라벨 생략
+              maxTicksLimit: 15    // 최대 표시 개수
+            }
+          },
+          y: { 
+            beginAtZero: true, 
+            ticks: { stepSize: 5 }
+          }
+        },
+        interaction: {
+          intersect: false,        // 마우스가 점 근처에만 있어도 반응
+          mode: 'index'
         }
       }
     });
@@ -335,7 +392,15 @@
         document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
         this.classList.add('active');
 
-        const pages = ['${pageContext.request.contextPath}/admin/dashboard', '${pageContext.request.contextPath}/admin/user-management', '${pageContext.request.contextPath}/admin/property-management', '${pageContext.request.contextPath}/admin/content-management', '${pageContext.request.contextPath}/admin/inquiry-management', '${pageContext.request.contextPath}/admin/realtor-approval'];
+        const pages = [
+          '${pageContext.request.contextPath}/admin/dashboard',
+          '${pageContext.request.contextPath}/admin/user-management',
+          '${pageContext.request.contextPath}/admin/property-management',
+          '${pageContext.request.contextPath}/admin/content-management',
+          '${pageContext.request.contextPath}/admin/inquiry-management',
+          '${pageContext.request.contextPath}/admin/realtor-approval'
+        ];
+        
         if (pages[index]) {
           window.location.href = pages[index];
         }
@@ -350,7 +415,6 @@
     // 로그아웃
     document.querySelector('.btn-login').addEventListener('click', function() {
       if (confirm('로그아웃 하시겠습니까?')) {
-        alert('로그아웃되었습니다.');
         window.location.href = '${pageContext.request.contextPath}/auth/logout';
       }
     });
