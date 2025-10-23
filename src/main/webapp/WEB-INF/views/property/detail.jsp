@@ -962,7 +962,7 @@
 
                 <div class="action-buttons">
                     <button class="btn-action btn-primary" onclick="openInquiryModal()">
-                        <i class="fa-solid fa-comment-dots"></i> 문의하기
+                        <i class="fa-solid fa-comment-dots"></i> 중개사 문의하기
                     </button>
                     <button class="btn-action btn-secondary" onclick="toggleFavorite()">
                         <i class="fa-regular fa-heart"></i> <span id="favoriteText">찜하기</span>

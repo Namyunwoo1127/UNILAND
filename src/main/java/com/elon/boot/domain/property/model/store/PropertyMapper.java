@@ -1,6 +1,10 @@
 package com.elon.boot.domain.property.model.store;
 
+import com.elon.boot.controller.dto.property.PropertyAddRequest;
 import com.elon.boot.domain.property.model.vo.Property;
+import com.elon.boot.domain.property.model.vo.PropertyImg;
+import com.elon.boot.domain.property.model.vo.PropertyOption;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -9,6 +13,9 @@ import java.util.Map;
 
 @Mapper
 public interface PropertyMapper {
-    void insertProperty(Property property);
-    void insertPropertyImages(@Param("list") List<Map<String, Object>> list);
+    int insertProperty(PropertyAddRequest pReq);
+    int insertPropertyImages(@Param("list") List<PropertyImg> imgList);
+	Property selectOneByNo(Long id);
+	PropertyOption selectOnesOption(Long id);
+	PropertyImg selectOnesImg(Long id);
 }
