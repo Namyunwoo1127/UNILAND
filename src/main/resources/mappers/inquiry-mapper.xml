@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.elon.boot.domain.inquiry.model.store.InquiryMapper">
+
+    <!-- TODO: resultMap 정의 -->
+    <!--
+    <resultMap id="inquiryResultMap" type="com.elon.boot.domain.inquiry.model.vo.Inquiry">
+        <id property="inquiryId" column="INQUIRY_ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="inquiryType" column="INQUIRY_TYPE"/>
+        <result property="category" column="CATEGORY"/>
+        <result property="propertyId" column="PROPERTY_ID"/>
+        <result property="realtorId" column="REALTOR_ID"/>
+        <result property="title" column="TITLE"/>
+        <result property="content" column="CONTENT"/>
+        <result property="status" column="STATUS"/>
+        <result property="answer" column="ANSWER"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="answeredAt" column="ANSWERED_AT"/>
+    </resultMap>
+    -->
+
+    <!-- TODO: 문의 등록 -->
+    <!--
+    <insert id="insertInquiry" parameterType="Inquiry">
+        INSERT INTO INQUIRY (
+            INQUIRY_ID, USER_ID, INQUIRY_TYPE, CATEGORY,
+            PROPERTY_ID, REALTOR_ID, TITLE, CONTENT, STATUS, CREATED_AT
+        ) VALUES (
+            SEQ_INQUIRY.NEXTVAL, #{userId}, #{inquiryType}, #{category},
+            #{propertyId}, #{realtorId}, #{title}, #{content}, 'PENDING', SYSDATE
+        )
+    </insert>
+    -->
+
+    <!-- TODO: 사용자별 문의 조회 -->
+    <!--
+    <select id="selectInquiriesByUserId" parameterType="string" resultMap="inquiryResultMap">
+        SELECT * FROM INQUIRY
+        WHERE USER_ID = #{userId}
+        ORDER BY CREATED_AT DESC
+    </select>
+    -->
+
+    <!-- TODO: 사용자별 + 타입별 문의 조회 -->
+    <!--
+    <select id="selectInquiriesByType" resultMap="inquiryResultMap">
+        SELECT * FROM INQUIRY
+        WHERE USER_ID = #{userId}
+          AND INQUIRY_TYPE = #{inquiryType}
+        ORDER BY CREATED_AT DESC
+    </select>
+    -->
+
+    <!-- TODO: 문의 상세 조회 -->
+    <!--
+    <select id="selectInquiryById" parameterType="int" resultMap="inquiryResultMap">
+        SELECT * FROM INQUIRY
+        WHERE INQUIRY_ID = #{inquiryId}
+    </select>
+    -->
+
+    <!-- TODO: 문의 답변 등록 -->
+    <!--
+    <update id="updateInquiryAnswer">
+        UPDATE INQUIRY
+        SET ANSWER = #{answer},
+            STATUS = 'ANSWERED',
+            ANSWERED_AT = SYSDATE
+        WHERE INQUIRY_ID = #{inquiryId}
+    </update>
+    -->
+
+    <!-- TODO: 중개사별 문의 조회 -->
+    <!--
+    <select id="selectInquiriesByRealtorId" parameterType="string" resultMap="inquiryResultMap">
+        SELECT * FROM INQUIRY
+        WHERE REALTOR_ID = #{realtorId}
+          AND INQUIRY_TYPE = 'REALTOR'
+        ORDER BY CREATED_AT DESC
+    </select>
+    -->
+
+    <!-- TODO: 관리자 문의 전체 조회 -->
+    <!--
+    <select id="selectAdminInquiries" resultMap="inquiryResultMap">
+        SELECT * FROM INQUIRY
+        WHERE INQUIRY_TYPE = 'ADMIN'
+        ORDER BY CREATED_AT DESC
+    </select>
+    -->
+
+</mapper>
