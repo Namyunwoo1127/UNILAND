@@ -1,7 +1,11 @@
 package com.elon.boot.controller;
 
+import com.elon.boot.controller.dto.property.OptionAddRequest;
 import com.elon.boot.controller.dto.property.PropertyAddRequest;
 import com.elon.boot.domain.property.model.service.PropertyService;
+import com.elon.boot.domain.property.model.vo.Property;
+import com.elon.boot.domain.property.model.vo.PropertyImg;
+import com.elon.boot.domain.property.model.vo.PropertyOption;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +22,20 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PropertyController {
 
-    private final PropertyService propertyService;
+    private final PropertyService pService;
 
     // 매물 상세 페이지
     @GetMapping("/{id}")
     public String propertyDetail(@PathVariable Long id, Model model) {
+    	System.out.println(id);
+    	Property property = pService.selectOneByNo(id);
+    	PropertyOption option = pService.selectOnesOption(id);
+    	PropertyImg img = pService.selectOnesImg(id);
+    	System.out.println(property);
+    	System.out.println(option);
+    	System.out.println(img);
+    	
+    	
         // 실제 구현 예시
         // var property = propertyService.get(id);
         // var option   = propertyService.getOption(id);
@@ -31,16 +44,19 @@ public class PropertyController {
         return "property/detail";
     }
 
+    
+    
     @PostMapping("/register")
     public String register(PropertyAddRequest req
+    		, OptionAddRequest oReq
     		, HttpSession session
     		,@RequestParam (value="images",required=false)List<MultipartFile> images) {
         Realtor realtor = (Realtor) session.getAttribute("loginRealtor");
         if (realtor == null || realtor.getRealtorId() == null || realtor.getRealtorId().isBlank()) {
             return "redirect:/realtor/realtor-dashboard";
         }
-        
-        propertyService.register(req,images, realtor.getRealtorId());
+
+        pService.register(req,oReq,images, realtor.getRealtorId());
         
         return "redirect:/realtor/property-management";
     }

@@ -644,8 +644,8 @@
            <div class="form-group">
              <label class="form-label">냉난방</label>
              <div class="option-grid">
-               <input type="checkbox" id="opt1" class="option-checkbox" name="optAc" value="Y"><label for="opt1" class="option-label">에어컨</label>
-               <input type="checkbox" id="opt2" class="option-checkbox" name="optHeater" value="Y"><label for="opt2" class="option-label">히터</label>
+               <input type="checkbox" id="opt1" class="option-checkbox" name="airConditioner" value="Y"><label for="opt1" class="option-label">에어컨</label>
+               <input type="checkbox" id="opt2" class="option-checkbox" name="heater" value="Y"><label for="opt2" class="option-label">히터</label>
              </div>
            </div>
          
@@ -653,10 +653,10 @@
            <div class="form-group" style="margin-top:20px;">
              <label class="form-label">주방</label>
              <div class="option-grid">
-               <input type="checkbox" id="opt3" class="option-checkbox" name="optFridge" value="Y"><label for="opt3" class="option-label">냉장고</label>
-               <input type="checkbox" id="opt4" class="option-checkbox" name="optMicrowave" value="Y"><label for="opt4" class="option-label">전자레인지</label>
-               <input type="checkbox" id="opt5" class="option-checkbox" name="optInduction" value="Y"><label for="opt5" class="option-label">인덕션</label>
-               <input type="checkbox" id="opt6" class="option-checkbox" name="optGasRange" value="Y"><label for="opt6" class="option-label">가스레인지</label>
+               <input type="checkbox" id="opt3" class="option-checkbox" name="refrigerator" value="Y"><label for="opt3" class="option-label">냉장고</label>
+               <input type="checkbox" id="opt4" class="option-checkbox" name="microwave" value="Y"><label for="opt4" class="option-label">전자레인지</label>
+               <input type="checkbox" id="opt5" class="option-checkbox" name="induction" value="Y"><label for="opt5" class="option-label">인덕션</label>
+               <input type="checkbox" id="opt6" class="option-checkbox" name="gasStove" value="Y"><label for="opt6" class="option-label">가스레인지</label>
              </div>
            </div>
          
@@ -664,13 +664,13 @@
            <div class="form-group" style="margin-top:20px;">
              <label class="form-label">가구/가전</label>
              <div class="option-grid">
-               <input type="checkbox" id="opt7"  class="option-checkbox" name="optWasher" value="Y"><label for="opt7" class="option-label">세탁기</label>
-               <input type="checkbox" id="opt8"  class="option-checkbox" name="optDryer" value="Y"><label for="opt8" class="option-label">건조기</label>
-               <input type="checkbox" id="opt9"  class="option-checkbox" name="optBed" value="Y"><label for="opt9" class="option-label">침대</label>
-               <input type="checkbox" id="opt10" class="option-checkbox" name="optDesk" value="Y"><label for="opt10" class="option-label">책상</label>
-               <input type="checkbox" id="opt11" class="option-checkbox" name="optWardrobe" value="Y"><label for="opt11" class="option-label">옷장</label>
-               <input type="checkbox" id="opt12" class="option-checkbox" name="optShoecloset" value="Y"><label for="opt12" class="option-label">신발장</label>
-               <input type="checkbox" id="opt13" class="option-checkbox" name="optTv" value="Y"><label for="opt13" class="option-label">TV</label>
+               <input type="checkbox" id="opt7"  class="option-checkbox" name="washer" value="Y"><label for="opt7" class="option-label">세탁기</label>
+               <input type="checkbox" id="opt8"  class="option-checkbox" name="dryer" value="Y"><label for="opt8" class="option-label">건조기</label>
+               <input type="checkbox" id="opt9"  class="option-checkbox" name="bed" value="Y"><label for="opt9" class="option-label">침대</label>
+               <input type="checkbox" id="opt10" class="option-checkbox" name="desk" value="Y"><label for="opt10" class="option-label">책상</label>
+               <input type="checkbox" id="opt11" class="option-checkbox" name="wardrobe" value="Y"><label for="opt11" class="option-label">옷장</label>
+               <input type="checkbox" id="opt12" class="option-checkbox" name="shoeRack" value="Y"><label for="opt12" class="option-label">신발장</label>
+               <input type="checkbox" id="opt13" class="option-checkbox" name="tv" value="Y"><label for="opt13" class="option-label">TV</label>
              </div>
            </div>
          
@@ -678,10 +678,10 @@
            <div class="form-group" style="margin-top:20px;">
              <label class="form-label">시설</label>
              <div class="option-grid">
-               <input type="checkbox" id="opt14" class="option-checkbox" name="facParking" value="Y"><label for="opt14" class="option-label">주차 가능</label>
-               <input type="checkbox" id="opt15" class="option-checkbox" name="facElevator" value="Y"><label for="opt15" class="option-label">엘리베이터</label>
-               <input type="checkbox" id="opt16" class="option-checkbox" name="facSecurity" value="Y"><label for="opt16" class="option-label">보안시스템</label>
-               <input type="checkbox" id="opt17" class="option-checkbox" name="facPet" value="Y"><label for="opt17" class="option-label">반려동물</label>
+               <input type="checkbox" id="opt14" class="option-checkbox" name="parking" value="Y"><label for="opt14" class="option-label">주차 가능</label>
+               <input type="checkbox" id="opt15" class="option-checkbox" name="elevator" value="Y"><label for="opt15" class="option-label">엘리베이터</label>
+               <input type="checkbox" id="opt16" class="option-checkbox" name="security" value="Y"><label for="opt16" class="option-label">보안시스템</label>
+               <input type="checkbox" id="opt17" class="option-checkbox" name="petAllowed" value="Y"><label for="opt17" class="option-label">반려동물</label>
              </div>
            </div>
          </div>

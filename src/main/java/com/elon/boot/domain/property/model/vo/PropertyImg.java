@@ -12,7 +12,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Propertyimg {
+public class PropertyImg {
 	private int 	imgNo;
 	private Long 	propertyNo;
 	private String 	imgPath;
