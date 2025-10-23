@@ -536,13 +536,13 @@
                         </label>
                         <div id="maintenanceItemsContainer" style="display:none; margin-top:10px;">
                             <div class="option-grid" style="grid-template-columns: repeat(2, 1fr);">
-                                <input type="checkbox" id="maint1" class="option-checkbox" name="maintenanceItems" value="수도">
+                                <input type="checkbox" id="maint1" class="option-checkbox" name="maintenanceItems" value="water">
                                 <label for="maint1" class="option-label">수도</label>
-                                <input type="checkbox" id="maint2" class="option-checkbox" name="maintenanceItems" value="전기">
+                                <input type="checkbox" id="maint2" class="option-checkbox" name="maintenanceItems" value="elec">
                                 <label for="maint2" class="option-label">전기</label>
-                                <input type="checkbox" id="maint3" class="option-checkbox" name="maintenanceItems" value="가스">
+                                <input type="checkbox" id="maint3" class="option-checkbox" name="maintenanceItems" value="gas">
                                 <label for="maint3" class="option-label">가스</label>
-                                <input type="checkbox" id="maint4" class="option-checkbox" name="maintenanceItems" value="인터넷">
+                                <input type="checkbox" id="maint4" class="option-checkbox" name="maintenanceItems" value="internet">
                                 <label for="maint4" class="option-label">인터넷</label>
                             </div>
                         </div>

@@ -33,22 +33,14 @@ public class PropertyController {
     	PropertyOption option = pService.selectOnesOption(id);
     	List<PropertyImg> imgs = new ArrayList<PropertyImg> ();
     	imgs = pService.selectOnesImgs(id);
-    	System.out.println(property);
-    	System.out.println(option);
-    	System.out.println(imgs);
     	
     	
-        // 실제 구현 예시
-        // var property = propertyService.get(id);
-        // var option   = propertyService.getOption(id);
          model.addAttribute("property", property);
          model.addAttribute("option", option);
          model.addAttribute("imgs", imgs);
          
         return "property/detail";
     }
-
-    
     
     @PostMapping("/register")
     public String register(PropertyAddRequest req

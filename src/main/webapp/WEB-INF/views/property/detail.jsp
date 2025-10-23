@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -613,7 +614,9 @@
             <div class="main-image-container">
                 <c:choose>
                     <c:when test="${not empty imgs}">
-                        <img id="mainImage" class="main-image" src="${pageContext.request.contextPath}${property.images[0]}" alt="${property.propertyName}">
+					  <img id="mainImage" class="main-image"
+					       src="${pageContext.request.contextPath}${imgs[0].imgPath}"
+					       alt="${property.propertyName}">
                     </c:when>
                     <c:otherwise>
                         <img id="mainImage" class="main-image" src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&h=800&fit=crop" alt="매물 사진">
@@ -632,11 +635,17 @@
             <div class="thumbnail-container">
                 <c:choose>
                     <c:when test="${not empty imgs}">
-                        <c:forEach var="image" items="${imgs}" varStatus="status">
+<%--                         <c:forEach var="image" items="${imgs}" varStatus="status">
                             <div class="thumbnail ${status.index == 0 ? 'active' : ''}" onclick="selectImage(${status.index})">
-                                <img src="${pageContext.request.contextPath}${imgs}" alt="썸네일 ${status.index + 1}">
+                                <img src="${pageContext.request.contextPath}${image.imgPath}" alt="썸네일 ${status.index + 1}">
                             </div>
-                        </c:forEach>
+                        </c:forEach> --%>
+                      	<c:forEach var="image" items="${imgs}" varStatus="status">
+					  	<div class="thumbnail ${status.index == 0 ? 'active' : ''}" onclick="selectImage(${status.index})">
+					    	<img src="${pageContext.request.contextPath}${image.imgPath}" alt="썸네일 ${status.index + 1}">
+					  	</div>
+						</c:forEach>
+						
                     </c:when>
                     <c:otherwise>
                         <div class="thumbnail active" onclick="selectImage(0)">
@@ -684,11 +693,11 @@
                         <h1 class="property-title">${property.propertyName != null ? property.propertyName : '신촌역 5분거리 풀옵션 원룸'}</h1>
                         <div class="property-location">
                             <i class="fa-solid fa-location-dot"></i>
-                            ${property.roadAddress != null ? property.roadAddress : '서울 서대문구 창천동'}
+                            ${property.roadAddress != null ? property.roadAddress : '서울 서대문구 창천동'}${not empty property.addressDetail ? ' ' : ''}${property.addressDetail}
                         </div>
                         <div class="property-meta">
-                            <span><i class="fa-solid fa-eye"></i> 조회 ${property.viewCount != null ? property.viewCount : 142}</span>
-                            <span><i class="fa-solid fa-heart"></i> 찜 ${property.likeCount != null ? property.likeCount : 23}</span>
+                            <span><i class="fa-solid fa-eye"></i> 조회 142<%-- ${property.viewCount != null ? property.viewCount : 142} --%></span>
+                            <span><i class="fa-solid fa-heart"></i> 찜 23<%-- ${property.likeCount != null ? property.likeCount : 23} --%></span>
                             <span><i class="fa-solid fa-calendar"></i> <fmt:formatDate value="${property.createdAt}" pattern="yyyy.MM.dd"/></span>
                         </div>
                     </div>
@@ -882,7 +891,7 @@
                     </h2>
                     <div id="map"></div>
                     <div style="margin-top: 15px; font-size: 14px; color: #666;">
-                        <i class="fa-solid fa-location-dot"></i> ${property.roadAddress != null ? property.roadAddress : '서울 서대문구 창천동 123-45'}
+                        <i class="fa-solid fa-location-dot"></i> ${property.roadAddress != null ? property.roadAddress : '서울 서대문구 창천동 123-45'}${not empty property.addressDetail ? ' ' : ''}${property.addressDetail}
                     </div>
                 </div>
 
@@ -892,24 +901,62 @@
                         <i class="fa-solid fa-user-tie"></i> 중개사 정보
                     </h2>
                     <div class="agent-info">
-                        <div class="agent-avatar">${property.agentName != null ? property.agentName.substring(0, 1) : '김'}</div>
+						<div class="agent-avatar">
+							김
+						</div>
                         <div class="agent-details">
-                            <h3>${property.agentName != null ? property.agentName : '김부동산'} 중개사</h3>
+                            <h3>'김부동산' 중개사</h3>
                             <div class="agent-contact">
-                                <i class="fa-solid fa-building"></i> ${property.agencyName != null ? property.agencyName : '신촌부동산중개사무소'}
+                                <i class="fa-solid fa-building"></i> '신촌부동산중개사무소'
                             </div>
                             <div class="agent-contact">
-                                <i class="fa-solid fa-phone"></i> ${property.agentPhone != null ? property.agentPhone : '02-1234-5678'}
+                                <i class="fa-solid fa-phone"></i> '02-1234-5678'
                             </div>
                             <div class="agent-contact">
-                                <i class="fa-solid fa-id-card"></i> 중개사 등록번호: ${property.agentLicense != null ? property.agentLicense : '12345-2024-00001'}
+                                <i class="fa-solid fa-id-card"></i> 중개사 등록번호:'12345-2024-00001'
                             </div>
                         </div>
+<%-- 						<div class="agent-avatar">				realtor model이 필요하여 주석처리함
+						  <c:choose>
+						    <c:when test="${not empty property.agentName}">
+						      ${fn:substring(property.agentName, 0, 1)}
+						    </c:when>
+						    <c:otherwise>김</c:otherwise>
+						  </c:choose>
+						</div>
+                        <div class="agent-details">
+                            <h3>${realor.realtorName != null ? realor.realtorName : '김부동산'} 중개사</h3>
+                            <div class="agent-contact">
+                                <i class="fa-solid fa-building"></i> ${realor.officeName != null ? realor.officeName : '신촌부동산중개사무소'}
+                            </div>
+                            <div class="agent-contact">
+                                <i class="fa-solid fa-phone"></i> ${realor.realtorPhone != null ? realor.realtorPhone : '02-1234-5678'}
+                            </div>
+                            <div class="agent-contact">
+                                <i class="fa-solid fa-id-card"></i> 중개사 등록번호: ${realor.businessNum != null ? realor.businessNum : '12345-2024-00001'}
+                            </div>
+                        </div> --%>
                     </div>
                 </div>
 
                 <!-- 비슷한 매물 -->
-                <c:if test="${not empty similarProperties}">
+                    <div class="content-card">
+                        <h2 class="section-title">
+                            <i class="fa-solid fa-grip"></i> 비슷한 매물
+                        </h2>
+                        <div class="similar-grid">
+                                <div class="similar-card" onclick="location.href=''">
+                                    <div class="similar-image">
+	                                    비슷한 이미지
+                                    </div>
+                                    <div class="similar-info">
+                                        <div class="similar-title">비슷한 매물 1</div>
+                                        <div class="similar-price">대충 비슷한 가격대</div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+<%--                 <c:if test="${not empty similarProperties}">			similar model이 필요하여 주석처리함
                     <div class="content-card">
                         <h2 class="section-title">
                             <i class="fa-solid fa-grip"></i> 비슷한 매물
@@ -935,7 +982,7 @@
                             </c:forEach>
                         </div>
                     </div>
-                </c:if>
+                </c:if> --%>
             </div>
 
             <!-- 우측 고정 가격 박스 -->
@@ -947,11 +994,28 @@
                         <div>
                             <div class="price-detail-item">관리비</div>
                             <div class="price-detail-value">${property.maintenanceFee != null ? property.maintenanceFee : 5}만원</div>
-                            <c:if test="${not empty property.maintenanceItems}">
-                                <div style="font-size: 12px; color: #666; margin-top: 4px;">
-                                    (${property.maintenanceItems} 포함)
-                                </div>
-                            </c:if>
+							<c:if test="${property.water == 'Y' or property.elect == 'Y' or property.gas == 'Y' or property.internet == 'Y'}">
+							    <div style="font-size: 12px; color: #666; margin-top: 4px;">
+							        (
+							        <c:set var="includedItems" value="" />
+							
+							        <c:if test="${property.water == 'Y'}">
+							            <c:set var="includedItems" value="${includedItems}수도, " />
+							        </c:if>
+							        <c:if test="${property.elect == 'Y'}">
+							            <c:set var="includedItems" value="${includedItems}전기, " />
+							        </c:if>
+							        <c:if test="${property.gas == 'Y'}">
+							            <c:set var="includedItems" value="${includedItems}가스, " />
+							        </c:if>
+							        <c:if test="${property.internet == 'Y'}">
+							            <c:set var="includedItems" value="${includedItems}인터넷, " />
+							        </c:if>
+							
+							        <c:out value="${fn:substring(includedItems, 0, fn:length(includedItems) - 2)}" /> 포함
+							        )
+							    </div>
+							</c:if>
                         </div>
                         <div>
                             <div class="price-detail-item">총 월 비용</div>
@@ -1025,11 +1089,11 @@
         // 이미지 갤러리
         const images = [
             <c:choose>
-                <c:when test="${not empty property.images}">
-                    <c:forEach var="image" items="${imgs.imgs}" varStatus="status">
-                        '${pageContext.request.contextPath}${image}'${!status.last ? ',' : ''}
-                    </c:forEach>
-                </c:when>
+	            <c:when test="${not empty imgs}">
+		            <c:forEach var="image" items="${imgs}" varStatus="status">
+		              '${pageContext.request.contextPath}${image.imgPath}'${!status.last ? ',' : ''}
+		            </c:forEach>
+	          	</c:when>
                 <c:otherwise>
                     'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&h=800&fit=crop',
                     'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&h=800&fit=crop',
@@ -1103,7 +1167,7 @@
             }
 
             // AJAX로 찜하기 처리
-            fetch('${pageContext.request.contextPath}/property/${property.propertyId}/wishlist', {
+            fetch('${pageContext.request.contextPath}/property/${property.propertyNo}/wishlist', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1131,23 +1195,22 @@
         }
 
         // 공유하기
-        function shareProperty() {
-            const url = window.location.href;
-            const title = '${property.propertyName != null ? property.propertyName : "신촌역 5분거리 풀옵션 원룸"}';
-
-            if (navigator.share) {
-                navigator.share({
-                	propertyName: propertyName,
-                    text: 'UNILAND에서 매물을 공유합니다.',
-                    url: url
-                }).catch(err => console.log('공유 실패:', err));
-            } else {
-                // Fallback: URL 복사
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('링크가 복사되었습니다!');
-                });
-            }
-        }
+		function shareProperty() {
+		  const url = window.location.href;
+		  const title = '${property.propertyName != null ? property.propertyName : "신촌역 5분거리 풀옵션 원룸"}';
+		
+		  if (navigator.share) {
+		    navigator.share({
+		      title: title,              
+		      text: 'UNILAND에서 매물을 공유합니다.',
+		      url: url
+		    }).catch(err => console.log('공유 실패:', err));
+		  } else {
+		    navigator.clipboard.writeText(url).then(() => {
+		      alert('링크가 복사되었습니다!');
+		    });
+		  }
+		}
 
         // 문의 모달
         function openInquiryModal() {
