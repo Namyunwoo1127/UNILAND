@@ -20,6 +20,54 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <result property="deleteYn" column="DELETE_YN"/>
 </resultMap>
 
+<!-- 가이드 등록 -->
+<insert id="insertGuide" parameterType="Guide">
+    INSERT INTO GUIDE_TBL (
+        GUIDE_NO,
+        USER_ID,
+        GUIDE_CATEGORY,
+        GUIDE_TITLE,
+        GUIDE_CONTENT,
+        VIEW_COUNT,
+        LIKE_COUNT,
+        COMMENT_COUNT,
+        IS_HOT,
+        WRITE_DATE,
+        DELETE_YN
+    ) VALUES (
+        SEQ_GUIDE_NO.NEXTVAL,
+        #{userId},
+        #{guideCategory},
+        #{guideTitle},
+        #{guideContent},
+        0,
+        0,
+        0,
+        'N',
+        SYSDATE,
+        'N'
+    )
+</insert>
+
+<!-- 가이드 수정 -->
+<update id="updateGuide" parameterType="Guide">
+    UPDATE GUIDE_TBL
+    SET GUIDE_CATEGORY = #{guideCategory},
+        GUIDE_TITLE = #{guideTitle},
+        GUIDE_CONTENT = #{guideContent},
+        UPDATE_DATE = SYSDATE
+    WHERE GUIDE_NO = #{guideNo}
+      AND DELETE_YN = 'N'
+</update>
+
+<!-- 가이드 삭제 (논리적 삭제) -->
+<update id="deleteGuide" parameterType="int">
+    UPDATE GUIDE_TBL
+    SET DELETE_YN = 'Y',
+        UPDATE_DATE = SYSDATE
+    WHERE GUIDE_NO = #{guideNo}
+</update>
+
 <!-- [추가] 상세 조회용 ResultMap (조인 컬럼 포함) -->
 <resultMap id="guideDetailResultMap" type="com.elon.boot.domain.community.guide.model.vo.Guide" extends="guideResultMap">
     <result property="authorNickname" column="AUTHOR_NICKNAME"/>

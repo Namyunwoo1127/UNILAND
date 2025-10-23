@@ -18,5 +18,10 @@ public interface GuideService {
 
 	Guide getNextGuide(int guideNo);
 
+	int insertGuide(Guide guide);
+	
+	int updateGuide(Guide guide);
+	
+	int deleteGuide(int guideNo);
 
 }

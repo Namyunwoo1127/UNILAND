@@ -99,8 +99,52 @@
             font-size: 32px;
             font-weight: 700;
             color: #1a1a1a;
-            margin-bottom: 20px;
             line-height: 1.4;
+            margin-bottom: 0; /* 마진을 부모 컨테이너로 이동 */
+        }
+
+        /* ✅ 제목과 버튼을 묶는 컨테이너 CSS 추가 */
+        .post-title-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px; /* 기존 post-title의 마진 */
+        }
+
+        .post-author-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0; /* 버튼이 줄어들지 않도록 */
+        }
+
+        .btn-author-action {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-author-action.btn-edit {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .btn-author-action.btn-edit:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .btn-author-action.btn-delete {
+            background-color: #fed7d7;
+            color: #c53030;
+        }
+        .btn-author-action.btn-delete:hover {
+            background-color: #fecaca;
         }
 
         .post-meta {
@@ -167,6 +211,7 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             margin-bottom: 20px;
+            white-space: pre-line; /* DB는 \n을 일반 공백 처리하기 때문에 개행 문제 시 */
         }
 
         .post-body {
@@ -514,6 +559,10 @@
             border-color: #667eea;
             color: #667eea;
         }
+        
+        /* ✅ 댓글 수정 폼을 위한 스타일 추가 */
+        .comment-edit-form textarea { margin-bottom: 8px; font-size: 14px; }
+        .comment-edit-form button { font-size: 13px; }
 
         /* 반응형 */
         @media (max-width: 768px) {
@@ -523,9 +572,21 @@
                 padding: 24px;
             }
 
+            /* ✅ 반응형 CSS 추가 */
+            .post-title-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .post-author-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
             .post-title {
                 font-size: 24px;
             }
+            /* ✅ 반응형 CSS 끝 */
+
 
             .post-meta {
                 flex-direction: column;
@@ -702,8 +763,23 @@
 		            </span>
 		        </c:otherwise>
 		    </c:choose>
-		    <h1 class="post-title">${guide.guideTitle}</h1>
-		    <div class="post-meta">
+
+            <div class="post-title-container">
+		        <h1 class="post-title">${guide.guideTitle}</h1>
+
+                <c:if test="${sessionScope.loginUser.userId == guide.userId}">
+                    <div class="post-author-actions">
+                        <button class="btn-author-action btn-edit" 
+                                onclick="location.href='${pageContext.request.contextPath}/community/guide/edit/${guide.guideNo}'">
+                            <i class="fa-solid fa-pen"></i> 수정
+                        </button>
+                        <button class="btn-author-action btn-delete" onclick="deletePost()">
+                            <i class="fa-solid fa-trash"></i> 삭제
+                        </button>
+                    </div>
+                </c:if>
+            </div>
+            <div class="post-meta">
 		        <div class="post-author-info">
 		            <div class="author-avatar">
 		                ${guide.userId.substring(0, 1)}
@@ -726,13 +802,11 @@
 		</div>
 
 		<!-- 게시글 내용 -->
-		<div class="post-content">
-            <div class="post-body">
-                ${guide.guideContent}
-            </div>
-        </div>
+		<!-- white-space: pre-line을 사용하면 JSP 소스 코드에 있는 줄바꿈까지 그대로 화면에 나오기 때문에
+				개행을 없애려면 JSP 소스 코드에서 태그들을 모두 한 줄로 붙여 써야 함 -->
+		<div class="post-content"><div class="post-body">${guide.guideContent}</div></div>
 
-		<!-- 액션 버튼 -->
+		<!-- 좋아요,공유하기 액션 버튼 -->
 		<div class="post-actions">
             <button class="btn-action btn-like ${isLiked ? 'active' : ''}" onclick="toggleLike()">
                 <i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
@@ -778,7 +852,10 @@
                 <c:choose>
                     <c:when test="${not empty comments}">
                         <c:forEach var="comment" items="${comments}">
-                            <li class="comment-item">
+                            
+                            <%-- ✅ 각 댓글 항목에 고유 ID 추가 --%>
+                            <li class="comment-item" id="comment-item-${comment.commentId}">                   
+                            
                                 <div class="comment-header">
                                     <div class="comment-author-info">
                                         <div class="comment-avatar">${comment.userId.substring(0, 1)}</div>
@@ -787,27 +864,32 @@
                                             <span class="comment-date"><fmt:formatDate value="${comment.createdAt}" pattern="yyyy.MM.dd HH:mm"/></span>
                                         </div>
                                     </div>
-                                    <div class="comment-actions">
-										<!-- 수정된 가이드 댓글 좋아요 버튼 -->
-                                        <button class="btn-comment-action guide-comment-like ${comment.liked ? 'liked' : ''}" 
-                                                data-comment-id="${comment.commentId}"
-                                                onclick="toggleGuideCommentLike(event)">
-                                            <i class="${comment.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> 
-                                            좋아요 <span class="guide-comment-like-count" data-comment-id="${comment.commentId}">(${comment.likeCount})</span>
-                                        </button>
+                                    <%-- ✅ 댓글 액션 버튼 영역 ID 추가 --%>
+                                    <div class="comment-actions" id="comment-actions-${comment.commentId}">
+										<button class="btn-comment-action guide-comment-like ${comment.liked ? 'liked' : ''}" data-comment-id="${comment.commentId}" onclick="toggleGuideCommentLike(event)"><i class="${comment.liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> 좋아요 <span class="guide-comment-like-count" data-comment-id="${comment.commentId}">(${comment.likeCount})</span></button>
                                         <c:if test="${sessionScope.loginUser.userId == comment.userId}">
-                                            <button class="btn-comment-action" onclick="deleteComment(${comment.commentId})">삭제</button>
+                                            <%-- ✅ 이 버튼은 이제 ${escapedContent} 변수를 올바르게 참조합니다. --%>
+							                <button class="btn-comment-action btn-edit-comment" onclick="showEditForm(${comment.commentId})">수정</button>
+							                <button class="btn-comment-action btn-delete-comment" onclick="deleteComment(${comment.commentId})">삭제</button>
                                         </c:if>
                                     </div>
                                 </div>
-                                <div class="comment-body" style="white-space: pre-line;"><c:out value="${comment.content}"/></div>
+                                <%-- ✅ 기존 댓글 내용 영역 ID 부여 --%>
+                                <div class="comment-body" id="comment-content-${comment.commentId}" style="white-space: pre-line;"><c:out value="${comment.content}"/></div>
+
+                                <%-- ✅ 숨겨진 수정 폼 영역 추가 --%>
+                                <div class="comment-edit-form" id="comment-edit-form-${comment.commentId}" style="display: none; padding-left: 52px; margin-top: 10px;">
+                                    <textarea id="comment-edit-textarea-${comment.commentId}" class="comment-textarea" style="min-height: 80px;"></textarea>
+                                    <div style="text-align: right; margin-top: 8px;">
+                                        <button class="btn-comment-action" style="color: #667eea; font-weight: 600;" onclick="saveCommentEdit(${comment.commentId})">저장</button>
+                                        <button class="btn-comment-action" onclick="hideEditForm(${comment.commentId})">취소</button>
+                                    </div>
+                                </div>
                             </li>
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
-                        <li style="text-align: center; padding: 40px 0; color: #999;">
-                            첫 번째 댓글을 작성해보세요!
-                        </li>
+                        <li style="text-align: center; padding: 40px 0; color: #999;">첫 번째 댓글을 작성해보세요!</li>
                     </c:otherwise>
                 </c:choose>
             </ul>
@@ -817,20 +899,20 @@
 		<c:if test="${not empty prevGuide || not empty nextGuide}">
             <div class="post-navigation">
                 <h3 class="nav-title">다른 글 보기</h3>
-                <c:if test="${not empty prevGuide}">
-                    <div class="nav-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/${prevGuide.guideNo}'">
-                        <div class="nav-label">
-                            <i class="fa-solid fa-chevron-up"></i> 이전 글
-                        </div>
-                        <div class="nav-post-title">${prevGuide.guideTitle}</div>
-                    </div>
-                </c:if>
                 <c:if test="${not empty nextGuide}">
                     <div class="nav-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/${nextGuide.guideNo}'">
                         <div class="nav-label">
-                            <i class="fa-solid fa-chevron-down"></i> 다음 글
+                            <i class="fa-solid fa-chevron-up"></i> 다음 글
                         </div>
                         <div class="nav-post-title">${nextGuide.guideTitle}</div>
+                    </div>
+                </c:if>
+                <c:if test="${not empty prevGuide}">
+                    <div class="nav-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/${prevGuide.guideNo}'">
+                        <div class="nav-label">
+                            <i class="fa-solid fa-chevron-down"></i> 이전 글
+                        </div>
+                        <div class="nav-post-title">${prevGuide.guideTitle}</div>
                     </div>
                 </c:if>
             </div>
@@ -1060,6 +1142,99 @@
             .catch(err => console.error('댓글 삭제 실패:', err));
         }
 
+        // ✅ 게시글 삭제 함수 추가
+        function deletePost() {
+            if (!confirm('게시글을 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                return;
+            }
+
+            fetch('${pageContext.request.contextPath}/community/guide/${guide.guideNo}', {
+                method: 'DELETE'
+            })
+            .then(response => response.json()) // 서버에서 { "success": true } 형태의 응답을 기대
+            .then(data => {
+                if (data.success) {
+                    alert('게시글이 삭제되었습니다.');
+                    // 성공 시 목록 페이지로 리디렉션
+                    location.href = '${pageContext.request.contextPath}/community/guide';
+                } else {
+                    alert(data.message || '게시글 삭제에 실패했습니다.');
+                }
+            })
+            .catch(err => {
+                console.error('게시글 삭제 실패:', err);
+                alert('게시글 삭제 처리 중 오류가 발생했습니다.');
+            });
+        }
+
+        // ✅ 댓글 수정 폼 보이기
+        function showEditForm(commentId) {
+            // 기존 댓글 내용 숨기기
+            document.getElementById('comment-content-' + commentId).style.display = 'none';
+            // 댓글 액션 버튼 숨기기
+            document.getElementById('comment-actions-' + commentId).style.display = 'none';
+            
+            // 수정 폼 보이기
+            const editForm = document.getElementById('comment-edit-form-' + commentId);
+            editForm.style.display = 'block';
+            
+            // textarea에 기존 내용 채우기
+            const originalContent = document.getElementById('comment-content-' + commentId).textContent;
+            const textarea = document.getElementById('comment-edit-textarea-' + commentId);
+            textarea.value = originalContent;
+            textarea.focus();
+        }
+
+        // ✅ 댓글 수정 폼 숨기기 (취소)
+        function hideEditForm(commentId) {
+            // 기존 댓글 내용 다시 보이기
+            document.getElementById('comment-content-' + commentId).style.display = 'block';
+            // 댓글 액션 버튼 다시 보이기
+            document.getElementById('comment-actions-' + commentId).style.display = 'flex';
+            
+            // 수정 폼 숨기기
+            document.getElementById('comment-edit-form-' + commentId).style.display = 'none';
+        }
+
+        // ✅ 댓글 수정 저장
+        function saveCommentEdit(commentId) {
+            const textarea = document.getElementById('comment-edit-textarea-' + commentId);
+            const newContent = textarea.value.trim();
+
+            if (newContent === '') {
+                alert('댓글 내용을 입력해주세요.');
+                textarea.focus();
+                return;
+            }
+
+            fetch('${pageContext.request.contextPath}/community/guide/${guide.guideNo}/comment/' + commentId, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: newContent })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('댓글이 수정되었습니다.');
+                    
+                    // 화면 업데이트
+                    const contentDiv = document.getElementById('comment-content-' + commentId);
+                    contentDiv.textContent = newContent;
+                    
+                    // 수정 폼 숨기고 원래 댓글 보이기
+                    hideEditForm(commentId);
+                } else {
+                    alert(data.message || '댓글 수정에 실패했습니다.');
+                }
+            })
+            .catch(err => {
+                console.error('댓글 수정 실패:', err);
+                alert('댓글 수정 처리 중 오류가 발생했습니다.');
+            });
+        }
+
         // 엔터키로 댓글 작성 (Shift + Enter는 줄바꿈)
         document.getElementById('commentInput').addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -1088,6 +1263,7 @@
                 closeShareModal();
             }
         });
+
     </script>
 </body>
 </html>
