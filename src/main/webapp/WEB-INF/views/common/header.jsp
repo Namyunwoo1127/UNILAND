@@ -7,12 +7,24 @@
             <a href="${pageContext.request.contextPath}/" class="logo">
                 <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
             </a>
-            <a href="${pageContext.request.contextPath}/map" class="header-map-btn">
-                <i class="fa-solid fa-map-location-dot"></i> 지도검색
-            </a>
+            <c:choose>
+               <c:when test="${sessionScope.loginUser.adminYn != 'Y'}">
+                  <a href="${pageContext.request.contextPath}/map" class="header-map-btn">
+                      <i class="fa-solid fa-map-location-dot"></i> 지도검색
+                  </a>
+              </c:when>
+          </c:choose>
         </div>
         <div class="auth-buttons">
             <c:choose>
+               <c:when test="${not empty sessionScope.loginUser && (sessionScope.loginUser.adminYn == 'Y')}">
+                  <a href="${pageContext.request.contextPath}/admin/dashboard" class="btn-mypage">
+                        <i class="fa-solid fa-user"></i> ${loginUser.userName}님
+                    </a>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
+                    </button>
+              </c:when>
                 <c:when test="${not empty sessionScope.loginUser}">
                     <a href="${pageContext.request.contextPath}/mypage" class="btn-mypage">
                         <i class="fa-solid fa-user"></i> ${loginUser.userName}님

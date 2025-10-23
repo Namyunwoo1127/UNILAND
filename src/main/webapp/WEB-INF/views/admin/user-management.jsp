@@ -16,7 +16,7 @@
       color: #1a1a1a;
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      min-height: 100vh;
     }
 
     /* 헤더 */
@@ -37,10 +37,10 @@
       padding: 0 24px;
     }
     .logo img {
-      	height: 60px;
-        object-fit: contain;
-        object-position: center;
-      	cursor: pointer;
+      height: 60px;
+      object-fit: contain;
+      object-position: center;
+      cursor: pointer;
     }
     .btn-login {
       background: #667eea;
@@ -56,7 +56,7 @@
     .btn-login:hover { background: #5a67d8; transform: translateY(-2px); }
 
     /* 레이아웃 */
-    .admin-container { flex: 1; display: flex; min-height: calc(100vh - 150px); }
+    .admin-container { flex: 1; display: flex; }
 
     /* 사이드바 */
     .sidebar {
@@ -171,9 +171,8 @@
     .badge.active { background: #48bb78; }
     .badge.inactive { background: #e53e3e; }
     .badge.PENDING {background: gray;}
-    .badge.APPROVED { background: #48bb78;}
+    .badge.APPROVAL { background: #48bb78;}
     .badge.REJECTED {background: #e53e3e;}
-    
 
     /* 버튼 */
     .action-btns button {
@@ -226,7 +225,7 @@
         <li><i class="fa-solid fa-building"></i> 매물관리</li>
         <li><i class="fa-solid fa-bullhorn"></i> 공지사항관리</li>
         <li><i class="fa-solid fa-envelope"></i> 문의관리</li>
-              <li><i class="fa-solid fa-user-check"></i> 중개사 승인</li>
+        <li><i class="fa-solid fa-user-check"></i> 중개사 승인</li>
       </ul>
     </aside>
 
@@ -336,14 +335,14 @@
               <td>${realtor.realtorPhone}</td>
               <td>
                 <c:choose>
-                  <c:when test="${realtor.approvalStatus == 'APPROVED'}">
-                    <span class="badge ${realtor.approvalStatus }" >승인완료</span>
+                  <c:when test="${realtor.approvalStatus == 'APPROVAL'}">
+                    <span class="badge ${realtor.approvalStatus}">승인완료</span>
                   </c:when>
                   <c:when test="${realtor.approvalStatus == 'PENDING'}">
-                    <span class="badge ${realtor.approvalStatus }" >승인대기</span>
+                    <span class="badge ${realtor.approvalStatus}">승인대기</span>
                   </c:when>
                   <c:when test="${realtor.approvalStatus == 'REJECTED'}">
-                    <span class="badge ${realtor.approvalStatus }" >반려</span>
+                    <span class="badge ${realtor.approvalStatus}">반려</span>
                   </c:when>
                   <c:otherwise>
                     <span class="badge_inactive">-</span>
@@ -369,6 +368,14 @@
               </td>
             </tr>
           </c:forEach>
+        </tbody>
+      </table>
+    </main> <!-- ✅ main 닫음 -->
+  </div> <!-- ✅ admin-container 닫음 -->
+
+  <!-- 푸터 -->
+  <footer>
+    © 2025 UNILAND Admin. All rights reserved.
   </footer>
 
   <script>
@@ -393,7 +400,14 @@
         document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
         this.classList.add('active');
 
-        const pages = ['${pageContext.request.contextPath}/admin/dashboard', '${pageContext.request.contextPath}/admin/user-management', '${pageContext.request.contextPath}/admin/property-management', '${pageContext.request.contextPath}/admin/content-management', '${pageContext.request.contextPath}/admin/inquiry-management', '${pageContext.request.contextPath}/admin/realtor-approval'];
+        const pages = [
+          '${pageContext.request.contextPath}/admin/dashboard',
+          '${pageContext.request.contextPath}/admin/user-management',
+          '${pageContext.request.contextPath}/admin/property-management',
+          '${pageContext.request.contextPath}/admin/content-management',
+          '${pageContext.request.contextPath}/admin/inquiry-management',
+          '${pageContext.request.contextPath}/admin/realtor-approval'
+        ];
         if (pages[index]) {
           window.location.href = pages[index];
         }
@@ -413,14 +427,12 @@
       }
     });
 
-    // 수정/탈퇴 버튼
+    // 수정 버튼 (준비중)
     document.querySelectorAll('.btn-edit').forEach(btn => {
       btn.addEventListener('click', function() {
         alert('회원 수정 기능은 준비중입니다.');
       });
     });
-
   </script>
 </body>
 </html>
-
