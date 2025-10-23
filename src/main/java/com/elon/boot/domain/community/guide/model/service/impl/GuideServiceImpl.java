@@ -59,4 +59,20 @@ public class GuideServiceImpl implements GuideService {
 	public Guide getNextGuide(int guideNo) {
 		return gStore.selectNextGuide(guideNo);
 	}
+
+	@Override
+	public int insertGuide(Guide guide) {
+		return gStore.insertGuide(guide);
+	}
+	
+	@Override
+	public int updateGuide(Guide guide) {
+		return gStore.updateGuide(guide);
+	}
+	
+	@Override
+	public int deleteGuide(int guideNo) {
+		// 물리적 삭제 대신 논리적 삭제 (DELETE_YN = 'Y')
+		return gStore.deleteGuide(guideNo);
+	}
 }

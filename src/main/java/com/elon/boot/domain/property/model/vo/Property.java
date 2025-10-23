@@ -16,6 +16,15 @@ public class Property {
     private String propertyName;
     private String propertyType;
 
+    private Integer room;
+    private Integer bathroom;
+    private Integer floor;
+    private Integer totalFloor;
+    private String studentPref;     // Y/N
+    private String shortCont;       // Y/N
+    private String constructionYear;
+    private String availableDate;
+    
     private String priceType;
     private Integer deposit;
     private Integer monthlyRent;
@@ -32,19 +41,8 @@ public class Property {
     private Double longitude;
 
     private Double contractArea;
-    private Integer room;
-    private Integer bathroom;
-    private Integer floor;
-    private Integer totalFloor;
-    private String constructionYear;
-    private String availableDate;
-    private String studentPref;     // Y/N
-    private String shortCont;       // Y/N
 
-    private String options;
-    private String images;
     private String description;
-
     private String contractStatus;
     private Timestamp contractAt;
 

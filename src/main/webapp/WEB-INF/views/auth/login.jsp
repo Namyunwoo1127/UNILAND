@@ -240,6 +240,7 @@
             </c:if>
 
             <form action="${pageContext.request.contextPath}/auth/login" method="post">
+                <input type="hidden" name="redirectUrl" value="${redirectUrl}">
                 <div class="input-group">
                     <input type="text" name="userId" class="input-field" placeholder="아이디를 입력해주세요" required>
                 </div>

@@ -3,6 +3,7 @@ package com.elon.boot.domain.community.guide.model.service.impl;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.elon.boot.domain.community.guide.model.service.GuideCommentService;
 import com.elon.boot.domain.community.guide.model.store.GuideCommentMapper;
@@ -12,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class GuideCommentImpl implements GuideCommentService{
+public class GuideCommentServiceImpl implements GuideCommentService{
 	
 	private final GuideCommentMapper cStore;
 
@@ -48,6 +49,14 @@ public class GuideCommentImpl implements GuideCommentService{
 	    }
 	    
 	    return result;
+	}
+
+    @Override
+    @Transactional // 데이터 변경 작업이므로 Transactional 추가 권장
+    public int updateComment(int commentId, String userId, String content) {
+        // 매개변수로 Map을 사용하거나, 별도 DTO를 만들어 전달할 수도 있음
+        // 여기서는 Mapper 메소드에서 @Param을 사용하는 것을 가정
+        return cStore.updateComment(commentId, userId, content);
 	}
 
 }
