@@ -88,7 +88,10 @@ public class RealtorController {
         return res;
     }
 
-    /** ✅ 로그인 처리 */
+    // =========================================================================
+    // ⭐ 수정된 로그인 처리 메소드
+    // =========================================================================
+    /** ✅ 로그인 처리 (수정: APPROVAL_STATUS 확인, 대문자 비교) */
     @PostMapping("/realtor-login")
     public String realtorLogin(@RequestParam("realtorId") String realtorId,
                                @RequestParam("password") String password,
@@ -96,18 +99,45 @@ public class RealtorController {
                                HttpSession session,
                                Model model) {
 
+        // 1. 아이디, 비밀번호, 사업자등록번호로 중개사 정보 조회
         Realtor realtor = realtorService.getRealtorByLogin(realtorId, password, businessNumber);
 
         if (realtor != null) {
-            // 로그인 성공 → 세션 저장 및 대시보드로 이동
-            session.setAttribute("loginRealtor", realtor);
-            return "redirect:/realtor/realtor-dashboard";
+            // 2. 로그인 정보가 일치하는 경우, 승인 상태(APPROVAL_STATUS) 확인
+            // ⭐ Realtor 객체에 getApprovalStatus()가 있다고 가정하며, 값은 PENDING, APPROVAL, REJECTED
+            String status = realtor.getApprovalStatus(); 
+
+            if ("APPROVAL".equals(status)) { 
+                // 2-1. ✅ 승인된 상태 (로그인 성공)
+                session.setAttribute("loginRealtor", realtor);
+                return "redirect:/realtor/realtor-dashboard";
+
+            } else if ("PENDING".equals(status)) { 
+                // 2-2. ⏳ 승인 대기 상태
+                model.addAttribute("loginError", "회원가입 승인 대기 중입니다. 관리자의 승인을 기다려주세요.");
+                return "auth/realtor-login"; 
+
+            } else if ("REJECTED".equals(status)) { 
+                // 2-3. ❌ 승인 거절 상태
+                model.addAttribute("loginError", "죄송합니다. 회원가입 신청이 거절되었습니다. 고객센터에 문의해주세요.");
+                return "auth/realtor-login";
+
+            } else {
+                 // 2-4. 기타/알 수 없는 상태
+                model.addAttribute("loginError", "계정 상태를 확인할 수 없습니다. 고객센터에 문의해주세요.");
+                return "auth/realtor-login";
+            }
+            
         } else {
-            // 로그인 실패 → 에러 메시지를 모델에 담아 같은 페이지로 유지
+            // 3. 로그인 정보 불일치
             model.addAttribute("loginError", "아이디, 비밀번호 또는 사업자등록번호가 올바르지 않습니다.");
             return "auth/realtor-login";
         }
     }
+    // =========================================================================
+    // ⭐ 수정된 로그인 처리 메소드 끝
+    // =========================================================================
+
 
     /** ✅ 대시보드 페이지 */
     @GetMapping("/realtor-dashboard")

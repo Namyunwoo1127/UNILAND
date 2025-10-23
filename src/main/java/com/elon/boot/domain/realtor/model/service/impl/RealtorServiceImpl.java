@@ -29,13 +29,18 @@ public class RealtorServiceImpl implements RealtorService {
     }
 
     @Override
+    @Transactional
     public boolean registerRealtor(Realtor realtor) {
+        // ⭐ 수정: 회원가입 시 승인 상태(APPROVAL_STATUS)를 PENDING으로 설정
+        realtor.setApprovalStatus("PENDING"); 
+        
         return realtorMapper.insertRealtor(realtor) > 0;
     }
 
     @Override
     public Realtor getRealtorByLogin(String realtorId, String password, String businessNumber) {
-        // 기존 메서드: 로그인 정보로 조회 (Mapper 메서드 이름은 예시입니다. 실제 이름에 맞게 수정 필요)
+        // 이 메소드는 DAO(Mapper)를 통해 APPROVAL_STATUS를 포함한 모든 정보를 조회하여
+        // Realtor 객체에 담아 반환해야 합니다. (Mapper 구현이 올바르다고 가정)
         return realtorMapper.findByLoginInfo(realtorId, password, businessNumber);
     }
     

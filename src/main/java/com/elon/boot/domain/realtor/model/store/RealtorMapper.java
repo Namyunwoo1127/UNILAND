@@ -19,6 +19,8 @@ public interface RealtorMapper {
     int countByRealtorRegNum(@Param("realtorRegNum") String realtorRegNum);
 
     int insertRealtor(Realtor realtor);
+    
+    // ⭐ 이 메소드의 XML 쿼리에 APPROVAL_STATUS를 포함해야 합니다.
     Realtor findByLoginInfo(@Param("realtorId") String realtorId,
                             @Param("password") String password,
                             @Param("businessNumber") String businessNumber);

@@ -14,6 +14,8 @@ public interface RealtorService {
     boolean isRealtorRegNumDuplicate(String realtorRegNum);
 
     boolean registerRealtor(Realtor realtor);
+    
+    // ⭐ 이 메소드가 APPROVAL_STATUS를 포함한 Realtor 객체를 반환해야 함
     Realtor getRealtorByLogin(String realtorId, String password, String businessNumber);
 
     // ✅ 회원 정보 수정 메서드 추가
@@ -47,5 +49,5 @@ public interface RealtorService {
      * @param savedFileName 서버에 저장된 새 파일명
      * @return 업데이트 성공 여부 (true/false)
      */
-    boolean updateRealtorImage(String realtorId, String savedFileName); // 반환 타입을 boolean으로 가정
+    boolean updateRealtorImage(String realtorId, String savedFileName);
 }

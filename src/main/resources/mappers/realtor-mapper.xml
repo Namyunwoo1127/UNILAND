@@ -62,13 +62,25 @@
             CURRENT_TIMESTAMP,
             CURRENT_TIMESTAMP,
 	        'N',
-            'PENDING'
-	    )
+            #{approvalStatus, jdbcType=VARCHAR}  )
     </insert>
 
     <select id="findByLoginInfo" resultMap="realtorResultMap">
-        SELECT *
-        FROM REALTOR_TBL
+        SELECT
+            REALTOR_ID,
+            REALTOR_PASSWORD,
+            OFFICE_NAME,
+            REALTOR_NAME,
+            REALTOR_ADDRESS,
+            REALTOR_PHONE,
+            REALTOR_EMAIL,
+            BUSINESS_NUM,
+            REALTOR_IMAGE,
+            REALTOR_REG_NUM,
+            CREATED_AT,
+            UPDATED_AT,
+            DELETE_YN,
+            APPROVAL_STATUS  FROM REALTOR_TBL
         WHERE REALTOR_ID = #{realtorId}
           AND REALTOR_PASSWORD = #{password}
           AND BUSINESS_NUM = #{businessNumber}
@@ -76,7 +88,21 @@
     </select>
 
     <select id="findById" resultMap="realtorResultMap">
-        SELECT *
+        SELECT
+            REALTOR_ID,
+            REALTOR_PASSWORD,
+            OFFICE_NAME,
+            REALTOR_NAME,
+            REALTOR_ADDRESS,
+            REALTOR_PHONE,
+            REALTOR_EMAIL,
+            BUSINESS_NUM,
+            REALTOR_IMAGE,
+            REALTOR_REG_NUM,
+            CREATED_AT,
+            UPDATED_AT,
+            DELETE_YN,
+            APPROVAL_STATUS
         FROM REALTOR_TBL
         WHERE REALTOR_ID = #{realtorId}
     </select>
