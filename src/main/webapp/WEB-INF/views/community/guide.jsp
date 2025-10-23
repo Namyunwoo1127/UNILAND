@@ -489,11 +489,21 @@
                                     <div class="post-left">
                                         <span class="post-category ${guide.guideCategory}">
                                             <c:choose>
-                                                <c:when test="${guide.guideCategory eq 'contract'}">계약 팁</c:when>
-                                                <c:when test="${guide.guideCategory eq 'moving'}">이사 팁</c:when>
-                                                <c:when test="${guide.guideCategory eq 'life'}">생활 팁</c:when>
-                                                <c:when test="${guide.guideCategory eq 'area'}">동네 정보</c:when>
-                                                <c:when test="${guide.guideCategory eq 'qna'}">질문/답변</c:when>
+                                                <c:when test="${guide.guideCategory eq 'contract'}">
+                                                    <i class="fa-solid fa-file-contract"></i> 계약 팁
+                                                </c:when>
+                                                <c:when test="${guide.guideCategory eq 'moving'}">
+                                                    <i class="fa-solid fa-truck-moving"></i> 이사 팁
+                                                </c:when>
+                                                <c:when test="${guide.guideCategory eq 'life'}">
+                                                    <i class="fa-solid fa-house-user"></i> 생활 팁
+                                                </c:when>
+                                                <c:when test="${guide.guideCategory eq 'area'}">
+                                                    <i class="fa-solid fa-map-location-dot"></i> 동네 정보
+                                                </c:when>
+                                                <c:when test="${guide.guideCategory eq 'qna'}">
+                                                    <i class="fa-solid fa-question-circle"></i> 질문/답변
+                                                </c:when>
                                                 <c:otherwise>${guide.guideCategory}</c:otherwise>
                                             </c:choose>
                                         </span>
@@ -600,7 +610,7 @@
 
         // 글쓰기 (로그인 체크)
         function checkLoginAndWrite() {
-            const isLoggedIn = ${not empty sessionScope.user};
+            const isLoggedIn = ${not empty sessionScope.loginUser};
 
             if (!isLoggedIn) {
                 if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
@@ -609,7 +619,7 @@
                 return;
             }
 
-            location.href = '${pageContext.request.contextPath}/community/guide/write';
+            location.href = '${pageContext.request.contextPath}/community/guide-write';
         }
     </script>
 </body>
