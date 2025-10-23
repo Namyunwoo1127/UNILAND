@@ -16,6 +16,5 @@ public interface PropertyMapper {
     int insertProperty(PropertyAddRequest pReq);
     int insertPropertyImages(@Param("list") List<PropertyImg> imgList);
 	Property selectOneByNo(Long id);
-	PropertyOption selectOnesOption(Long id);
-	PropertyImg selectOnesImg(Long id);
+	List<PropertyImg> selectImagesByPropertyNo(Long id);
 }

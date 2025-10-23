@@ -9,44 +9,21 @@
     FROM PROPERTY_TBL
     WHERE PROPERTY_NO = #{id, jdbcType=NUMERIC}
   </select>
+<select id="selectImagesByPropertyNo"
+        parameterType="long"
+        resultType="com.elon.boot.domain.property.model.vo.PropertyImg">
+  SELECT
+    IMG_NO            AS imgNo,
+    PROPERTY_NO       AS propertyNo,
+    IMG_PATH          AS imgPath,
+    IMG_RENAME        AS imgRename,
+    IMG_ORIGINAL_NAME AS imgOriginalName,
+    IMG_ORDER         AS imgOrder
+  FROM PROPERTIES_IMG_TBL
+  WHERE PROPERTY_NO = #{id}
+  ORDER BY IMG_ORDER ASC, IMG_NO ASC
+</select>
 
-<!-- <insert id="insertProperty" parameterType="com.elon.boot.domain.property.model.vo.Property">
-  <selectKey keyProperty="propertyNo" order="BEFORE" resultType="long">
-    SELECT SEQ_PROPERTY_NO.NEXTVAL FROM DUAL
-  </selectKey>
-  INSERT INTO PROPERTY_TBL (
-    PROPERTY_NO, REALTOR_ID,
-    PROPERTY_NAME, PROPERTY_TYPE,
-    ROOM, BATHROOM, FLOOR, TOTAL_FLOOR,
-    CONSTRUCTION_YEAR, AVAILABLE_DATE, STUDENT_PREF, SHORT_CONT,
-    PRICE_TYPE, DEPOSIT, MONTHLY_RENT, MAINTENANCE_FEE, MAINTENANCE_INCL,
-    ROAD_ADDRESS, ADDRESS_DETAIL, PROVINCE, DISTRICT, LATITUDE, LONGITUDE,
-    CONTRACT_AREA, DESCRIPTION, STATUS, CREATED_AT
-  ) VALUES (
-    #{propertyNo}, #{realtorId},
-    #{propertyName}, #{propertyType},
-    #{room}, #{bathroom}, #{floor}, #{totalFloor},
-    #{constructionYear}, #{availableDate}, #{studentPref}, #{shortCont},
-    #{priceType}, #{deposit}, #{monthlyRent}, #{maintenanceFee}, #{maintenanceIncl},
-    #{roadAddress}, #{addressDetail}, #{province}, #{district}, #{latitude}, #{longitude},
-    #{contractArea}, #{description}, 'ACTIVE', SYSTIMESTAMP
-  )
-</insert> -->
-<!-- 이미지 삽입 -->
-<!-- <insert id="insertPropertyImages">
-  INSERT INTO PROPERTIES_IMG_TBL 
-  SELECT SEQ_PROPERTIES_IMG_NO.NEXTVAL , BI.*
-  FROM (
-  	<foreach collection="list" item="img" separator=" UNION ALL ">
-  	SELECT 	#{img.propertyNo} 		PROPERTY_NO,
-  			#{img.imgPath}			IMG_PATH,
-  			#{img.imgRename}		IMG_RENAME,
-  			#{img.imgOriginalName}	IMG_ORIGINAL_NAME,
-  			#{img.imgOrder}			IMG_ORDER
-		FROM DUAL
-  </foreach>
-  )BI
-</insert> -->
   <insert id="insertProperty" parameterType="com.elon.boot.domain.property.model.vo.Property">
     <selectKey keyProperty="propertyNo" order="BEFORE" resultType="long">
       SELECT SEQ_PROPERTY_NO.NEXTVAL FROM DUAL

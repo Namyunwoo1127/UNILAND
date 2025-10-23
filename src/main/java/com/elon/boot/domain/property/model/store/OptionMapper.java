@@ -7,4 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface OptionMapper {
     int insertOption(OptionAddRequest oReq);
+
+	PropertyOption selectOnesOption(Long id);
 }

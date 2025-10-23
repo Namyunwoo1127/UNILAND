@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${property.title != null ? property.title : '신촌역 5분거리 풀옵션 원룸'} - UNILAND</title>
+    <title>${property.propertyName != null ? property.propertyName : '신촌역 5분거리 풀옵션 원룸'} - UNILAND</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3dcf1c6a535cc727189e80cbf9ad7b43"></script>
     <style>
@@ -612,8 +612,8 @@
         <div class="image-gallery">
             <div class="main-image-container">
                 <c:choose>
-                    <c:when test="${not empty property.images}">
-                        <img id="mainImage" class="main-image" src="${pageContext.request.contextPath}${property.images[0]}" alt="${property.title}">
+                    <c:when test="${not empty imgs}">
+                        <img id="mainImage" class="main-image" src="${pageContext.request.contextPath}${property.images[0]}" alt="${property.propertyName}">
                     </c:when>
                     <c:otherwise>
                         <img id="mainImage" class="main-image" src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&h=800&fit=crop" alt="매물 사진">
@@ -631,10 +631,10 @@
             </div>
             <div class="thumbnail-container">
                 <c:choose>
-                    <c:when test="${not empty property.images}">
-                        <c:forEach var="image" items="${property.images}" varStatus="status">
+                    <c:when test="${not empty imgs}">
+                        <c:forEach var="image" items="${imgs}" varStatus="status">
                             <div class="thumbnail ${status.index == 0 ? 'active' : ''}" onclick="selectImage(${status.index})">
-                                <img src="${pageContext.request.contextPath}${image}" alt="썸네일 ${status.index + 1}">
+                                <img src="${pageContext.request.contextPath}${imgs}" alt="썸네일 ${status.index + 1}">
                             </div>
                         </c:forEach>
                     </c:when>
@@ -681,10 +681,10 @@
                                 </span>
                             </c:if>
                         </div>
-                        <h1 class="property-title">${property.title != null ? property.title : '신촌역 5분거리 풀옵션 원룸'}</h1>
+                        <h1 class="property-title">${property.propertyName != null ? property.propertyName : '신촌역 5분거리 풀옵션 원룸'}</h1>
                         <div class="property-location">
                             <i class="fa-solid fa-location-dot"></i>
-                            ${property.address != null ? property.address : '서울 서대문구 창천동'}
+                            ${property.roadAddress != null ? property.roadAddress : '서울 서대문구 창천동'}
                         </div>
                         <div class="property-meta">
                             <span><i class="fa-solid fa-eye"></i> 조회 ${property.viewCount != null ? property.viewCount : 142}</span>
@@ -702,11 +702,11 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <span class="info-label">전용면적</span>
-                            <span class="info-value">${property.area != null ? property.area : 20}㎡ (약 ${property.area != null ? property.area/3.3 : 6}평)</span>
+                            <span class="info-value">${property.contractArea != null ? property.contractArea : 20}㎡ (약 ${property.contractArea != null ? property.contractArea/3.3 : 6}평)</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">방/욕실</span>
-                            <span class="info-value">${property.rooms != null ? property.rooms : 1}개 / ${property.bathrooms != null ? property.bathrooms : 1}개</span>
+                            <span class="info-value">${property.room != null ? property.room : 1}개 / ${property.bathroom != null ? property.bathroom : 1}개</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">층수</span>
@@ -714,7 +714,7 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">건축년도</span>
-                            <span class="info-value">${property.buildYear != null ? property.buildYear : 2020}년</span>
+                            <span class="info-value">${property.constructionYear != null ? property.constructionYear : 2020}년</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">입주가능일</span>
@@ -722,7 +722,7 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">주차</span>
-                            <span class="info-value">${property.facParking != null ? (property.facParking == 'Y' ? '가능' : '불가') : '불가'}</span>
+                            <span class="info-value">${option.parking != null ? (option.parking == 'Y' ? '가능' : '불가') : '불가'}</span>
                         </div>
                         <c:if test="${property.studentPref == 'Y' or property.shortCont == 'Y'}">
                             <div class="info-item">
@@ -744,14 +744,14 @@
                     </h2>
 
                     <!-- 냉난방 -->
-                    <c:if test="${property.optAc == 'Y' or property.optHeater == 'Y'}">
+                    <c:if test="${option.airConditioner == 'Y' or option.heater == 'Y'}">
                         <div style="margin-bottom: 20px;">
                             <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">냉난방</div>
                             <div class="option-grid">
-                                <c:if test="${property.optAc == 'Y'}">
+                                <c:if test="${option.airConditioner == 'Y'}">
                                     <div class="option-badge">❄️ 에어컨</div>
                                 </c:if>
-                                <c:if test="${property.optHeater == 'Y'}">
+                                <c:if test="${option.heater == 'Y'}">
                                     <div class="option-badge">🌡️ 히터</div>
                                 </c:if>
                             </div>
@@ -759,20 +759,20 @@
                     </c:if>
 
                     <!-- 주방 -->
-                    <c:if test="${property.optFridge == 'Y' or property.optMicrowave == 'Y' or property.optInduction == 'Y' or property.optGasRange == 'Y'}">
+                    <c:if test="${option.refrigerator == 'Y' or option.microwave == 'Y' or option.induction == 'Y' or option.gasStove == 'Y'}">
                         <div style="margin-bottom: 20px;">
                             <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">주방</div>
                             <div class="option-grid">
-                                <c:if test="${property.optFridge == 'Y'}">
+                                <c:if test="${option.refrigerator == 'Y'}">
                                     <div class="option-badge">🧊 냉장고</div>
                                 </c:if>
-                                <c:if test="${property.optMicrowave == 'Y'}">
+                                <c:if test="${option.microwave == 'Y'}">
                                     <div class="option-badge">📻 전자레인지</div>
                                 </c:if>
-                                <c:if test="${property.optInduction == 'Y'}">
+                                <c:if test="${option.induction == 'Y'}">
                                     <div class="option-badge">🍳 인덕션</div>
                                 </c:if>
-                                <c:if test="${property.optGasRange == 'Y'}">
+                                <c:if test="${option.gasStove == 'Y'}">
                                     <div class="option-badge">🔥 가스레인지</div>
                                 </c:if>
                             </div>
@@ -780,29 +780,29 @@
                     </c:if>
 
                     <!-- 가구/가전 -->
-                    <c:if test="${property.optWasher == 'Y' or property.optDryer == 'Y' or property.optBed == 'Y' or property.optDesk == 'Y' or property.optWardrobe == 'Y' or property.optShoecloset == 'Y' or property.optTv == 'Y'}">
+                    <c:if test="${option.washer == 'Y' or option.dryer == 'Y' or option.bed == 'Y' or option.desk == 'Y' or option.wardrobe == 'Y' or option.shoeRack == 'Y' or option.tv == 'Y'}">
                         <div style="margin-bottom: 20px;">
                             <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">가구/가전</div>
                             <div class="option-grid">
-                                <c:if test="${property.optWasher == 'Y'}">
+                                <c:if test="${option.washer == 'Y'}">
                                     <div class="option-badge">🧺 세탁기</div>
                                 </c:if>
-                                <c:if test="${property.optDryer == 'Y'}">
+                                <c:if test="${option.dryer == 'Y'}">
                                     <div class="option-badge">💨 건조기</div>
                                 </c:if>
-                                <c:if test="${property.optBed == 'Y'}">
+                                <c:if test="${option.bed == 'Y'}">
                                     <div class="option-badge">🛏️ 침대</div>
                                 </c:if>
-                                <c:if test="${property.optDesk == 'Y'}">
+                                <c:if test="${option.desk == 'Y'}">
                                     <div class="option-badge">📚 책상</div>
                                 </c:if>
-                                <c:if test="${property.optWardrobe == 'Y'}">
+                                <c:if test="${option.wardrobe == 'Y'}">
                                     <div class="option-badge">👔 옷장</div>
                                 </c:if>
-                                <c:if test="${property.optShoecloset == 'Y'}">
+                                <c:if test="${option.shoeRack == 'Y'}">
                                     <div class="option-badge">👞 신발장</div>
                                 </c:if>
-                                <c:if test="${property.optTv == 'Y'}">
+                                <c:if test="${option.tv == 'Y'}">
                                     <div class="option-badge">📺 TV</div>
                                 </c:if>
                             </div>
@@ -810,20 +810,20 @@
                     </c:if>
 
                     <!-- 시설 -->
-                    <c:if test="${property.facParking == 'Y' or property.facElevator == 'Y' or property.facSecurity == 'Y' or property.facPet == 'Y'}">
+                    <c:if test="${option.parking == 'Y' or option.elevator == 'Y' or option.security == 'Y' or option.petAllowed == 'Y'}">
                         <div>
                             <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">시설</div>
                             <div class="option-grid">
-                                <c:if test="${property.facParking == 'Y'}">
+                                <c:if test="${option.parking == 'Y'}">
                                     <div class="option-badge">🚗 주차 가능</div>
                                 </c:if>
-                                <c:if test="${property.facElevator == 'Y'}">
+                                <c:if test="${option.elevator == 'Y'}">
                                     <div class="option-badge">🏢 엘리베이터</div>
                                 </c:if>
-                                <c:if test="${property.facSecurity == 'Y'}">
+                                <c:if test="${option.security == 'Y'}">
                                     <div class="option-badge">🔒 보안시스템</div>
                                 </c:if>
-                                <c:if test="${property.facPet == 'Y'}">
+                                <c:if test="${option.petAllowed == 'Y'}">
                                     <div class="option-badge">🐾 반려동물</div>
                                 </c:if>
                             </div>
@@ -831,7 +831,7 @@
                     </c:if>
 
                     <!-- 옵션이 없는 경우 -->
-                    <c:if test="${property.optAc != 'Y' and property.optHeater != 'Y' and property.optFridge != 'Y' and property.optMicrowave != 'Y' and property.optInduction != 'Y' and property.optGasRange != 'Y' and property.optWasher != 'Y' and property.optDryer != 'Y' and property.optBed != 'Y' and property.optDesk != 'Y' and property.optWardrobe != 'Y' and property.optShoecloset != 'Y' and property.optTv != 'Y' and property.facParking != 'Y' and property.facElevator != 'Y' and property.facSecurity != 'Y' and property.facPet != 'Y'}">
+                    <c:if test="${option.airConditioner != 'Y' and option.heater != 'Y' and option.refrigerator != 'Y' and option.microwave != 'Y' and option.induction != 'Y' and option.gasStove != 'Y' and option.washer != 'Y' and option.dryer != 'Y' and option.bed != 'Y' and option.desk != 'Y' and option.wardrobe != 'Y' and option.shoeRack != 'Y' and option.tv != 'Y' and option.parking != 'Y' and option.elevator != 'Y' and option.security != 'Y' and option.petAllowed != 'Y'}">
                         <div style="text-align: center; padding: 40px; color: #999;">
                             등록된 옵션이 없습니다.
                         </div>
@@ -882,7 +882,7 @@
                     </h2>
                     <div id="map"></div>
                     <div style="margin-top: 15px; font-size: 14px; color: #666;">
-                        <i class="fa-solid fa-location-dot"></i> ${property.address != null ? property.address : '서울 서대문구 창천동 123-45'}
+                        <i class="fa-solid fa-location-dot"></i> ${property.roadAddress != null ? property.roadAddress : '서울 서대문구 창천동 123-45'}
                     </div>
                 </div>
 
@@ -983,7 +983,7 @@
                 <button class="modal-close" onclick="closeInquiryModal()">×</button>
             </div>
             <form id="inquiryForm" action="${pageContext.request.contextPath}/inquiry/create" method="post">
-                <input type="hidden" name="propertyId" value="${property.propertyId}">
+                <input type="hidden" name="propertyId" value="${property.propertyNo}">
                 <div class="form-group">
                     <label class="form-label">이름</label>
                     <input type="text" name="name" class="form-input" placeholder="이름을 입력하세요" required>
@@ -1026,7 +1026,7 @@
         const images = [
             <c:choose>
                 <c:when test="${not empty property.images}">
-                    <c:forEach var="image" items="${property.images}" varStatus="status">
+                    <c:forEach var="image" items="${imgs.imgs}" varStatus="status">
                         '${pageContext.request.contextPath}${image}'${!status.last ? ',' : ''}
                     </c:forEach>
                 </c:when>
@@ -1133,11 +1133,11 @@
         // 공유하기
         function shareProperty() {
             const url = window.location.href;
-            const title = '${property.title != null ? property.title : "신촌역 5분거리 풀옵션 원룸"}';
+            const title = '${property.propertyName != null ? property.propertyName : "신촌역 5분거리 풀옵션 원룸"}';
 
             if (navigator.share) {
                 navigator.share({
-                    title: title,
+                	propertyName: propertyName,
                     text: 'UNILAND에서 매물을 공유합니다.',
                     url: url
                 }).catch(err => console.log('공유 실패:', err));

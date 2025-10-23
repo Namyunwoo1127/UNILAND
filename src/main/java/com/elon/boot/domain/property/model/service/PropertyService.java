@@ -18,6 +18,6 @@ public interface PropertyService {
 
 	PropertyOption selectOnesOption(Long id);
 
-	PropertyImg selectOnesImg(Long id);
+	public List<PropertyImg> selectOnesImgs(Long id);
 	
 }

@@ -10,6 +10,7 @@ import com.elon.boot.domain.realtor.model.vo.Realtor;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -30,17 +31,20 @@ public class PropertyController {
     	System.out.println(id);
     	Property property = pService.selectOneByNo(id);
     	PropertyOption option = pService.selectOnesOption(id);
-    	PropertyImg img = pService.selectOnesImg(id);
+    	List<PropertyImg> imgs = new ArrayList<PropertyImg> ();
+    	imgs = pService.selectOnesImgs(id);
     	System.out.println(property);
     	System.out.println(option);
-    	System.out.println(img);
+    	System.out.println(imgs);
     	
     	
         // 실제 구현 예시
         // var property = propertyService.get(id);
         // var option   = propertyService.getOption(id);
-        // model.addAttribute("property", property);
-        // model.addAttribute("option", option);
+         model.addAttribute("property", property);
+         model.addAttribute("option", option);
+         model.addAttribute("imgs", imgs);
+         
         return "property/detail";
     }
 
