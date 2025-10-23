@@ -1,5 +1,6 @@
 package com.elon.boot.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.elon.boot.controller.dto.admin.Dashboard;
+import com.elon.boot.controller.dto.admin.RealtorApproval;
 import com.elon.boot.controller.dto.admin.UserManagement;
 import com.elon.boot.domain.admin.model.service.AdminService;
 import com.elon.boot.domain.community.notice.model.service.NoticeService;
@@ -29,10 +32,47 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminController {
 	
 	private final AdminService adminService;
+	private final NoticeService noticeService;
 
     // 대시보드
     @GetMapping("/dashboard")
-    public String dashboard() {
+    public String dashboard(Model model, 
+    						HttpSession session, 
+    						RedirectAttributes redirectAttributes) {
+    	
+    	// 관리자 권한 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
+            redirectAttributes.addFlashAttribute("error", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
+        
+        try {
+            Dashboard dashboard = adminService.getDashboardData();
+            model.addAttribute("dashboard", dashboard);
+            
+            log.debug("대시보드 로드: 회원 {} 명, 매물 {} 건", 
+                dashboard.getTotalUsers(), 
+                dashboard.getTotalProperties(), 
+                dashboard.getTotalRealtors());
+            
+        } catch (Exception e) {
+            log.error("대시보드 로드 실패: ", e);
+            model.addAttribute("error", "대시보드를 불러올 수 없습니다.");
+        }
+        
+        try {
+            // 최근 공지사항 5개 조회
+            List<Notice> noticeList = noticeService.getRecentNotices(5);
+            model.addAttribute("noticeList", noticeList);
+            
+            log.debug("메인 페이지 공지사항 조회: {} 건", noticeList != null ? noticeList.size() : 0);
+            
+        } catch (Exception e) {
+            log.error("메인 페이지 공지사항 조회 실패: ", e);
+            // 에러가 발생해도 페이지는 표시되도록 함
+        }
+    	
         return "admin/dashboard";
     }
 
@@ -125,10 +165,126 @@ public class AdminController {
         return "admin/inquiry-management";
     }
 
-    // 중개사 승인
+    // 중개사 관리
     @GetMapping("/realtor-approval")
-    public String realtorApproval() {
+    public String realtorApproval(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+    	
+    	// 관리자 권한 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
+            redirectAttributes.addFlashAttribute("error", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
+        
+        try {
+            RealtorApproval data = adminService.getRealtorApprovalData();
+            
+            // 전체 리스트 합치기
+            List<Realtor> allRealtors = new ArrayList<>();
+            allRealtors.addAll(data.getPendingRealtors());
+            allRealtors.addAll(data.getApprovedRealtors());
+            allRealtors.addAll(data.getRejectedRealtors());
+            
+            model.addAttribute("realtorList", allRealtors);
+            
+            log.debug("중개사 승인 관리 로드: 전체 {} 건", allRealtors.size());
+            
+        } catch (Exception e) {
+            log.error("중개사 승인 관리 로드 실패: ", e);
+            model.addAttribute("error", "중개사 목록을 불러올 수 없습니다.");
+        }
+    	
         return "admin/realtor-approval";
+    }
+    
+    // 중개사 승인
+    @PostMapping("/realtor-approve/{realtorId}")
+    public String approveRealtor(@PathVariable String realtorId,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+        
+        // 관리자 권한 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
+            redirectAttributes.addFlashAttribute("error", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
+        
+        try {
+            int result = adminService.approveRealtor(realtorId);
+            
+            if (result > 0) {
+                redirectAttributes.addFlashAttribute("message", "중개사가 승인되었습니다.");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "중개사 승인에 실패했습니다.");
+            }
+            
+        } catch (Exception e) {
+            log.error("중개사 승인 실패: ", e);
+            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다.");
+        }
+        
+        return "redirect:/admin/realtor-approval";
+    }
+    
+    // 중개사 거부
+    @PostMapping("/realtor-reject/{realtorId}")
+    public String rejectRealtor(@PathVariable String realtorId,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        
+        // 관리자 권한 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
+            redirectAttributes.addFlashAttribute("error", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
+        
+        try {
+            int result = adminService.rejectRealtor(realtorId);
+            
+            if (result > 0) {
+                redirectAttributes.addFlashAttribute("message", "중개사가 거부되었습니다.");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "중개사 거부에 실패했습니다.");
+            }
+            
+        } catch (Exception e) {
+            log.error("중개사 거부 실패: ", e);
+            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다.");
+        }
+        
+        return "redirect:/admin/realtor-approval";
+    }
+    
+    // 중개사 승인 취소
+    @PostMapping("/realtor-cancel/{realtorId}")
+    public String cancelRealtorApproval(@PathVariable String realtorId,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes) {
+        
+        // 관리자 권한 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
+            redirectAttributes.addFlashAttribute("error", "관리자 권한이 필요합니다.");
+            return "redirect:/";
+        }
+        
+        try {
+            int result = adminService.cancelApproval(realtorId);
+            
+            if (result > 0) {
+                redirectAttributes.addFlashAttribute("message", "중개사 승인이 취소되었습니다.");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "승인 취소에 실패했습니다.");
+            }
+            
+        } catch (Exception e) {
+            log.error("승인 취소 실패: ", e);
+            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다.");
+        }
+        
+        return "redirect:/admin/realtor-approval";
     }
 
     // 통계
