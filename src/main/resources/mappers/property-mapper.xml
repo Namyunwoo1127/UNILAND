@@ -30,26 +30,41 @@
       #{status}, SYSTIMESTAMP
     )
   </insert> -->
-<insert id="insertProperty" parameterType="com.elon.boot.domain.property.model.vo.Property">
-  <selectKey keyProperty="propertyNo" order="BEFORE" resultType="long">
-    SELECT SEQ_PROPERTY_NO.NEXTVAL FROM DUAL
-  </selectKey>
-  INSERT INTO PROPERTY_TBL (
-    PROPERTY_NO, REALTOR_ID,
-    PROPERTY_NAME, PROPERTY_TYPE,
-    ROOM, BATHROOM, FLOOR, TOTAL_FLOOR,
-    CONSTRUCTION_YEAR, AVAILABLE_DATE, STUDENT_PREF, SHORT_CONT,
-    PRICE_TYPE, DEPOSIT, MONTHLY_RENT, MAINTENANCE_FEE, MAINTENANCE_INCL,
-    ROAD_ADDRESS, ADDRESS_DETAIL, PROVINCE, DISTRICT, LATITUDE, LONGITUDE,
-    CONTRACT_AREA, DESCRIPTION, STATUS, CREATED_AT
-  ) VALUES (
-    #{propertyNo}, #{realtorId},
-    #{propertyName}, #{propertyType},
-    #{room}, #{bathroom}, #{floor}, #{totalFloor},
-    #{constructionYear}, #{availableDate}, #{studentPref}, #{shortCont},
-    #{priceType}, #{deposit}, #{monthlyRent}, #{maintenanceFee}, #{maintenanceIncl},
-    #{roadAddress}, #{addressDetail}, #{province}, #{district}, #{latitude}, #{longitude},
-    #{contractArea}, #{description}, 'ACTIVE', SYSTIMESTAMP
-  )
-</insert>
+	<insert id="insertProperty" parameterType="com.elon.boot.domain.property.model.vo.Property">
+	  <selectKey keyProperty="propertyNo" order="BEFORE" resultType="long">
+	    SELECT SEQ_PROPERTY_NO.NEXTVAL FROM DUAL
+	  </selectKey>
+	  INSERT INTO PROPERTY_TBL (
+	    PROPERTY_NO, REALTOR_ID,
+	    PROPERTY_NAME, PROPERTY_TYPE,
+	    ROOM, BATHROOM, FLOOR, TOTAL_FLOOR,
+	    CONSTRUCTION_YEAR, AVAILABLE_DATE, STUDENT_PREF, SHORT_CONT,
+	    PRICE_TYPE, DEPOSIT, MONTHLY_RENT, MAINTENANCE_FEE, MAINTENANCE_INCL,
+	    ROAD_ADDRESS, ADDRESS_DETAIL, PROVINCE, DISTRICT, LATITUDE, LONGITUDE,
+	    CONTRACT_AREA, DESCRIPTION, STATUS, CREATED_AT
+	  ) VALUES (
+	    #{propertyNo}, #{realtorId},
+	    #{propertyName}, #{propertyType},
+	    #{room}, #{bathroom}, #{floor}, #{totalFloor},
+	    #{constructionYear}, #{availableDate}, #{studentPref}, #{shortCont},
+	    #{priceType}, #{deposit}, #{monthlyRent}, #{maintenanceFee}, #{maintenanceIncl},
+	    #{roadAddress}, #{addressDetail}, #{province}, #{district}, #{latitude}, #{longitude},
+	    #{contractArea}, #{description}, 'ACTIVE', SYSTIMESTAMP
+	  )
+	</insert>
+  <!-- 이미지 INSERT -->
+    <insert id="insertPropertyImages">
+        <foreach collection="list" item="img" separator=";">
+            INSERT INTO PROPERTIES_IMG_TBL (
+                IMG_NO, PROPERTY_NO, IMG_PATH, IMG_RENAME, IMG_ORIGINAL_NAME, IMG_ORDER
+            ) VALUES (
+                SEQ_PROPERTIES_IMG_NO.NEXTVAL,
+                #{img.propertyNo},
+                #{img.imgPath},
+                #{img.imgRename},
+                #{img.imgOriginalName},
+                #{img.imgOrder}
+            )
+        </foreach>
+    </insert>
 </mapper>
