@@ -1422,7 +1422,7 @@
         </div>
         <div class="detail-actions">
             <button class="btn-favorite">♡ 찜하기</button>
-            <button class="btn-contact">중개사 문의하기</button>
+            <button class="btn-contact" onclick="goToContactPage()">중개사 문의하기</button>
             <button class="btn-detail" onclick="openDetailPage()">🔍 전체 상세보기</button>
         </div>
     </div>
@@ -1447,6 +1447,7 @@
         ];
 
         var overlays = []; // 오버레이 저장용
+        var currentPropertyId = null; // ★ 1. 현재 선택된 매물 ID를 저장할 변수
 
         // 마커 표시 (커스텀 오버레이만 사용)
         properties.forEach(function(property) {
@@ -1801,6 +1802,7 @@
 
         // 상세정보 열기
         function showPropertyDetail(propertyId) {
+            currentPropertyId = propertyId; // ★ 2. 상세정보가 열릴 때 현재 ID 저장
             var property = propertyDetails[propertyId];
             if (!property) return;
 
@@ -1825,12 +1827,26 @@
             document.getElementById('detailSidebar').classList.remove('active');
             document.getElementById('sidebarOverlay').classList.remove('active');
         }
+
+        // 중개사 문의 페이지로 이동하는 새 함수
+        function goToContactPage() {
+            if (!currentPropertyId) {
+                alert("오류: 현재 매물 ID를 찾을 수 없습니다.");
+                return;
+            }
+            // 'contact-realtor.jsp' 페이지로 propertyId를 쿼리 스트링으로 넘깁니다.
+            window.location.href = '${pageContext.request.contextPath}/inquiry/realtor?propertyId=' + currentPropertyId;
+        }
+
         // 전체 상세 페이지로 이동
         function openDetailPage() {
-            // 현재 보고 있는 매물 ID 가져오기 (임시로 1번)
-            const propertyId = 1; // 나중에 실제 매물 ID로 변경
+            // 하드코딩된 ID 대신 currentPropertyId 변수 사용하도록 수정
+            if (!currentPropertyId) { 
+                alert("오류: 현재 매물 ID를 찾을 수 없습니다.");
+                return;
+            }
             // Spring Controller의 @GetMapping("/{id}") 패턴에 맞게 이동
-            window.location.href = '${pageContext.request.contextPath}/property/' + propertyId;
+            window.location.href = '${pageContext.request.contextPath}/property/' + currentPropertyId;
         }
     </script>
 </body>
