@@ -9,6 +9,7 @@ import com.elon.boot.controller.dto.property.PropertyAddRequest;
 import com.elon.boot.domain.property.model.vo.Property;
 import com.elon.boot.domain.property.model.vo.PropertyImg;
 import com.elon.boot.domain.property.model.vo.PropertyOption;
+import com.elon.boot.domain.realtor.model.vo.Realtor;
 
 public interface PropertyService {
 	
@@ -18,6 +19,8 @@ public interface PropertyService {
 
 	PropertyOption selectOnesOption(Long id);
 
-	PropertyImg selectOnesImg(Long id);
+	public List<PropertyImg> selectOnesImgs(Long id);
+
+	Realtor selectRealtorById(String rId);
 	
 }
