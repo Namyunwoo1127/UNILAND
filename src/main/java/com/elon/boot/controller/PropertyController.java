@@ -2,14 +2,20 @@ package com.elon.boot.controller;
 
 import com.elon.boot.controller.dto.property.OptionAddRequest;
 import com.elon.boot.controller.dto.property.PropertyAddRequest;
+import com.elon.boot.domain.interest.service.InterestService;
+import com.elon.boot.domain.interest.vo.Interest;
 import com.elon.boot.domain.property.model.service.PropertyService;
 import com.elon.boot.domain.property.model.vo.Property;
 import com.elon.boot.domain.property.model.vo.PropertyImg;
 import com.elon.boot.domain.property.model.vo.PropertyOption;
+import com.elon.boot.domain.realtor.model.service.RealtorService;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
+import com.elon.boot.domain.user.model.vo.User;
+
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -23,28 +29,45 @@ import org.springframework.web.multipart.MultipartFile;
 public class PropertyController {
 
     private final PropertyService pService;
-
+    private final InterestService iService;
     // 매물 상세 페이지
     @GetMapping("/{id}")
-    public String propertyDetail(@PathVariable Long id, Model model) {
+    public String propertyDetail(@PathVariable Long id, Model model,HttpSession session) {
     	System.out.println(id);
     	Property property = pService.selectOneByNo(id);
+    	String rId = property.getRealtorId();
     	PropertyOption option = pService.selectOnesOption(id);
-    	PropertyImg img = pService.selectOnesImg(id);
-    	System.out.println(property);
-    	System.out.println(option);
-    	System.out.println(img);
+//    	중개사 정보 가져오기
+    	Realtor realtor = pService.selectRealtorById(rId);
+    	List<PropertyImg> imgs = new ArrayList<PropertyImg> ();
+    	imgs = pService.selectOnesImgs(id);
     	
+    	System.out.println(rId);
+    	System.out.println(realtor);
     	
-        // 실제 구현 예시
-        // var property = propertyService.get(id);
-        // var option   = propertyService.getOption(id);
-        // model.addAttribute("property", property);
-        // model.addAttribute("option", option);
+    	 model.addAttribute("realtor",realtor);
+         model.addAttribute("property", property);
+         model.addAttribute("option", option);
+         model.addAttribute("imgs", imgs);
+         
+         User loginUser = (User) session.getAttribute("loginUser");
+         String loginUserId = (loginUser != null) ? loginUser.getUserId() : null;
+         
+         boolean isFavorited = false;
+         int favoriteCount = iService.countFavorites(id);
+         
+         if(loginUserId != null) {
+             Interest interest = new Interest();
+             interest.setUserId(loginUserId);
+             interest.setPropertyNo(id);
+             isFavorited = iService.isFavorited(interest);
+         }
+         
+         model.addAttribute("isFavorited", isFavorited);
+         model.addAttribute("favoriteCount", favoriteCount);
+         
         return "property/detail";
     }
-
-    
     
     @PostMapping("/register")
     public String register(PropertyAddRequest req
@@ -71,4 +94,19 @@ public class PropertyController {
 //
 //        return "redirect:/realtor/property-management";
 //    }
+    @PostMapping("/{id}/wishlist")
+    public String toggleWishlist(@PathVariable Long id,
+                                 HttpSession session,Model model) {
+    	User loginUser = (User) session.getAttribute("loginUser");
+    	if (loginUser == null) {
+    	    return "redirect:/auth/login"; // 혹은 로그인 페이지 경로
+    	}
+    	String loginUserId = loginUser.getUserId();
+
+    	Interest interest = new Interest();
+    	interest.setUserId(loginUserId);
+    	interest.setPropertyNo(id);
+    	iService.toggle(interest);
+    	return "redirect:/property/" + id;
+    }
 }
