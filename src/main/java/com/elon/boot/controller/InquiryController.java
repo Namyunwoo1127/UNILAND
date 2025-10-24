@@ -1,5 +1,7 @@
 package com.elon.boot.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,13 +46,14 @@ public class InquiryController {
 
             // 1. 기본 매물 정보 조회
             Property property = propertyService.selectOneByNo(id);
-            
+
             // 2. 옵션 정보 조회
             PropertyOption options = propertyService.selectOnesOption(id);
 
-            // 3. 썸네일 이미지 조회 (selectOnesImg가 썸네일(order=0)을 가져온다고 가정)
-            PropertyImg thumbnail = propertyService.selectOnesImg(id);
-            
+            // 3. 썸네일 이미지 조회 (이미지 리스트의 첫 번째를 썸네일로 사용)
+            List<PropertyImg> images = propertyService.selectOnesImgs(id);
+            PropertyImg thumbnail = (images != null && !images.isEmpty()) ? images.get(0) : null;
+
             // 4. Model에 3개 객체를 각각 담아서 JSP로 전달
             model.addAttribute("property", property);
             model.addAttribute("options", options);     // ★ ${options} 라는 이름으로 전달
