@@ -15,8 +15,8 @@ import com.elon.boot.domain.realtor.model.service.FileStorageService;
 @Service // Spring Bean으로 등록하여 주입 가능하도록 설정
 public class FileStorageServiceImpl implements FileStorageService {
 
-    // ⚠️ 파일이 실제로 저장될 서버 경로를 지정합니다. (운영 환경에 따라 변경 필요)
-    private final Path uploadLocation = Paths.get("C:/Users/user/OneDrive/문서/바탕 화면/backend/semiworkspace/UNILAND/src/main/webapp/assets/profile"); 
+    // ⚠️ 파일이 실제로 저장될 서버 경로를 지정합니다. (프로젝트 루트 경로 자동 인식)
+    private final Path uploadLocation = Paths.get(System.getProperty("user.dir"), "src/main/webapp/assets/profile"); 
 
     // 생성자: 업로드 디렉토리가 없으면 생성
     public FileStorageServiceImpl() {

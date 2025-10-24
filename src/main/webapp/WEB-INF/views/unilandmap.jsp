@@ -1480,17 +1480,21 @@
 
         // 지역 필터링
         function filterRegions() {
-            var input = document.getElementById('regionSearch').value.toLowerCase();
+            var input = document.getElementById('regionSearch').value.toLowerCase().trim();
             var dropdown = document.getElementById('regionDropdown');
-            var filtered = regions.filter(r => r.toLowerCase().includes(input));
-            
+
+            // 빈 입력이면 전체 목록 표시
+            var filtered = input === '' ? regions : regions.filter(r => r.toLowerCase().includes(input));
+
             if (filtered.length === 0) {
                 dropdown.innerHTML = '<div class="dropdown-item no-results">검색 결과 없음</div>';
             } else {
-                dropdown.innerHTML = filtered.map(region => 
-                    `<div class="dropdown-item ${selectedRegions.includes(region) ? 'selected' : ''}" 
-                        onclick="toggleRegion('${region}')">${region}</div>`
-                ).join('');
+                var html = filtered.map(function(region) {
+                    var selectedClass = selectedRegions.includes(region) ? 'selected' : '';
+                    return '<div class="dropdown-item ' + selectedClass + '"' +
+                           ' onclick="toggleRegion(\'' + region + '\')">' + region + '</div>';
+                }).join('');
+                dropdown.innerHTML = html;
             }
         }
 
@@ -1508,9 +1512,9 @@
         // 선택된 지역 표시
         function updateSelectedRegions() {
             var container = document.getElementById('selectedRegions');
-            container.innerHTML = selectedRegions.map(region => 
-                `<div class="tag">${region} <span class="remove" onclick="toggleRegion('${region}')">×</span></div>`
-            ).join('');
+            container.innerHTML = selectedRegions.map(function(region) {
+                return '<div class="tag">' + region + ' <span class="remove" onclick="toggleRegion(\'' + region + '\')">×</span></div>';
+            }).join('');
         }
 
         // 학교 드롭다운 표시
@@ -1521,17 +1525,21 @@
 
         // 학교 필터링
         function filterSchools() {
-            var input = document.getElementById('schoolSearch').value.toLowerCase();
+            var input = document.getElementById('schoolSearch').value.toLowerCase().trim();
             var dropdown = document.getElementById('schoolDropdown');
-            var filtered = schools.filter(s => s.toLowerCase().includes(input));
-            
+
+            // 빈 입력이면 전체 목록 표시
+            var filtered = input === '' ? schools : schools.filter(s => s.toLowerCase().includes(input));
+
             if (filtered.length === 0) {
                 dropdown.innerHTML = '<div class="dropdown-item no-results">검색 결과 없음</div>';
             } else {
-                dropdown.innerHTML = filtered.map(school => 
-                    `<div class="dropdown-item ${selectedSchools.includes(school) ? 'selected' : ''}" 
-                        onclick="toggleSchool('${school}')">${school}</div>`
-                ).join('');
+                var html = filtered.map(function(school) {
+                    var selectedClass = selectedSchools.includes(school) ? 'selected' : '';
+                    return '<div class="dropdown-item ' + selectedClass + '"' +
+                           ' onclick="toggleSchool(\'' + school + '\')">' + school + '</div>';
+                }).join('');
+                dropdown.innerHTML = html;
             }
         }
 
@@ -1549,9 +1557,9 @@
         // 선택된 학교 표시
         function updateSelectedSchools() {
             var container = document.getElementById('selectedSchools');
-            container.innerHTML = selectedSchools.map(school => 
-                `<div class="tag">${school} <span class="remove" onclick="toggleSchool('${school}')">×</span></div>`
-            ).join('');
+            container.innerHTML = selectedSchools.map(function(school) {
+                return '<div class="tag">' + school + ' <span class="remove" onclick="toggleSchool(\'' + school + '\')">×</span></div>';
+            }).join('');
         }
 
         // 드롭다운 외부 클릭 시 닫기
