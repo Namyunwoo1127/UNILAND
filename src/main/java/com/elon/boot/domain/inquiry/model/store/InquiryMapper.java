@@ -1,6 +1,7 @@
 package com.elon.boot.domain.inquiry.model.store;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -12,6 +13,18 @@ import com.elon.boot.domain.inquiry.model.vo.Inquiry;
  */
 @Mapper
 public interface InquiryMapper {
+
+	List<Inquiry> selectInquiriesByUserId(String userId);
+
+	int insertInquiry(Inquiry inquiry);
+
+	Inquiry selectInquiryById(Integer inquiryId);
+
+	int deleteInquiry(Integer inquiryId);
+
+	List<Inquiry> selectAllInquiriesForAdmin();
+
+	int updateInquiryAnswer(Map<String, Object> params);
 
     // TODO: 문의 등록
     // int insertInquiry(Inquiry inquiry);
