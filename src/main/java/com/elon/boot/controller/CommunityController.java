@@ -322,6 +322,54 @@ public class CommunityController {
         return "community/guide";
     }
 
+    // AJAX용 가이드 목록 (JSON 반환)
+    @GetMapping("/guide/ajax")
+    @ResponseBody
+    public Map<String, Object> guideListAjax(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "all") String category,
+            @RequestParam(required = false, defaultValue = "1") int page) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 카테고리 처리 ('all'이면 null로)
+            String searchCategory = (category != null && !"all".equals(category)) ? category : null;
+
+            int boardLimit = 10;
+            int pageLimit = 5;
+            int totalCount = gService.getGuideCount(keyword, searchCategory);
+            int maxPage = (int) Math.ceil((double) totalCount / boardLimit);
+            int startPage = ((page-1)/pageLimit) * pageLimit + 1;
+            int endPage = startPage + pageLimit - 1;
+            if(endPage > maxPage) {
+                endPage = maxPage;
+            }
+
+            int offset = (page - 1) * boardLimit;
+
+            List<Guide> guideList = gService.getGuideList(keyword, searchCategory, offset, boardLimit);
+
+            // 응답 데이터 구성
+            response.put("success", true);
+            response.put("guideList", guideList);
+            response.put("currentPage", page);
+            response.put("maxPage", maxPage);
+            response.put("startPage", startPage);
+            response.put("endPage", endPage);
+            response.put("totalCount", totalCount);
+            response.put("keyword", keyword);
+            response.put("category", category);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "게시글 목록을 불러오는데 실패했습니다.");
+        }
+
+        return response;
+    }
+
     // 가이드 상세
     @GetMapping("/guide/{id}")
     public String guideDetail(@PathVariable("id") int guideNo,

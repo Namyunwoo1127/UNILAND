@@ -52,13 +52,20 @@
             padding: 0 24px;
         }
 
-        /* 게시글 헤더 */
-        .post-header {
+        /* 게시글 컨테이너 */
+        .post-container {
             background: white;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             margin-bottom: 20px;
+        }
+
+        /* 게시글 헤더 */
+        .post-header {
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e5e5e5;
+            margin-bottom: 30px;
         }
 
         .post-category {
@@ -206,11 +213,8 @@
 
         /* 게시글 내용 */
         .post-content {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+            padding-bottom: 0;
+            margin-bottom: 0;
             white-space: pre-line; /* DB는 \n을 일반 공백 처리하기 때문에 개행 문제 시 */
         }
 
@@ -269,11 +273,10 @@
 
         /* 액션 버튼 */
         .post-actions {
-            background: white;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+            padding: 30px 0;
+            border-top: 2px solid #e5e5e5;
+            border-bottom: 2px solid #e5e5e5;
+            margin: 30px 0;
             display: flex;
             justify-content: center;
             gap: 15px;
@@ -318,11 +321,8 @@
 
         /* 댓글 섹션 */
         .comments-section {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+            padding: 0;
+            margin-bottom: 30px;
         }
 
         .comments-header {
@@ -377,7 +377,7 @@
 
         .btn-comment-submit {
             padding: 10px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
             border-radius: 8px;
@@ -388,8 +388,7 @@
         }
 
         .btn-comment-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background: #5568d3;
         }
 
         /* 댓글 리스트 */
@@ -490,11 +489,9 @@
 
         /* 이전/다음 글 */
         .post-navigation {
-            background: white;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+            padding: 30px 0 0 0;
+            border-top: 2px solid #e5e5e5;
+            margin-bottom: 0;
         }
 
         .nav-title {
@@ -566,9 +563,7 @@
 
         /* 반응형 */
         @media (max-width: 768px) {
-            .post-header,
-            .post-content,
-            .comments-section {
+            .post-container {
                 padding: 24px;
             }
 
@@ -728,9 +723,11 @@
 		<button class="btn-back" onclick="location.href='${pageContext.request.contextPath}/community/guide'">
             <i class="fa-solid fa-arrow-left"></i> 목록으로
         </button>
-        
-		<!-- 게시글 헤더 -->
-		<div class="post-header">
+
+		<!-- 게시글 컨테이너 -->
+		<div class="post-container">
+			<!-- 게시글 헤더 -->
+			<div class="post-header">
 		    <c:choose>
 		        <c:when test="${guide.guideCategory eq 'contract'}">
 		            <span class="post-category contract">
@@ -799,15 +796,15 @@
 		            <span><i class="fa-solid fa-comment"></i> ${guide.commentCount}</span>
 		        </div>
 		    </div>
-		</div>
+			</div>
 
-		<!-- 게시글 내용 -->
-		<!-- white-space: pre-line을 사용하면 JSP 소스 코드에 있는 줄바꿈까지 그대로 화면에 나오기 때문에
-				개행을 없애려면 JSP 소스 코드에서 태그들을 모두 한 줄로 붙여 써야 함 -->
-		<div class="post-content"><div class="post-body">${guide.guideContent}</div></div>
+			<!-- 게시글 내용 -->
+			<!-- white-space: pre-line을 사용하면 JSP 소스 코드에 있는 줄바꿈까지 그대로 화면에 나오기 때문에
+					개행을 없애려면 JSP 소스 코드에서 태그들을 모두 한 줄로 붙여 써야 함 -->
+			<div class="post-content"><div class="post-body">${guide.guideContent}</div></div>
 
-		<!-- 좋아요,공유하기 액션 버튼 -->
-		<div class="post-actions">
+			<!-- 좋아요,공유하기 액션 버튼 -->
+			<div class="post-actions">
             <button class="btn-action btn-like ${isLiked ? 'active' : ''}" onclick="toggleLike()">
                 <i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
                 <span id="likeText">좋아요 (${likeCount})</span>
@@ -816,10 +813,10 @@
                 <i class="fa-solid fa-share-nodes"></i>
                 공유하기
             </button>
-        </div>
+			</div>
 
-		<!-- 댓글 섹션 -->
-		<div class="comments-section">
+			<!-- 댓글 섹션 -->
+			<div class="comments-section">
             <h3 class="comments-header">
                 <i class="fa-solid fa-comments"></i>
                 댓글 <span class="comment-count">${guide.commentCount}</span>
@@ -893,10 +890,10 @@
                     </c:otherwise>
                 </c:choose>
             </ul>
-        </div>
+			</div>
 
-		<!-- 이전/다음 글 -->
-		<c:if test="${not empty prevGuide || not empty nextGuide}">
+			<!-- 이전/다음 글 -->
+			<c:if test="${not empty prevGuide || not empty nextGuide}">
             <div class="post-navigation">
                 <h3 class="nav-title">다른 글 보기</h3>
                 <c:if test="${not empty nextGuide}">
@@ -916,7 +913,8 @@
                     </div>
                 </c:if>
             </div>
-        </c:if>
+			</c:if>
+		</div>
 
 		<!-- 목록 버튼 -->
 		<button class="btn-list" onclick="location.href='${pageContext.request.contextPath}/community/guide'">
