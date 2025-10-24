@@ -7,6 +7,7 @@ import com.elon.boot.domain.property.model.store.OptionMapper;
 import com.elon.boot.domain.property.model.store.PropertyMapper;
 import com.elon.boot.domain.property.model.vo.Property;
 import com.elon.boot.domain.property.model.vo.PropertyOption;
+import com.elon.boot.domain.realtor.model.vo.Realtor;
 import com.elon.boot.domain.property.model.vo.PropertyImg;
 import com.elon.boot.util.Util;
 
@@ -108,6 +109,12 @@ return propNo;
 		List<PropertyImg> imgs = propertyMapper.selectImagesByPropertyNo(id);
 		return imgs;
 	}
+
+	@Override
+	public Realtor selectRealtorById(String rId) {
+		return propertyMapper.selectRealtorById(rId);
+	}
+
 
 
 

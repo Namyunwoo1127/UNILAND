@@ -300,56 +300,6 @@
             margin-bottom: 4px;
         }
 
-        /* 비슷한 매물 */
-        .similar-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        .similar-card {
-            border: 2px solid #e5e5e5;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .similar-card:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-        }
-
-        .similar-image {
-            width: 100%;
-            height: 150px;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-        }
-
-        .similar-info {
-            padding: 15px;
-        }
-
-        .similar-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .similar-price {
-            font-size: 18px;
-            font-weight: 700;
-            color: #667eea;
-        }
 
         /* 우측 고정 박스 */
         .price-sticky {
@@ -597,9 +547,6 @@
                 grid-template-columns: repeat(3, 1fr);
             }
 
-            .similar-grid {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
@@ -901,7 +848,7 @@
                         <i class="fa-solid fa-user-tie"></i> 중개사 정보
                     </h2>
                     <div class="agent-info">
-						<div class="agent-avatar">
+<!-- 						<div class="agent-avatar">
 							김
 						</div>
                         <div class="agent-details">
@@ -915,74 +862,29 @@
                             <div class="agent-contact">
                                 <i class="fa-solid fa-id-card"></i> 중개사 등록번호:'12345-2024-00001'
                             </div>
-                        </div>
-<%-- 						<div class="agent-avatar">				realtor model이 필요하여 주석처리함
+                        </div> -->
+ 						<div class="agent-avatar">				
 						  <c:choose>
-						    <c:when test="${not empty property.agentName}">
-						      ${fn:substring(property.agentName, 0, 1)}
+						    <c:when test="${not empty realtor.realtorName}">
+						      ${fn:substring(realtor.realtorName, 0, 1)}
 						    </c:when>
 						    <c:otherwise>김</c:otherwise>
 						  </c:choose>
 						</div>
                         <div class="agent-details">
-                            <h3>${realor.realtorName != null ? realor.realtorName : '김부동산'} 중개사</h3>
+                            <h3>${realtor.realtorName != null ? realtor.realtorName : '김부동산'} 중개사</h3>
                             <div class="agent-contact">
-                                <i class="fa-solid fa-building"></i> ${realor.officeName != null ? realor.officeName : '신촌부동산중개사무소'}
+                                <i class="fa-solid fa-building"></i> ${realtor.officeName != null ? realtor.officeName : '신촌부동산중개사무소'}
                             </div>
                             <div class="agent-contact">
-                                <i class="fa-solid fa-phone"></i> ${realor.realtorPhone != null ? realor.realtorPhone : '02-1234-5678'}
+                                <i class="fa-solid fa-phone"></i> ${realtor.realtorPhone != null ? realtor.realtorPhone : '02-1234-5678'}
                             </div>
                             <div class="agent-contact">
-                                <i class="fa-solid fa-id-card"></i> 중개사 등록번호: ${realor.businessNum != null ? realor.businessNum : '12345-2024-00001'}
+                                <i class="fa-solid fa-id-card"></i> 중개사 등록번호: ${realtor.businessNum != null ? realtor.businessNum : '12345-2024-00001'}
                             </div>
-                        </div> --%>
+                        </div>
                     </div>
                 </div>
-
-                <!-- 비슷한 매물 -->
-                    <div class="content-card">
-                        <h2 class="section-title">
-                            <i class="fa-solid fa-grip"></i> 비슷한 매물
-                        </h2>
-                        <div class="similar-grid">
-                                <div class="similar-card" onclick="location.href=''">
-                                    <div class="similar-image">
-	                                    비슷한 이미지
-                                    </div>
-                                    <div class="similar-info">
-                                        <div class="similar-title">비슷한 매물 1</div>
-                                        <div class="similar-price">대충 비슷한 가격대</div>
-                                    </div>
-                                </div>
-                        </div>
-                    </div>
-<%--                 <c:if test="${not empty similarProperties}">			similar model이 필요하여 주석처리함
-                    <div class="content-card">
-                        <h2 class="section-title">
-                            <i class="fa-solid fa-grip"></i> 비슷한 매물
-                        </h2>
-                        <div class="similar-grid">
-                            <c:forEach var="similar" items="${similarProperties}">
-                                <div class="similar-card" onclick="location.href='${pageContext.request.contextPath}/property/${similar.propertyId}'">
-                                    <div class="similar-image">
-                                        <c:choose>
-                                            <c:when test="${not empty similar.imageUrl}">
-                                                <img src="${pageContext.request.contextPath}${similar.imageUrl}" alt="${similar.title}" style="width: 100%; height: 100%; object-fit: cover;">
-                                            </c:when>
-                                            <c:otherwise>
-                                                🏠
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                    <div class="similar-info">
-                                        <div class="similar-title">${similar.title}</div>
-                                        <div class="similar-price">${similar.deposit}/${similar.monthlyRent}</div>
-                                    </div>
-                                </div>
-                            </c:forEach>
-                        </div>
-                    </div>
-                </c:if> --%>
             </div>
 
             <!-- 우측 고정 가격 박스 -->

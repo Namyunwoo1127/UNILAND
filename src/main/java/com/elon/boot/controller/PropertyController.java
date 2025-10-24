@@ -6,6 +6,7 @@ import com.elon.boot.domain.property.model.service.PropertyService;
 import com.elon.boot.domain.property.model.vo.Property;
 import com.elon.boot.domain.property.model.vo.PropertyImg;
 import com.elon.boot.domain.property.model.vo.PropertyOption;
+import com.elon.boot.domain.realtor.model.service.RealtorService;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +31,17 @@ public class PropertyController {
     public String propertyDetail(@PathVariable Long id, Model model) {
     	System.out.println(id);
     	Property property = pService.selectOneByNo(id);
+    	String rId = property.getRealtorId();
     	PropertyOption option = pService.selectOnesOption(id);
+//    	중개사 정보 가져오기
+    	Realtor realtor = pService.selectRealtorById(rId);
     	List<PropertyImg> imgs = new ArrayList<PropertyImg> ();
     	imgs = pService.selectOnesImgs(id);
     	
+    	System.out.println(rId);
+    	System.out.println(realtor);
     	
+    	 model.addAttribute("realtor",realtor);
          model.addAttribute("property", property);
          model.addAttribute("option", option);
          model.addAttribute("imgs", imgs);
