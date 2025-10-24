@@ -2,12 +2,16 @@ package com.elon.boot.controller;
 
 import com.elon.boot.controller.dto.property.OptionAddRequest;
 import com.elon.boot.controller.dto.property.PropertyAddRequest;
+import com.elon.boot.domain.interest.service.InterestService;
+import com.elon.boot.domain.interest.vo.Interest;
 import com.elon.boot.domain.property.model.service.PropertyService;
 import com.elon.boot.domain.property.model.vo.Property;
 import com.elon.boot.domain.property.model.vo.PropertyImg;
 import com.elon.boot.domain.property.model.vo.PropertyOption;
 import com.elon.boot.domain.realtor.model.service.RealtorService;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
+import com.elon.boot.domain.user.model.vo.User;
+
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -25,10 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class PropertyController {
 
     private final PropertyService pService;
-
+    private final InterestService iService;
     // 매물 상세 페이지
     @GetMapping("/{id}")
-    public String propertyDetail(@PathVariable Long id, Model model) {
+    public String propertyDetail(@PathVariable Long id, Model model,HttpSession session) {
     	System.out.println(id);
     	Property property = pService.selectOneByNo(id);
     	String rId = property.getRealtorId();
@@ -45,6 +49,22 @@ public class PropertyController {
          model.addAttribute("property", property);
          model.addAttribute("option", option);
          model.addAttribute("imgs", imgs);
+         
+         User loginUser = (User) session.getAttribute("loginUser");
+         String loginUserId = (loginUser != null) ? loginUser.getUserId() : null;
+         
+         boolean isFavorited = false;
+         int favoriteCount = iService.countFavorites(id);
+         
+         if(loginUserId != null) {
+             Interest interest = new Interest();
+             interest.setUserId(loginUserId);
+             interest.setPropertyNo(id);
+             isFavorited = iService.isFavorited(interest);
+         }
+         
+         model.addAttribute("isFavorited", isFavorited);
+         model.addAttribute("favoriteCount", favoriteCount);
          
         return "property/detail";
     }
@@ -74,4 +94,19 @@ public class PropertyController {
 //
 //        return "redirect:/realtor/property-management";
 //    }
+    @PostMapping("/{id}/wishlist")
+    public String toggleWishlist(@PathVariable Long id,
+                                 HttpSession session,Model model) {
+    	User loginUser = (User) session.getAttribute("loginUser");
+    	if (loginUser == null) {
+    	    return "redirect:/auth/login"; // 혹은 로그인 페이지 경로
+    	}
+    	String loginUserId = loginUser.getUserId();
+
+    	Interest interest = new Interest();
+    	interest.setUserId(loginUserId);
+    	interest.setPropertyNo(id);
+    	iService.toggle(interest);
+    	return "redirect:/property/" + id;
+    }
 }

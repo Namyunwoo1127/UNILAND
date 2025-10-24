@@ -644,7 +644,7 @@
                         </div>
                         <div class="property-meta">
                             <span><i class="fa-solid fa-eye"></i> 조회 142<%-- ${property.viewCount != null ? property.viewCount : 142} --%></span>
-                            <span><i class="fa-solid fa-heart"></i> 찜 23<%-- ${property.likeCount != null ? property.likeCount : 23} --%></span>
+                            <span><i class="fa-solid fa-heart"></i> 찜 <span id="favoriteCount">${favoriteCount}</span></span>
                             <span><i class="fa-solid fa-calendar"></i> <fmt:formatDate value="${property.createdAt}" pattern="yyyy.MM.dd"/></span>
                         </div>
                     </div>
@@ -930,9 +930,12 @@
                     <button class="btn-action btn-primary" onclick="openInquiryModal()">
                         <i class="fa-solid fa-comment-dots"></i> 중개사 문의하기
                     </button>
-                    <button class="btn-action btn-secondary" onclick="toggleFavorite()">
-                        <i class="fa-regular fa-heart"></i> <span id="favoriteText">찜하기</span>
-                    </button>
+					<form action="${pageContext.request.contextPath}/property/${property.propertyNo}/wishlist" method="post" style="margin-top:12px;">
+					  <button type="submit" class="btn-action btn-secondary">
+					    <i class="${isFavorited ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}"></i>
+					    ${isFavorited ? '찜 취소' : '찜하기'}
+					  </button>
+					</form>
                     <button class="btn-action btn-share" onclick="shareProperty()">
                         <i class="fa-solid fa-share-nodes"></i> 공유하기
                     </button>
