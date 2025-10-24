@@ -4,24 +4,11 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.elon.boot.domain.property.model.store.OptionMapper">
 
-<!--   <insert id="insertOption" parameterType="com.elon.boot.domain.property.model.vo.PropertyOption">
-    <selectKey keyProperty="propertyOptionNo" order="BEFORE" resultType="long">
-      SELECT SEQ_OPTION_NO.NEXTVAL FROM DUAL
-    </selectKey>
-    INSERT INTO OPTION_TBL (
-      PROPERTY_OPTION_NO, PROPERTY_NO,
-      AIR_CONDITIONER, HEATER,
-      REFRIGERATOR, MICROWAVE, INDUCTION, GAS_STOVE,
-      WASHER, DRYER, BED, DESK, WARDROBE, SHOE_RACK, TV,
-      PARKING, ELEVATOR, SECURITY, PET_ALLOWED
-    ) VALUES (
-      #{propertyOptionNo}, #{propertyNo},
-      #{airConditioner}, #{heater},
-      #{refrigerator}, #{microwave}, #{induction}, #{gasStove},
-      #{washer}, #{dryer}, #{bed}, #{desk}, #{wardrobe}, #{shoeRack}, #{tv},
-      #{parking}, #{elevator}, #{security}, #{petAllowed}
-    )
-  </insert> -->
+  <select id="selectOnesOption" resultType="com.elon.boot.domain.property.model.vo.PropertyOption">
+    SELECT *
+    FROM OPTION_TBL
+    WHERE PROPERTY_NO = #{id, jdbcType=NUMERIC}
+  </select>
   <insert id="insertOption" parameterType="com.elon.boot.domain.property.model.vo.PropertyOption">
     <selectKey keyProperty="propertyOptionNo" order="BEFORE" resultType="long">
       SELECT SEQ_OPTION_NO.NEXTVAL FROM DUAL

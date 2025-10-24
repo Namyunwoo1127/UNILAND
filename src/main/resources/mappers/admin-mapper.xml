@@ -69,14 +69,15 @@
     <select id="countTotalProperties" resultType="int">
         SELECT COUNT(*)
         FROM PROPERTY_TBL
-        WHERE status = 'ACTIVE'
+        WHERE STATUS = 'ACTIVE'
     </select>
     
     <!-- 미처리 문의 수 -->
     <select id="countPendingInquiries" resultType="int">
         SELECT COUNT(*)
         FROM INQUIRY_TBL
-        WHERE status = 'PENDING'
+        WHERE STATUS = 'PENDING'
+        AND DELETE_YN = 'N'
     </select>
 
 	<!-- 회원 탈퇴 처리 -->

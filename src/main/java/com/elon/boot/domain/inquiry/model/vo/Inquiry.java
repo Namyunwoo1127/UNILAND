@@ -28,6 +28,9 @@ public class Inquiry {
     private String answer;              // 답변 내용
     private Date createdAt;             // 문의 작성일
     private Date answeredAt;            // 답변 작성일
+    private String userName;			// 문의자 이름
+    private String deleteYn;            // 삭제 여부 (Y/N)
+    private String usersPhone;		   	// 문의자 휴대폰 번호
 
     // TODO: 필요시 추가 필드 정의
     // - userName (조인용)

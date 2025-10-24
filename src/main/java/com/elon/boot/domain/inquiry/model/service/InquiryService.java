@@ -8,6 +8,19 @@ import com.elon.boot.domain.inquiry.model.vo.Inquiry;
  * 문의 서비스 인터페이스
  */
 public interface InquiryService {
+	
+	List<Inquiry> getMyInquiries(String userId);
+
+	int createInquiry(Inquiry inquiry);
+
+	Inquiry getInquiryById(Integer inquiryId);
+
+	int deleteInquiry(Integer inquiryId);
+	
+	// 관리자용
+    List<Inquiry> getAllInquiries();
+    
+    int answerInquiry(Integer inquiryId, String answer);
 
     // TODO: 중개사 문의 생성
     // int createRealtorInquiry(Inquiry inquiry);
