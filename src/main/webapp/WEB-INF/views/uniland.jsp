@@ -43,6 +43,20 @@
             overflow: hidden;
         }
 
+        .phone-background {
+            position: absolute;
+            right: -50px;
+            bottom: 0;
+            width: 400px;
+            height: 500px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center bottom;
+            opacity: 0.5;
+            z-index: 3;
+            pointer-events: none;
+        }
+
         .ai-search-section::before {
             content: '';
             position: absolute;
@@ -62,25 +76,41 @@
         .ai-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(255,255,255,0.2);
+            gap: 10px;
+            background: rgba(255,255,255,0.25);
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 700;
             margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1.5px solid rgba(255,255,255,0.4);
             position: relative;
+            box-shadow: 0 4px 16px rgba(255,255,255,0.15);
+        }
+
+        .ai-badge::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 24px;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.6;
         }
 
         .ai-badge i {
+            font-size: 16px;
             animation: sparkle 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 4px rgba(255,255,255,0.5));
         }
 
         @keyframes sparkle {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.2); }
+            50% { opacity: 0.8; transform: scale(1.15); }
         }
 
         .ai-search-section h1 {
@@ -109,7 +139,7 @@
         }
 
         .search-input-container {
-            max-width: 800px;
+            max-width: 720px;
             margin: 0 auto;
             position: relative;
         }
@@ -136,7 +166,20 @@
             top: 50%;
             transform: translateY(-50%);
             color: #667eea;
-            font-size: 18px;
+            font-size: 20px;
+            animation: ai-pulse 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 3px rgba(102, 126, 234, 0.3));
+        }
+
+        @keyframes ai-pulse {
+            0%, 100% {
+                opacity: 1;
+                filter: drop-shadow(0 0 3px rgba(102, 126, 234, 0.3));
+            }
+            50% {
+                opacity: 0.7;
+                filter: drop-shadow(0 0 6px rgba(102, 126, 234, 0.5));
+            }
         }
 
         .search-button {
@@ -201,6 +244,241 @@
 
         .map-link strong {
             cursor: pointer;
+        }
+
+        /* 메인 배너 */
+        .promo-banner {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 20px;
+            padding: 32px 40px;
+            margin-bottom: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .promo-text-background {
+            position: absolute;
+            right: 150px;
+            top: 47%;
+            transform: translateY(-50%);
+            width: 450px;
+            height: 300px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.9;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .promo-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .promo-content {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .promo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.3);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .promo-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .promo-subtitle {
+            font-size: 16px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 20px;
+        }
+
+        .promo-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: #059669;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .promo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            background: #f0fdf4;
+        }
+
+        .promo-image {
+            position: relative;
+            z-index: 1;
+        }
+
+        .promo-image i {
+            font-size: 120px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* 중간 배너 */
+        .middle-banner {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 24px;
+            padding: 48px;
+            margin: 60px 0;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .middle-banner::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .move-background {
+            position: absolute;
+            right: 5px;
+            top: 55%;
+            transform: translateY(-50%);
+            width: 500px;
+            height: 500px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.8;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .banner-image {
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .banner-image img {
+            width: 240px;
+            height: 240px;
+            border-radius: 20px;
+            object-fit: cover;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+        }
+
+        .banner-content {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .banner-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .banner-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .banner-description {
+            font-size: 16px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .banner-features {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .banner-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .banner-feature i {
+            font-size: 18px;
+            color: #fbbf24;
+        }
+
+        .banner-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: #2563eb;
+            padding: 14px 32px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .banner-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+            background: #eff6ff;
         }
 
         /* 인기 매물 섹션 */
@@ -504,6 +782,7 @@
     <div class="main-container">
         <!-- AI 검색 섹션 -->
         <section class="ai-search-section">
+            <div class="phone-background" style="background-image: url('${pageContext.request.contextPath}/phone.png');"></div>
             <div class="ai-badge">
                 <i class="fa-solid fa-sparkles"></i>
                 AI 기반 검색
@@ -515,7 +794,7 @@
             <p>AI가 당신의 조건에 딱 맞는 원룸을 찾아드립니다</p>
             <div class="search-input-container">
                 <i class="fa-solid fa-wand-magic-sparkles search-icon"></i>
-                <input type="text" class="search-input" placeholder="예) 연세대 근처에서 월세 70만원 이하로 찾아줘">
+                <input type="text" class="search-input" placeholder="💡 AI에게 물어보세요: 연세대 근처에서 월세 70만원 이하로 찾아줘">
                 <button class="search-button"><i class="fa-solid fa-magnifying-glass"></i> 검색</button>
             </div>
             <div class="search-examples">
@@ -526,6 +805,26 @@
             </div>
             <div class="map-link" style="cursor: pointer;">
                 또는 <strong>지도에서 직접 찾아보기 →</strong>
+            </div>
+        </section>
+
+        <!-- 프로모션 배너 -->
+        <section class="promo-banner">
+            <div class="promo-text-background" style="background-image: url('${pageContext.request.contextPath}/text.png');"></div>
+            <div class="promo-content">
+                <div class="promo-badge">
+                    <i class="fa-solid fa-bolt"></i>
+                    특별 이벤트
+                </div>
+                <h2 class="promo-title">2025 새학기 특가!</h2>
+                <p class="promo-subtitle">원룸 중개수수료 50% 할인 + 이사비용 최대 30만원 지원</p>
+                <button class="promo-btn" onclick="alert('이벤트 준비중입니다!')">
+                    <i class="fa-solid fa-gift"></i>
+                    지금 신청하기
+                </button>
+            </div>
+            <div class="promo-image">
+                <i class="fa-solid fa-tags"></i>
             </div>
         </section>
 
@@ -644,6 +943,43 @@
             </div>
         </section>
 
+        <!-- 중간 배너 -->
+        <section class="middle-banner">
+            <div class="move-background" style="background-image: url('${pageContext.request.contextPath}/move.png');"></div>
+            <div class="banner-image">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=400&fit=crop" alt="이사 서비스">
+            </div>
+            <div class="banner-content">
+                <div class="banner-tag">
+                    <i class="fa-solid fa-truck"></i>
+                    제휴 서비스
+                </div>
+                <h2 class="banner-title">이사 걱정 끝! 견적 비교하고 최저가로</h2>
+                <p class="banner-description">
+                    UNILAND와 함께하는 이사업체 비교 서비스로<br>
+                    최대 30% 저렴하게 이사하세요
+                </p>
+                <div class="banner-features">
+                    <div class="banner-feature">
+                        <i class="fa-solid fa-check-circle"></i>
+                        무료 견적 비교
+                    </div>
+                    <div class="banner-feature">
+                        <i class="fa-solid fa-check-circle"></i>
+                        실시간 예약
+                    </div>
+                    <div class="banner-feature">
+                        <i class="fa-solid fa-check-circle"></i>
+                        안전 보장
+                    </div>
+                </div>
+                <button class="banner-btn" onclick="window.open('https://da24.co.kr/', '_blank')">
+                    <i class="fa-solid fa-calculator"></i>
+                    무료 견적 받기
+                </button>
+            </div>
+        </section>
+
         <!-- 정보 섹션 -->
         <h2 class="info-section-title">유용한 정보</h2>
         <div class="info-section">
@@ -653,11 +989,14 @@
                     <h3>첫 자취 꿀팁</h3>
                 </div>
                 <ul class="info-list">
-                    <li onclick="location.href='${pageContext.request.contextPath}/community/guide'">계약 전 꼭 확인해야 할 10가지</li>
-                    <li onclick="location.href='${pageContext.request.contextPath}/community/guide'">숨은 비용 찾아내는 법</li>
-                    <li onclick="location.href='${pageContext.request.contextPath}/community/guide'">원룸 vs 오피스텔 차이점</li>
-                    <li onclick="location.href='${pageContext.request.contextPath}/community/guide'">계약서 작성 주의사항</li>
-                    <li onclick="location.href='${pageContext.request.contextPath}/community/guide'">입주 전 체크리스트</li>
+                    <c:forEach var="guide" items="${guideList}" begin="0" end="4">
+                        <li onclick="location.href='${pageContext.request.contextPath}/community/guide/${guide.guideNo}'">
+                            ${guide.guideTitle}
+                        </li>
+                    </c:forEach>
+                    <c:if test="${empty guideList}">
+                        <li style="color: #999; cursor: default;">등록된 가이드가 없습니다.</li>
+                    </c:if>
                 </ul>
                 <span class="view-more" onclick="location.href='${pageContext.request.contextPath}/community/guide'">더보기 →</span>
             </div>

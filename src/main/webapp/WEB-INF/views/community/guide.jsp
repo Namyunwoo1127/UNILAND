@@ -60,25 +60,28 @@
 
         .category-tab {
             padding: 12px 24px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid #e5e7eb;
             background: white;
-            color: #4a5568;
-            border-radius: 8px;
+            color: #6b7280;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 15px;
             font-weight: 600;
-            transition: all 0.3s;
+            transition: all 0.2s ease;
         }
 
         .category-tab:hover {
             border-color: #667eea;
             color: #667eea;
+            background: #f9fafb;
+            transform: translateY(-1px);
         }
 
         .category-tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
         }
 
         .content-wrapper {
@@ -136,22 +139,23 @@
 
         .btn-write {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .btn-write:hover {
+            background: #5568d3;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
         }
 
         .post-list {
@@ -315,16 +319,16 @@
 
         .popular-number {
             display: inline-block;
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 28px;
+            height: 28px;
+            background: #667eea;
             color: white;
-            border-radius: 4px;
+            border-radius: 8px;
             text-align: center;
-            line-height: 24px;
+            line-height: 28px;
             font-size: 13px;
             font-weight: 700;
-            margin-right: 10px;
+            margin-right: 12px;
         }
 
         .popular-item-title {
@@ -409,58 +413,58 @@
 
     <div class="main-container">
         <div class="page-header">
-            <h1 class="page-title">🏠 자취 가이드</h1>
+            <h1 class="page-title"><i class="fa-solid fa-book-open" style="color: #1a1a1a;"></i> 자취 가이드</h1>
             <p class="page-subtitle">처음 자취하는 대학생을 위한 꿀팁 모음</p>
         </div>
 
+        <!-- 인기글 섹션 -->
+        <c:if test="${not empty popularGuides}">
+        <div class="popular-section">
+            <h3 class="popular-title">
+                <i class="fa-solid fa-star" style="color: #fbbf24;"></i>
+                인기 게시글 TOP 5
+            </h3>
+            <ul class="popular-list">
+                <c:forEach var="popular" items="${popularGuides}" varStatus="status">
+                <li class="popular-item"
+                    onclick="location.href='${pageContext.request.contextPath}/community/guide/${popular.guideNo}'">
+                    <span class="popular-number">${status.index + 1}</span>
+                    <span class="popular-item-title">${popular.guideTitle}</span>
+                </li>
+                </c:forEach>
+            </ul>
+        </div>
+        </c:if>
+
         <!-- 카테고리 탭 -->
         <div class="category-tabs">
-            <button class="category-tab ${empty category or category eq 'all' ? 'active' : ''}" 
+            <button class="category-tab ${empty category or category eq 'all' ? 'active' : ''}"
                     onclick="filterCategory('all')">
-                <i class="fa-solid fa-list"></i> 전체
+                <i class="fa-solid fa-grip"></i> 전체
             </button>
-            <button class="category-tab ${category eq 'contract' ? 'active' : ''}" 
+            <button class="category-tab ${category eq 'contract' ? 'active' : ''}"
                     onclick="filterCategory('contract')">
-                <i class="fa-solid fa-file-contract"></i> 계약 팁
+                <i class="fa-solid fa-file-signature"></i> 계약 팁
             </button>
-            <button class="category-tab ${category eq 'moving' ? 'active' : ''}" 
+            <button class="category-tab ${category eq 'moving' ? 'active' : ''}"
                     onclick="filterCategory('moving')">
-                <i class="fa-solid fa-truck-moving"></i> 이사 팁
+                <i class="fa-solid fa-boxes-packing"></i> 이사 팁
             </button>
-            <button class="category-tab ${category eq 'life' ? 'active' : ''}" 
+            <button class="category-tab ${category eq 'life' ? 'active' : ''}"
                     onclick="filterCategory('life')">
-                <i class="fa-solid fa-house-user"></i> 생활 팁
+                <i class="fa-solid fa-lightbulb"></i> 생활 팁
             </button>
-            <button class="category-tab ${category eq 'area' ? 'active' : ''}" 
+            <button class="category-tab ${category eq 'area' ? 'active' : ''}"
                     onclick="filterCategory('area')">
-                <i class="fa-solid fa-map-location-dot"></i> 동네 정보
+                <i class="fa-solid fa-location-dot"></i> 동네 정보
             </button>
-            <button class="category-tab ${category eq 'qna' ? 'active' : ''}" 
+            <button class="category-tab ${category eq 'qna' ? 'active' : ''}"
                     onclick="filterCategory('qna')">
-                <i class="fa-solid fa-question-circle"></i> 질문/답변
+                <i class="fa-solid fa-circle-question"></i> 질문/답변
             </button>
         </div>
 
         <div class="content-wrapper">
-            <!-- 인기글 섹션 -->
-            <c:if test="${not empty popularGuides}">
-            <div class="popular-section">
-                <h3 class="popular-title">
-                    <i class="fa-solid fa-fire" style="color: #f56565;"></i>
-                    인기 게시글 TOP 5
-                </h3>
-                <ul class="popular-list">
-                    <c:forEach var="popular" items="${popularGuides}" varStatus="status">
-                    <li class="popular-item" 
-                        onclick="location.href='${pageContext.request.contextPath}/community/guide/${popular.guideNo}'">
-                        <span class="popular-number">${status.index + 1}</span>
-                        <span class="popular-item-title">${popular.guideTitle}</span>
-                    </li>
-                    </c:forEach>
-                </ul>
-            </div>
-            </c:if>
-
             <!-- 상단 컨트롤 -->
             <div class="controls">
                 <form action="${pageContext.request.contextPath}/community/guide" method="get" class="search-box">
@@ -470,11 +474,11 @@
                     <input type="text" name="keyword" class="search-input"
                            placeholder="검색어를 입력하세요" value="${keyword}">
                     <button type="submit" class="btn-search">
-                        <i class="fa-solid fa-magnifying-glass"></i> 검색
+                        <i class="fa-solid fa-search"></i> 검색
                     </button>
                 </form>
                 <button class="btn-write" onclick="checkLoginAndWrite()">
-                    <i class="fa-solid fa-pen"></i> 글쓰기
+                    <i class="fa-solid fa-pencil"></i> 글쓰기
                 </button>
             </div>
 
@@ -490,19 +494,19 @@
                                         <span class="post-category ${guide.guideCategory}">
                                             <c:choose>
                                                 <c:when test="${guide.guideCategory eq 'contract'}">
-                                                    <i class="fa-solid fa-file-contract"></i> 계약 팁
+                                                    <i class="fa-solid fa-file-signature"></i> 계약 팁
                                                 </c:when>
                                                 <c:when test="${guide.guideCategory eq 'moving'}">
-                                                    <i class="fa-solid fa-truck-moving"></i> 이사 팁
+                                                    <i class="fa-solid fa-boxes-packing"></i> 이사 팁
                                                 </c:when>
                                                 <c:when test="${guide.guideCategory eq 'life'}">
-                                                    <i class="fa-solid fa-house-user"></i> 생활 팁
+                                                    <i class="fa-solid fa-lightbulb"></i> 생활 팁
                                                 </c:when>
                                                 <c:when test="${guide.guideCategory eq 'area'}">
-                                                    <i class="fa-solid fa-map-location-dot"></i> 동네 정보
+                                                    <i class="fa-solid fa-location-dot"></i> 동네 정보
                                                 </c:when>
                                                 <c:when test="${guide.guideCategory eq 'qna'}">
-                                                    <i class="fa-solid fa-question-circle"></i> 질문/답변
+                                                    <i class="fa-solid fa-circle-question"></i> 질문/답변
                                                 </c:when>
                                                 <c:otherwise>${guide.guideCategory}</c:otherwise>
                                             </c:choose>
@@ -591,22 +595,189 @@
     <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
 
     <script>
-        // 카테고리 필터
+        let currentCategory = '${category}' || 'all';
+        let currentKeyword = '${keyword}' || '';
+        let currentPage = ${currentPage} || 1;
+
+        // 카테고리 필터 (AJAX)
         function filterCategory(category) {
-            const keyword = '${keyword}' || '';
-            let url = '${pageContext.request.contextPath}/community/guide';
-            
-            if (category !== 'all') {
-                url += '?category=' + category;
-                if (keyword) {
-                    url += '&keyword=' + encodeURIComponent(keyword);
-                }
-            } else if (keyword) {
-                url += '?keyword=' + encodeURIComponent(keyword);
-            }
-            
-            location.href = url;
+            currentCategory = category;
+            currentPage = 1; // 카테고리 변경 시 첫 페이지로
+            loadGuideList();
+
+            // 카테고리 탭 활성화 상태 업데이트
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
         }
+
+        // 페이지 변경 (AJAX)
+        function changePage(page) {
+            currentPage = page;
+            loadGuideList();
+        }
+
+        // AJAX로 가이드 목록 로드
+        function loadGuideList() {
+            const contentWrapper = document.querySelector('.content-wrapper');
+
+            // 로딩 효과
+            contentWrapper.style.opacity = '0.5';
+            contentWrapper.style.transition = 'opacity 0.3s';
+
+            let url = '${pageContext.request.contextPath}/community/guide/ajax?category=' + currentCategory + '&page=' + currentPage;
+            if (currentKeyword) {
+                url += '&keyword=' + encodeURIComponent(currentKeyword);
+            }
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderGuideList(data);
+                        renderPagination(data);
+
+                        // 부드�운 전환
+                        contentWrapper.style.opacity = '1';
+
+                        // URL 업데이트 (뒤로가기 지원)
+                        const newUrl = '${pageContext.request.contextPath}/community/guide?category=' + currentCategory + '&page=' + currentPage + (currentKeyword ? '&keyword=' + encodeURIComponent(currentKeyword) : '');
+                        history.pushState({category: currentCategory, page: currentPage, keyword: currentKeyword}, '', newUrl);
+                    } else {
+                        alert(data.message || '게시글 목록을 불러오는데 실패했습니다.');
+                        contentWrapper.style.opacity = '1';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('게시글 목록을 불러오는데 실패했습니다.');
+                    contentWrapper.style.opacity = '1';
+                });
+        }
+
+        // 게시글 목록 렌더링
+        function renderGuideList(data) {
+            const postList = document.querySelector('.post-list');
+
+            if (!data.guideList || data.guideList.length === 0) {
+                postList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h3>게시글이 없습니다</h3>
+                        <p>첫 번째 게시글을 작성해보세요!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            data.guideList.forEach(guide => {
+                const categoryInfo = getCategoryInfo(guide.guideCategory);
+                const isHot = guide.isHot === 'Y';
+
+                html += `
+                    <li class="post-item" onclick="location.href='${pageContext.request.contextPath}/community/guide/\${guide.guideNo}'">
+                        <div class="post-header">
+                            <div class="post-left">
+                                <span class="post-category \${guide.guideCategory}">
+                                    \${categoryInfo.icon} \${categoryInfo.name}
+                                </span>
+                                \${isHot ? '<span class="post-badge hot"><i class="fa-solid fa-fire"></i> HOT</span>' : ''}
+                                <h3 class="post-title">\${guide.guideTitle}</h3>
+                                <p class="post-preview">\${getPreview(guide.guideContent)}</p>
+                            </div>
+                        </div>
+                        <div class="post-meta">
+                            <span><i class="fa-solid fa-user"></i> \${guide.userId}</span>
+                            <span><i class="fa-solid fa-calendar"></i> \${formatDate(guide.writeDate)}</span>
+                            <span><i class="fa-solid fa-eye"></i> \${guide.viewCount}</span>
+                            <span><i class="fa-solid fa-heart"></i> \${guide.likeCount}</span>
+                            <span><i class="fa-solid fa-comment"></i> \${guide.commentCount}</span>
+                        </div>
+                    </li>
+                `;
+            });
+
+            postList.innerHTML = html;
+        }
+
+        // 페이징 렌더링
+        function renderPagination(data) {
+            const paginationDiv = document.querySelector('.pagination');
+            if (!paginationDiv) return;
+
+            let html = '';
+
+            // 이전 페이지 그룹
+            if (data.startPage > 1) {
+                html += `<a href="javascript:changePage(\${data.startPage - 1})" class="page-link">&laquo;</a>`;
+            }
+            // 이전 페이지
+            if (data.currentPage > 1) {
+                html += `<a href="javascript:changePage(\${data.currentPage - 1})" class="page-link">&lt;</a>`;
+            }
+
+            // 페이지 번호
+            for (let p = data.startPage; p <= data.endPage; p++) {
+                html += `<a href="javascript:changePage(\${p})" class="page-link \${data.currentPage == p ? 'active' : ''}">\${p}</a>`;
+            }
+
+            // 다음 페이지
+            if (data.currentPage < data.maxPage) {
+                html += `<a href="javascript:changePage(\${data.currentPage + 1})" class="page-link">&gt;</a>`;
+            }
+            // 다음 페이지 그룹
+            if (data.endPage < data.maxPage) {
+                html += `<a href="javascript:changePage(\${data.endPage + 1})" class="page-link">&raquo;</a>`;
+            }
+
+            paginationDiv.innerHTML = html;
+        }
+
+        // 카테고리 정보 반환
+        function getCategoryInfo(category) {
+            const categories = {
+                'contract': { icon: '<i class="fa-solid fa-file-signature"></i>', name: '계약 팁' },
+                'moving': { icon: '<i class="fa-solid fa-boxes-packing"></i>', name: '이사 팁' },
+                'life': { icon: '<i class="fa-solid fa-lightbulb"></i>', name: '생활 팁' },
+                'area': { icon: '<i class="fa-solid fa-location-dot"></i>', name: '동네 정보' },
+                'qna': { icon: '<i class="fa-solid fa-circle-question"></i>', name: '질문/답변' }
+            };
+            return categories[category] || { icon: '', name: category };
+        }
+
+        // 미리보기 텍스트 생성
+        function getPreview(content) {
+            const cleaned = content.replace(/<[^>]*>/g, ' ').trim();
+            return cleaned.length > 100 ? cleaned.substring(0, 100) + '...' : cleaned;
+        }
+
+        // 날짜 포맷
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return year + '.' + month + '.' + day;
+        }
+
+        // 뒤로가기/앞으로가기 지원
+        window.addEventListener('popstate', function(e) {
+            if (e.state) {
+                currentCategory = e.state.category || 'all';
+                currentPage = e.state.page || 1;
+                currentKeyword = e.state.keyword || '';
+                loadGuideList();
+
+                // 카테고리 탭 상태 업데이트
+                document.querySelectorAll('.category-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                const activeTab = document.querySelector(`.category-tab[onclick*="'\${currentCategory}'"]`);
+                if (activeTab) activeTab.classList.add('active');
+            }
+        });
 
         // 글쓰기 (로그인 체크)
         function checkLoginAndWrite() {

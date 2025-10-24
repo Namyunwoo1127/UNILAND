@@ -50,4 +50,9 @@ public class Property {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private Timestamp deletedAt;
+    
+    private String water;
+    private String elect;
+    private String gas;
+    private String internet;
 }
