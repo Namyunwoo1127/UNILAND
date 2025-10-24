@@ -13,9 +13,9 @@
     <result property="propertyId"  column="PROPERTY_ID"/>
     <result property="realtorId"   column="REALTOR_ID"/>
     <result property="title"       column="TITLE"/>
-    <result property="content"     column="CONTENT"/>     <!-- CLOB -> String -->
+    <result property="content"     column="CONTENT"/>    
     <result property="status"      column="STATUS"/>
-    <result property="answer"      column="ANSWER"/>      <!-- CLOB -> String -->
+    <result property="answer"      column="ANSWER"/>     
     <result property="createdAt"   column="CREATED_AT"/>
     <result property="answeredAt"  column="ANSWERED_AT"/>
     <result property="userName"    column="USER_NAME"/>
@@ -72,7 +72,7 @@
      WHERE INQUIRY_ID = #{inquiryId}
   </update>
 
-  <!-- 삭제 플래그 (물리삭제면 DELETE로 바꿔도 됨) -->
+  <!-- 삭제 플래그 -->
   <update id="deleteInquiry" parameterType="int">
     UPDATE INQUIRY_TBL
        SET DELETE_YN = 'Y'
