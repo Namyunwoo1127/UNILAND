@@ -10,6 +10,22 @@
     WHERE PROPERTY_NO = #{id, jdbcType=NUMERIC}
   </select>
 
+  <select id="selectOnesOption" resultType="com.elon.boot.domain.property.model.vo.PropertyOption">
+    SELECT *
+    FROM OPTION_TBL
+    WHERE PROPERTY_NO = #{id, jdbcType=NUMERIC}
+  </select>
+
+  <select id="selectOnesImg" resultType="com.elon.boot.domain.property.model.vo.PropertyImg">
+    SELECT *
+    FROM (
+        SELECT *
+        FROM PROPERTIES_IMG_TBL
+        WHERE PROPERTY_NO = #{id, jdbcType=NUMERIC}
+        ORDER BY IMG_ORDER ASC
+    )
+    WHERE ROWNUM = 1
+  </select>
 <!-- <insert id="insertProperty" parameterType="com.elon.boot.domain.property.model.vo.Property">
   <selectKey keyProperty="propertyNo" order="BEFORE" resultType="long">
     SELECT SEQ_PROPERTY_NO.NEXTVAL FROM DUAL
