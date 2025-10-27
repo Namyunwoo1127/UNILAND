@@ -10,6 +10,8 @@ import com.elon.boot.domain.community.guide.model.service.GuideService;
 import com.elon.boot.domain.community.guide.model.vo.Guide;
 import com.elon.boot.domain.community.notice.model.service.NoticeService;
 import com.elon.boot.domain.community.notice.model.vo.Notice;
+import com.elon.boot.domain.property.model.service.PropertyService;
+import com.elon.boot.domain.property.model.vo.Property;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +23,34 @@ public class HomeController {
 
 	private final NoticeService noticeService;
 	private final GuideService guideService;
-	
+	private final PropertyService propertyService;
+
     // 지도 검색 페이지
     @GetMapping("/map")
     public String propertyMap(Model model) {
-        // TODO: 지도에 표시할 매물 목록 가져오기
-        // List<Property> properties = propertyService.getAllProperties();
-        // model.addAttribute("properties", properties);
+        try {
+            // 지도에 표시할 매물 목록 가져오기
+            List<Property> properties = propertyService.getAllProperties();
+
+            // 각 매물에 썸네일 이미지 경로 설정
+            if (properties != null) {
+                for (Property property : properties) {
+                    try {
+                        var images = propertyService.selectOnesImgs(property.getPropertyNo());
+                        if (images != null && !images.isEmpty()) {
+                            property.setThumbnailPath(images.get(0).getImgPath());
+                        }
+                    } catch (Exception e) {
+                        log.warn("매물 {} 썸네일 조회 실패", property.getPropertyNo());
+                    }
+                }
+            }
+
+            model.addAttribute("properties", properties);
+            log.debug("지도 페이지 매물 조회: {} 건", properties != null ? properties.size() : 0);
+        } catch (Exception e) {
+            log.error("지도 페이지 매물 조회 실패: ", e);
+        }
 
         return "unilandmap";
     }

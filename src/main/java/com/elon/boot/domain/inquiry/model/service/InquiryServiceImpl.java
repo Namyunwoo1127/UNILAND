@@ -65,4 +65,49 @@ public class InquiryServiceImpl implements InquiryService {
 	public List<Inquiry> getInquiriesByUserId(String userId) {
 		return inquiryMapper.selectInquiriesByUserId(userId);
 	}
+	
+	@Override
+    public List<Inquiry> getRealtorInquiries(String realtorId) {
+        return inquiryMapper.selectInquiriesByRealtorId(realtorId);
+    }
+    
+    @Override
+    public Map<String, Integer> getRealtorInquiryStats(String realtorId) {
+        Map<String, Integer> stats = new HashMap<>();
+        
+        // 전체 문의 수
+        int totalCount = inquiryMapper.countRealtorInquiries(realtorId);
+        
+        // 미답변 문의 수
+        int pendingCount = inquiryMapper.countRealtorInquiriesByStatus(realtorId, "PENDING");
+        
+        // 답변완료 문의 수
+        int answeredCount = inquiryMapper.countRealtorInquiriesByStatus(realtorId, "ANSWERED");
+        
+        // 오늘 받은 문의 수
+        int todayCount = inquiryMapper.countRealtorInquiriesToday(realtorId);
+        
+        stats.put("totalCount", totalCount);
+        stats.put("pendingCount", pendingCount);
+        stats.put("answeredCount", answeredCount);
+        stats.put("todayCount", todayCount);
+        
+        return stats;
+    }
+    
+    @Override
+    @Transactional
+    public int answerRealtorInquiry(Integer inquiryId, String answer) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("inquiryId", inquiryId);
+        params.put("answer", answer);
+        
+        return inquiryMapper.updateInquiryAnswer(params);
+    }
+    
+    @Override
+    @Transactional
+    public int markAsRead(Integer inquiryId) {
+        return inquiryMapper.updateInquiryReadStatus(inquiryId);
+    }
 }

@@ -20,7 +20,10 @@
     <result property="answeredAt"  column="ANSWERED_AT"/>
     <result property="userName"    column="USER_NAME"/>
     <result property="deleteYn"    column="DELETE_YN"/>
-    <result property="usersPhone"  column="USER_PHONE"/>
+    <result property="userPhone"   column="USER_PHONE"/>  <!-- ⭐ 수정: usersPhone → userPhone -->
+    <result property="readYn" column="READ_YN"/>
+    <result property="readAt" column="READ_AT"/>
+    <result property="propertyName" column="PROPERTY_NAME"/>
   </resultMap>
 
   <!-- 전체(관리자용) -->
@@ -52,14 +55,16 @@
     INSERT INTO INQUIRY_TBL (
       INQUIRY_ID, USER_ID, INQUIRY_TYPE, CATEGORY, PROPERTY_ID, REALTOR_ID,
       TITLE, CONTENT, STATUS, ANSWER, CREATED_AT, ANSWERED_AT,
-      USER_NAME, DELETE_YN, USER_PHONE
+      USER_NAME, DELETE_YN, USER_PHONE, READ_YN
     )
     VALUES (
-      SEQ_INQUIRY_ID.NEXTVAL,
+      INQUIRY_ID.NEXTVAL,
       #{userId}, #{inquiryType}, #{category}, #{propertyId}, #{realtorId},
-      #{title}, #{content}, NVL(#{status}, 'PENDING'), #{answer},
-      SYSDATE, #{answeredAt},
-      #{userName}, NVL(#{deleteYn}, 'N'), #{usersPhone}
+      #{title}, #{content}, NVL(#{status}, 'PENDING'), 
+      #{answer, jdbcType=CLOB},
+      SYSDATE, 
+      #{answeredAt, jdbcType=DATE},
+      #{userName}, NVL(#{deleteYn}, 'N'), #{userPhone}, NVL(#{readYn}, 'N')
     )
   </insert>
 
@@ -78,5 +83,57 @@
        SET DELETE_YN = 'Y'
      WHERE INQUIRY_ID = #{value}
   </update>
+  
+  <select id="selectInquiriesByRealtorId" parameterType="string" resultMap="InquiryMap">
+        SELECT 
+            I.*,
+            P.PROPERTY_NAME
+        FROM INQUIRY_TBL I
+        LEFT JOIN PROPERTY_TBL P ON I.PROPERTY_ID = P.PROPERTY_NO
+        WHERE I.REALTOR_ID = #{value}
+          AND I.DELETE_YN = 'N'
+          AND I.INQUIRY_TYPE = 'REALTOR'
+        ORDER BY 
+            CASE WHEN I.STATUS = 'PENDING' THEN 0 ELSE 1 END,
+            I.CREATED_AT DESC
+    </select>
+
+    <!-- 중개사 전체 문의 수 조회 -->
+    <select id="countRealtorInquiries" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM INQUIRY_TBL
+        WHERE REALTOR_ID = #{value}
+          AND DELETE_YN = 'N'
+          AND INQUIRY_TYPE = 'REALTOR'
+    </select>
+
+    <!-- 중개사 상태별 문의 수 조회 -->
+    <select id="countRealtorInquiriesByStatus" resultType="int">
+        SELECT COUNT(*)
+        FROM INQUIRY_TBL
+        WHERE REALTOR_ID = #{realtorId}
+          AND STATUS = #{status}
+          AND DELETE_YN = 'N'
+          AND INQUIRY_TYPE = 'REALTOR'
+    </select>
+
+    <!-- 중개사 오늘 받은 문의 수 조회 -->
+    <select id="countRealtorInquiriesToday" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM INQUIRY_TBL
+        WHERE REALTOR_ID = #{value}
+          AND DELETE_YN = 'N'
+          AND INQUIRY_TYPE = 'REALTOR'
+          AND TRUNC(CREATED_AT) = TRUNC(SYSDATE)
+    </select>
+
+    <!-- 문의 읽음 처리 -->
+    <update id="updateInquiryReadStatus" parameterType="int">
+        UPDATE INQUIRY_TBL
+        SET READ_YN = 'Y',
+            READ_AT = SYSDATE
+        WHERE INQUIRY_ID = #{value}
+          AND READ_YN = 'N'
+    </update>
 
 </mapper>
