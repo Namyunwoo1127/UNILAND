@@ -1,5 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -19,16 +20,11 @@
             color: #333;
             background-color: #f8f9fa;
         }
-
-        /* ---------------------------------------------------- */
-        /* [삭제] 기존 헤더(header) 태그 관련 CSS 모두 제거되었습니다. */
-        /* ---------------------------------------------------- */
         
         .main-layout {
             display: flex;
             max-width: 1400px;
             margin: 0 auto;
-            /* 헤더가 외부에서 포함되므로 min-height 계산 시 헤더 높이에 맞게 조정이 필요할 수 있습니다. */
             min-height: calc(100vh - 80px); 
         }
 
@@ -478,40 +474,7 @@
             color: #2d3748;
             font-size: 14px;
             line-height: 1.6;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-top: 40px;
-        }
-
-        .pagination button {
-            padding: 10px 15px;
-            border: 2px solid #e2e8f0;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .pagination button:hover {
-            border-color: #667eea;
-            color: #667eea;
-        }
-
-        .pagination button.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+            white-space: pre-wrap;
         }
 
         .empty-state {
@@ -533,13 +496,22 @@
         .empty-state p {
             color: #718096;
         }
+        
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .alert-error {
+            background: rgba(245, 101, 101, 0.1);
+            color: #f56565;
+            border: 1px solid #f56565;
+        }
     </style>
 </head>
 <body>
-    <%-- 
-        ✅ 기존의 <header> 태그를 삭제하고, realtor-header.jsp 파일을 포함하도록 수정했습니다.
-        이 파일이 실제 헤더 내용을 담당하며, 관련 CSS는 해당 파일에 정의되어 있어야 합니다.
-    --%>
     <jsp:include page="/WEB-INF/views/common/realtor-header.jsp" />
 
     <div class="main-layout">
@@ -549,7 +521,7 @@
                 <li><a href="${pageContext.request.contextPath}/realtor/realtor-dashboard"><span class="menu-icon">📊</span>대시보드</a></li>
                 <li><a href="${pageContext.request.contextPath}/realtor/property-management"><span class="menu-icon">🏢</span>매물 관리</a></li>
                 <li><a href="${pageContext.request.contextPath}/realtor/property-register"><span class="menu-icon">➕</span>매물 등록</a></li>
-                <li><a href="#" class="active"><span class="menu-icon">💬</span>받은 문의</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management" class="active"><span class="menu-icon">💬</span>받은 문의</a></li>
             </ul>
         </aside>
 
@@ -558,23 +530,30 @@
                 <h1>받은 문의 관리</h1>
                 <p>고객 문의에 빠르게 답변하세요</p>
             </div>
+            
+            <c:if test="${not empty error}">
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    ${error}
+                </div>
+            </c:if>
 
             <div class="content-section">
                 <div class="stats-bar">
                     <div class="stat-item">
-                        <div class="stat-number">12</div>
+                        <div class="stat-number">${stats.totalCount}</div>
                         <div class="stat-label">전체 문의</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number" style="color: #ed8936;">5</div>
+                        <div class="stat-number" style="color: #ed8936;">${stats.pendingCount}</div>
                         <div class="stat-label">미답변</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number" style="color: #48bb78;">7</div>
+                        <div class="stat-number" style="color: #48bb78;">${stats.answeredCount}</div>
                         <div class="stat-label">답변완료</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number" style="color: #4299e1;">3</div>
+                        <div class="stat-number" style="color: #4299e1;">${stats.todayCount}</div>
                         <div class="stat-label">오늘 문의</div>
                     </div>
                 </div>
@@ -582,286 +561,155 @@
                 <div class="filter-section">
                     <div class="filter-group">
                         <span class="filter-label">상태</span>
-                        <select class="filter-select">
-                            <option>전체</option>
-                            <option>미답변</option>
-                            <option>답변완료</option>
+                        <select class="filter-select" id="statusFilter">
+                            <option value="">전체</option>
+                            <option value="PENDING">미답변</option>
+                            <option value="ANSWERED">답변완료</option>
                         </select>
                     </div>
                     <div class="filter-group">
                         <span class="filter-label">문의유형</span>
-                        <select class="filter-select">
-                            <option>전체</option>
-                            <option>방문 문의</option>
-                            <option>가격 문의</option>
-                            <option>계약 문의</option>
-                            <option>기타</option>
+                        <select class="filter-select" id="categoryFilter">
+                            <option value="">전체</option>
+                            <option value="VISIT">방문 문의</option>
+                            <option value="PRICE">가격 문의</option>
+                            <option value="CONTRACT">계약 문의</option>
+                            <option value="ETC">기타</option>
                         </select>
                     </div>
                     <div class="filter-group">
                         <span class="filter-label">정렬</span>
-                        <select class="filter-select">
-                            <option>최신순</option>
-                            <option>오래된순</option>
-                            <option>미답변 우선</option>
+                        <select class="filter-select" id="sortFilter">
+                            <option value="latest">최신순</option>
+                            <option value="oldest">오래된순</option>
+                            <option value="pending">미답변 우선</option>
                         </select>
                     </div>
                     <div class="search-box">
-                        <input type="text" class="search-input" placeholder="문의자, 매물명으로 검색...">
+                        <input type="text" class="search-input" id="searchInput" placeholder="문의자, 매물명으로 검색...">
                         <span class="search-icon">🔍</span>
                     </div>
                 </div>
 
-                <ul class="inquiry-list">
-                    <li class="inquiry-item new" onclick="toggleInquiry(this)">
-                        <div class="inquiry-header">
-                            <div class="inquiry-left">
-                                <div class="inquiry-user-info">
-                                    <div class="inquiry-avatar">김</div>
-                                    <div class="inquiry-user-detail">
-                                        <h3>김대학 님</h3>
-                                        <div class="inquiry-meta">
-                                            <span>📧 kim@email.com</span>
-                                            <span>📞 010-1234-5678</span>
-                                            <span>🕐 2024.01.16 14:30</span>
+                <c:choose>
+                    <c:when test="${empty inquiries}">
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <h3>받은 문의가 없습니다</h3>
+                            <p>고객이 문의를 남기면 여기에 표시됩니다</p>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <ul class="inquiry-list" id="inquiryList">
+                            <c:forEach var="inquiry" items="${inquiries}">
+                                <li class="inquiry-item ${inquiry.status == 'PENDING' ? 'new' : ''}" data-inquiry-id="${inquiry.inquiryId}" data-status="${inquiry.status}" data-category="${inquiry.category}">
+                                    <div class="inquiry-header" onclick="toggleInquiry(this.parentElement)">
+                                        <div class="inquiry-left">
+                                            <div class="inquiry-user-info">
+                                                <div class="inquiry-avatar">
+                                                    ${inquiry.userName.substring(0, 1)}
+                                                </div>
+                                                <div class="inquiry-user-detail">
+                                                    <h3>${inquiry.userName} 님</h3>
+                                                    <div class="inquiry-meta">
+                                                        <span>📞 ${inquiry.userPhone}</span>
+                                                        <span>🕐 <fmt:formatDate value="${inquiry.createdAt}" pattern="yyyy.MM.dd HH:mm"/></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <c:if test="${not empty inquiry.propertyName}">
+                                                <div class="inquiry-property">🏠 ${inquiry.propertyName}</div>
+                                            </c:if>
+                                            
+                                            <div>
+                                                <c:choose>
+                                                    <c:when test="${inquiry.category == 'VISIT'}">
+                                                        <span class="inquiry-type type-visit">방문 문의</span>
+                                                    </c:when>
+                                                    <c:when test="${inquiry.category == 'PRICE'}">
+                                                        <span class="inquiry-type type-price">가격 문의</span>
+                                                    </c:when>
+                                                    <c:when test="${inquiry.category == 'CONTRACT'}">
+                                                        <span class="inquiry-type type-contract">계약 문의</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="inquiry-type type-etc">기타</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <span class="inquiry-content">${inquiry.title}</span>
+                                            </div>
+                                        </div>
+                                        <div class="inquiry-right">
+                                            <c:choose>
+                                                <c:when test="${inquiry.status == 'PENDING'}">
+                                                    <span class="inquiry-badge badge-new">새 문의</span>
+                                                    <button class="btn-reply" onclick="event.stopPropagation(); showReplyForm(this)">답변하기</button>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="inquiry-badge badge-replied">답변완료</span>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="inquiry-property">🏠 신촌역 5분거리 풀옵션 원룸</div>
-                                <div>
-                                    <span class="inquiry-type type-visit">방문 문의</span>
-                                    <span class="inquiry-content">이번 주 주말에 방문 가능할까요? 학교에서 가까운 곳을 찾고 있습니다. 3월 초 입주 희망합니다.</span>
-                                </div>
-                            </div>
-                            <div class="inquiry-right">
-                                <span class="inquiry-badge badge-new">새 문의</span>
-                                <button class="btn-reply" onclick="event.stopPropagation(); showReplyForm(this)">답변하기</button>
-                            </div>
-                        </div>
-                        <div class="inquiry-body">
-                            <div class="inquiry-divider"></div>
-                            <div class="reply-section">
-                                <div class="reply-title">💬 답변 작성</div>
-                                <textarea class="reply-textarea" placeholder="고객님께 답변을 작성하세요..."></textarea>
-                                <div class="reply-actions">
-                                    <button class="btn-cancel" onclick="event.stopPropagation(); hideReplyForm(this)">취소</button>
-                                    <button class="btn-submit" onclick="event.stopPropagation(); submitReply(this)">답변 전송</button>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="inquiry-item new">
-                        <div class="inquiry-header" onclick="toggleInquiry(this.parentElement)">
-                            <div class="inquiry-left">
-                                <div class="inquiry-user-info">
-                                    <div class="inquiry-avatar">박</div>
-                                    <div class="inquiry-user-detail">
-                                        <h3>박연세 님</h3>
-                                        <div class="inquiry-meta">
-                                            <span>📧 park@email.com</span>
-                                            <span>📞 010-2345-6789</span>
-                                            <span>🕐 2024.01.16 11:20</span>
+                                    
+                                    <div class="inquiry-body">
+                                        <div class="inquiry-divider"></div>
+											<div style="margin-bottom: 20px;">
+                                            <div style="background: #f7fafc; padding: 15px; border-radius: 8px;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                                    <h4 style="font-size: 14px; color: #4a5568; font-weight: 600;">문의 내용</h4>
+                                                    <span style="font-size: 13px; color: #718096;">
+                                                        <fmt:formatDate value="${inquiry.createdAt}" pattern="yyyy.MM.dd HH:mm"/>
+                                                    </span>
+                                                </div>
+                                                <div style="white-space: pre-wrap; line-height: 1.6;">${inquiry.content}</div>
+                                            </div>
                                         </div>
+                                        
+                                        <c:choose>
+                                            <c:when test="${inquiry.status == 'PENDING'}">
+                                                <div class="reply-section">
+                                                    <div class="reply-title">💬 답변 작성</div>
+                                                    <textarea class="reply-textarea" placeholder="고객님께 답변을 작성하세요..."></textarea>
+                                                    <div class="reply-actions">
+                                                        <button class="btn-cancel" onclick="event.stopPropagation(); hideReplyForm(this)">취소</button>
+                                                        <button class="btn-submit" onclick="event.stopPropagation(); submitReply(this, ${inquiry.inquiryId})">답변 전송</button>
+                                                    </div>
+                                                </div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div class="replied-content">
+                                                    <div class="replied-header">
+                                                        <span class="replied-title">✅ 답변 완료</span>
+                                                        <span class="replied-date">
+                                                            <fmt:formatDate value="${inquiry.answeredAt}" pattern="yyyy.MM.dd HH:mm"/>
+                                                        </span>
+                                                    </div>
+                                                    <div class="replied-text">${inquiry.answer}</div>
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
-                                </div>
-                                <div class="inquiry-property">🏠 신촌역 5분거리 풀옵션 원룸</div>
-                                <div>
-                                    <span class="inquiry-type type-price">가격 문의</span>
-                                    <span class="inquiry-content">가격 협상 가능할까요? 보증금을 조금 더 올리고 월세를 낮출 수 있는지 궁금합니다.</span>
-                                </div>
-                            </div>
-                            <div class="inquiry-right">
-                                <span class="inquiry-badge badge-new">새 문의</span>
-                                <button class="btn-reply" onclick="event.stopPropagation(); showReplyForm(this)">답변하기</button>
-                            </div>
-                        </div>
-                        <div class="inquiry-body">
-                            <div class="inquiry-divider"></div>
-                            <div class="reply-section">
-                                <div class="reply-title">💬 답변 작성</div>
-                                <textarea class="reply-textarea" placeholder="고객님께 답변을 작성하세요..."></textarea>
-                                <div class="reply-actions">
-                                    <button class="btn-cancel" onclick="event.stopPropagation(); hideReplyForm(this)">취소</button>
-                                    <button class="btn-submit" onclick="event.stopPropagation(); submitReply(this)">답변 전송</button>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="inquiry-item">
-                        <div class="inquiry-header" onclick="toggleInquiry(this.parentElement)">
-                            <div class="inquiry-left">
-                                <div class="inquiry-user-info">
-                                    <div class="inquiry-avatar">이</div>
-                                    <div class="inquiry-user-detail">
-                                        <h3>이학생 님</h3>
-                                        <div class="inquiry-meta">
-                                            <span>📧 lee@email.com</span>
-                                            <span>📞 010-3456-7890</span>
-                                            <span>🕐 2024.01.15 18:45</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="inquiry-property">🏢 혜화역 도보 7분 깨끗한 오피스텔</div>
-                                <div>
-                                    <span class="inquiry-type type-contract">계약 문의</span>
-                                    <span class="inquiry-content">주차 가능한가요? 그리고 관리비에 포함되는 항목이 궁금합니다.</span>
-                                </div>
-                            </div>
-                            <div class="inquiry-right">
-                                <span class="inquiry-badge badge-replied">답변완료</span>
-                            </div>
-                        </div>
-                        <div class="inquiry-body">
-                            <div class="inquiry-divider"></div>
-                            <div class="replied-content">
-                                <div class="replied-header">
-                                    <span class="replied-title">✅ 답변 완료</span>
-                                    <span class="replied-date">2024.01.15 19:20</span>
-                                </div>
-                                <div class="replied-text">
-                                    안녕하세요, 이학생님. 문의 주셔서 감사합니다.<br><br>
-                                    네, 주차 가능합니다. 지하 주차장에 1대 주차 가능하며, 추가 비용은 없습니다.<br><br>
-                                    관리비는 월 5만원이며, 수도/전기/인터넷이 포함되어 있습니다. 가스비와 난방비는 별도로 개별 정산됩니다.<br><br>
-                                    방문 상담 원하시면 편하신 시간 알려주세요. 감사합니다.
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="inquiry-item new">
-                        <div class="inquiry-header" onclick="toggleInquiry(this.parentElement)">
-                            <div class="inquiry-left">
-                                <div class="inquiry-user-info">
-                                    <div class="inquiry-avatar">최</div>
-                                    <div class="inquiry-user-detail">
-                                        <h3>최학생 님</h3>
-                                        <div class="inquiry-meta">
-                                            <span>📧 choi@email.com</span>
-                                            <span>📞 010-4567-8901</span>
-                                            <span>🕐 2024.01.15 16:30</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="inquiry-property">🏡 홍대 캠퍼스 앞 저렴한 원룸</div>
-                                <div>
-                                    <span class="inquiry-type type-etc">기타</span>
-                                    <span class="inquiry-content">반려동물 키울 수 있나요? 소형견 1마리입니다.</span>
-                                </div>
-                            </div>
-                            <div class="inquiry-right">
-                                <span class="inquiry-badge badge-new">새 문의</span>
-                                <button class="btn-reply" onclick="event.stopPropagation(); showReplyForm(this)">답변하기</button>
-                            </div>
-                        </div>
-                        <div class="inquiry-body">
-                            <div class="inquiry-divider"></div>
-                            <div class="reply-section">
-                                <div class="reply-title">💬 답변 작성</div>
-                                <textarea class="reply-textarea" placeholder="고객님께 답변을 작성하세요..."></textarea>
-                                <div class="reply-actions">
-                                    <button class="btn-cancel" onclick="event.stopPropagation(); hideReplyForm(this)">취소</button>
-                                    <button class="btn-submit" onclick="event.stopPropagation(); submitReply(this)">답변 전송</button>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="inquiry-item">
-                        <div class="inquiry-header" onclick="toggleInquiry(this.parentElement)">
-                            <div class="inquiry-left">
-                                <div class="inquiry-user-info">
-                                    <div class="inquiry-avatar">정</div>
-                                    <div class="inquiry-user-detail">
-                                        <h3>정대학 님</h3>
-                                        <div class="inquiry-meta">
-                                            <span>📧 jung@email.com</span>
-                                            <span>📞 010-5678-9012</span>
-                                            <span>🕐 2024.01.14 10:15</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="inquiry-property">🏠 이대역 도보 3분 원룸</div>
-                                <div>
-                                    <span class="inquiry-type type-visit">방문 문의</span>
-                                    <span class="inquiry-content">내일 오후 2시에 방문 가능할까요?</span>
-                                </div>
-                            </div>
-                            <div class="inquiry-right">
-                                <span class="inquiry-badge badge-replied">답변완료</span>
-                            </div>
-                        </div>
-                        <div class="inquiry-body">
-                            <div class="inquiry-divider"></div>
-                            <div class="replied-content">
-                                <div class="replied-header">
-                                    <span class="replied-title">✅ 답변 완료</span>
-                                    <span class="replied-date">2024.01.14 11:30</span>
-                                </div>
-                                <div class="replied-text">
-                                    안녕하세요, 정대학님.<br><br>
-                                    네, 내일(15일) 오후 2시 방문 가능합니다. 이대역 2번 출구에서 도보 3분 거리입니다.<br><br>
-                                    주소: 서울 서대문구 대현동 123-45<br>
-                                    연락처: 010-1234-5678<br><br>
-                                    방문 30분 전에 연락 주시면 감사하겠습니다. 뵙겠습니다!
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-                    <li class="inquiry-item new">
-                        <div class="inquiry-header" onclick="toggleInquiry(this.parentElement)">
-                            <div class="inquiry-left">
-                                <div class="inquiry-user-info">
-                                    <div class="inquiry-avatar">강</div>
-                                    <div class="inquiry-user-detail">
-                                        <h3>강학생 님</h3>
-                                        <div class="inquiry-meta">
-                                            <span>📧 kang@email.com</span>
-                                            <span>📞 010-6789-0123</span>
-                                            <span>🕐 2024.01.14 09:00</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="inquiry-property">🏡 성신여대 도보 5분 투룸</div>
-                                <div>
-                                    <span class="inquiry-type type-contract">계약 문의</span>
-                                    <span class="inquiry-content">단기 계약(6개월) 가능한가요? 교환학생 기간 동안만 살고 싶습니다.</span>
-                                </div>
-                            </div>
-                            <div class="inquiry-right">
-                                <span class="inquiry-badge badge-new">새 문의</span>
-                                <button class="btn-reply" onclick="event.stopPropagation(); showReplyForm(this)">답변하기</button>
-                            </div>
-                        </div>
-                        <div class="inquiry-body">
-                            <div class="inquiry-divider"></div>
-                            <div class="reply-section">
-                                <div class="reply-title">💬 답변 작성</div>
-                                <textarea class="reply-textarea" placeholder="고객님께 답변을 작성하세요..."></textarea>
-                                <div class="reply-actions">
-                                    <button class="btn-cancel" onclick="event.stopPropagation(); hideReplyForm(this)">취소</button>
-                                    <button class="btn-submit" onclick="event.stopPropagation(); submitReply(this)">답변 전송</button>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-
-                <div class="pagination">
-                    <button disabled>← 이전</button>
-                    <button class="active">1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button>다음 →</button>
-                </div>
+                                </li>
+                            </c:forEach>
+                        </ul>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </main>
     </div>
 
     <script>
         function toggleInquiry(element) {
+            const inquiryId = element.dataset.inquiryId;
+            const isExpanded = element.classList.contains('expanded');
+            
+            if (!isExpanded && element.classList.contains('new')) {
+                // 읽음 처리
+                markAsRead(inquiryId);
+            }
+            
             element.classList.toggle('expanded');
         }
 
@@ -875,47 +723,87 @@
             inquiryItem.classList.remove('expanded');
         }
 
-        function submitReply(button) {
+        function submitReply(button, inquiryId) {
             const inquiryItem = button.closest('.inquiry-item');
             const textarea = inquiryItem.querySelector('.reply-textarea');
+            const answer = textarea.value.trim();
             
-            if (textarea.value.trim() === '') {
+            if (answer === '') {
                 alert('답변 내용을 입력해주세요.');
                 return;
             }
 
-            if (confirm('답변을 전송하시겠습니까?')) {
-                // 답변 전송 로직
-                alert('답변이 전송되었습니다.');
-                
-                // UI 업데이트
-                inquiryItem.classList.remove('new');
-                const badge = inquiryItem.querySelector('.inquiry-badge');
-                badge.textContent = '답변완료';
-                badge.className = 'inquiry-badge badge-replied';
-                
-                const replyButton = inquiryItem.querySelector('.btn-reply');
-                if (replyButton) {
-                    replyButton.remove();
-                }
-                
-                // 답변 내용을 표시된 답변으로 변경
-                const replySection = inquiryItem.querySelector('.reply-section');
-                const replyText = textarea.value;
-                const today = new Date().toLocaleDateString('ko-KR');
-                
-                replySection.innerHTML = `
-                    <div class="replied-content">
-                        <div class="replied-header">
-                            <span class="replied-title">✅ 답변 완료</span>
-                            <span class="replied-date">\${today}</span>
-                        </div>
-                        <div class="replied-text">\${replyText.replace(/\\n/g, '<br>')}</div>
-                    </div>
-                `;
-                
-                inquiryItem.classList.remove('expanded');
+            if (!confirm('답변을 전송하시겠습니까?')) {
+                return;
             }
+
+            // AJAX로 답변 전송
+            fetch('${pageContext.request.contextPath}/realtor/inquiry/answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'inquiryId=' + inquiryId + '&answer=' + encodeURIComponent(answer)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('답변이 전송되었습니다.');
+                    location.reload();
+                } else {
+                    alert(data.message || '답변 전송에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다.');
+            });
+        }
+
+        function markAsRead(inquiryId) {
+            fetch('${pageContext.request.contextPath}/realtor/inquiry/read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'inquiryId=' + inquiryId
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('읽음 처리 완료');
+                }
+            })
+            .catch(error => {
+                console.error('읽음 처리 실패:', error);
+            });
+        }
+
+        // 필터링 기능
+        document.getElementById('statusFilter').addEventListener('change', filterInquiries);
+        document.getElementById('categoryFilter').addEventListener('change', filterInquiries);
+        document.getElementById('searchInput').addEventListener('input', filterInquiries);
+
+        function filterInquiries() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            
+            const inquiryItems = document.querySelectorAll('.inquiry-item');
+            
+            inquiryItems.forEach(item => {
+                const status = item.dataset.status;
+                const category = item.dataset.category;
+                const text = item.textContent.toLowerCase();
+                
+                let show = true;
+                
+                if (statusFilter && status !== statusFilter) show = false;
+                if (categoryFilter && category !== categoryFilter) show = false;
+                if (searchText && !text.includes(searchText)) show = false;
+                
+                item.style.display = show ? 'block' : 'none';
+            });
         }
     </script>
 </body>

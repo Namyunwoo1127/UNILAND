@@ -1420,9 +1420,9 @@
                 </div>
             </div>
         </div>
-        <div class="detail-actions">
+		<div class="detail-actions">
             <button class="btn-favorite">♡ 찜하기</button>
-            <button class="btn-contact" onclick="goToContactPage()">중개사 문의하기</button>
+            <button class="btn-contact" onclick="checkLoginAndGoToContact()">중개사 문의하기</button>
             <button class="btn-detail" onclick="openDetailPage()">🔍 전체 상세보기</button>
         </div>
     </div>
@@ -1835,7 +1835,7 @@
                 return;
             }
             // 'contact-realtor.jsp' 페이지로 propertyId를 쿼리 스트링으로 넘깁니다.
-            window.location.href = '${pageContext.request.contextPath}/inquiry/realtor?propertyId=' + currentPropertyId;
+            window.location.href = '${pageContext.request.contextPath}/inquiries/realtor?propertyId=' + currentPropertyId;
         }
 
         // 전체 상세 페이지로 이동
@@ -1847,6 +1847,25 @@
             }
             // Spring Controller의 @GetMapping("/{id}") 패턴에 맞게 이동
             window.location.href = '${pageContext.request.contextPath}/property/' + currentPropertyId;
+        }
+        
+     	//  중개사 문의하기 버튼 클릭 시 로그인 체크 함수
+        function checkLoginAndGoToContact() {
+            // JSTL을 이용해 로그인 상태를 JavaScript 변수에 저장
+            const isLoggedIn = ${not empty sessionScope.loginUser}; 
+
+            if (!isLoggedIn) {
+                // 로그인이 안 되어 있으면 확인 창 띄우기
+                if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
+                    // 확인 누르면 로그인 페이지로 이동 (로그인 후 지도 페이지로 돌아오도록 redirectUrl 설정)
+                    window.location.href = '${pageContext.request.contextPath}/auth/login?redirectUrl=/map';
+                }
+                // 취소 누르면 아무것도 안 함
+                return; 
+            }
+
+            // 로그인이 되어 있으면 기존 함수 호출
+            goToContactPage(); 
         }
     </script>
 </body>

@@ -9,6 +9,7 @@ import com.elon.boot.domain.inquiry.model.vo.Inquiry;
  */
 public interface InquiryService {
 	
+	// 사용자용
 	List<Inquiry> getMyInquiries(String userId);
 
 	int createInquiry(Inquiry inquiry);
@@ -21,6 +22,22 @@ public interface InquiryService {
     List<Inquiry> getAllInquiries();
     
     int answerInquiry(Integer inquiryId, String answer);
+    
+
+    
+    // 중개사용
+    
+    // 중개사가 받은 문의 목록 조회
+    List<Inquiry> getRealtorInquiries(String realtorId);
+    
+    // 중개사가 받은 문의 통계 조회
+    java.util.Map<String, Integer> getRealtorInquiryStats(String realtorId);
+    
+    // 중개사 문의에 답변 작성
+    int answerRealtorInquiry(Integer inquiryId, String answer);
+    
+    // 문의 읽음 처리
+    int markAsRead(Integer inquiryId);
 
     // TODO: 중개사 문의 생성
     // int createRealtorInquiry(Inquiry inquiry);

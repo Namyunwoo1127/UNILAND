@@ -5,87 +5,48 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>중개사 문의하기 - UNILAND</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ========================================
-           UNILAND 디자인 시스템 - CSS 변수
-        ======================================== */
-        :root {
-            --primary-purple: #667eea;
-            --primary-dark: #5568d3;
-            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --text-primary: #1a1a1a;
-            --text-secondary: #555;
-            --text-tertiary: #718096; /* ★ map.jsp와 통일 */
-            --bg-body: #f5f5f5;
-            --bg-white: #ffffff;
-            --bg-tag: #f7fafc; /* ★ map.jsp와 통일 */
-            --border-light: #e2e8f0; /* ★ map.jsp와 통일 */
-            --spacing-sm: 12px;
-            --spacing-md: 20px;
-            --spacing-lg: 24px;
-            --spacing-xl: 32px;
-            --spacing-2xl: 40px;
-            --spacing-3xl: 48px;
-            --radius-md: 6px;
-            --radius-lg: 8px;
-            --font-md: 14px;
-            --font-lg: 16px;
-            --font-2xl: 24px;
-            --color-red: #f56565; /* ★ 빨간색 변수 추가 */
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-body);
-            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
         }
 
-        /* ========================================
-           ▼▼▼ 1. 새로운 2단 레이아웃 CSS ▼▼▼
-        ======================================== */
         .page-wrapper {
             display: flex;
-            max-width: 1200px; /* ★ 전체 컨테이너 폭 조절 */
-            margin: var(--spacing-3xl) auto;
-            background: var(--bg-white);
-            border-radius: var(--radius-lg);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            overflow: hidden; /* 자식 요소의 radius 적용을 위해 */
+            max-width: 1200px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
         }
 
-        .property-detail-column {
-            flex: 1; /* 왼쪽 컬럼 */
-            min-width: 450px; /* 최소 너비 */
-            max-width: 550px; /* 최대 너비 */
-            border-right: 1px solid var(--border-light);
-            background: var(--bg-white);
-        }
-
-        .inquiry-form-column {
-            flex: 1; /* 오른쪽 컬럼 */
-            min-width: 400px; /* 최소 너비 */
-            padding: var(--spacing-xl);
-            display: flex;
-            flex-direction: column;
-        }
-        
         /* ========================================
-           ▼▼▼ 2. map.jsp에서 가져온 상세정보 CSS ▼▼▼
+           왼쪽 컬럼 - 매물 상세 정보
         ======================================== */
+        .property-detail-column {
+            flex: 1;
+            min-width: 450px;
+            max-width: 550px;
+            border-right: 1px solid #e2e8f0;
+            background: white;
+        }
+
         .detail-images {
             width: 100%;
             height: 300px;
             position: relative;
             background: #f0f0f0;
-            flex-shrink: 0;
         }
 
         .detail-images img {
@@ -96,14 +57,12 @@
 
         .detail-info {
             padding: 25px;
-            width: 100%;
-            flex-shrink: 0;
         }
 
         .detail-price {
             font-size: 32px;
             font-weight: bold;
-            color: var(--primary-purple);
+            color: #667eea;
             margin-bottom: 15px;
         }
 
@@ -116,14 +75,14 @@
 
         .detail-location {
             font-size: 15px;
-            color: var(--text-tertiary);
+            color: #718096;
             margin-bottom: 20px;
         }
 
         .detail-section {
             margin-bottom: 25px;
             padding-bottom: 25px;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .detail-section:last-child {
@@ -149,12 +108,12 @@
             display: flex;
             justify-content: space-between;
             padding: 10px;
-            background: var(--bg-tag);
+            background: #f7fafc;
             border-radius: 4px;
         }
 
         .detail-item-label {
-            color: var(--text-tertiary);
+            color: #718096;
             font-size: 14px;
         }
 
@@ -172,7 +131,7 @@
 
         .detail-option {
             background: #e0e7ff;
-            color: var(--primary-purple);
+            color: #667eea;
             padding: 8px 14px;
             border-radius: 4px;
             font-size: 13px;
@@ -183,134 +142,182 @@
             color: #4a5568;
             line-height: 1.6;
             font-size: 14px;
-            white-space: pre-wrap; /* 줄바꿈 유지를 위해 */
+            white-space: pre-wrap;
         }
-        
+
         /* ========================================
-           ▼▼▼ 3. 기존 문의 양식 CSS ▼▼▼
+           오른쪽 컬럼 - 문의 양식
         ======================================== */
-        .page-title {
-            font-size: var(--font-2xl);
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-2xl);
+        .inquiry-form-column {
+            flex: 1;
+            min-width: 400px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            color: #2d3748;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: var(--spacing-sm);
+            gap: 12px;
         }
-        
-        .form-group {
-            margin-bottom: var(--spacing-lg);
+
+        .page-header p {
+            color: #718096;
+            font-size: 16px;
         }
-        
-        .form-label {
-            display: block;
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-size: var(--font-md);
-            margin-bottom: var(--spacing-sm);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: var(--spacing-sm) var(--spacing-md);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            font-size: var(--font-md);
-            transition: all 0.3s;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-purple);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        textarea.form-control {
-            min-height: 200px;
-            resize: vertical;
-            font-family: inherit;
-        }
-        
-        .btn-area {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto; /* ★ 버튼을 하단에 고정 */
-            padding-top: var(--spacing-lg);
-            border-top: 1px solid var(--border-light);
-        }
-        
-        .btn-primary {
-            padding: var(--spacing-sm) var(--spacing-lg);
-            background: var(--gradient-primary);
-            color: var(--bg-white);
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: var(--font-md);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-        
-        .btn-primary:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn-secondary {
-            padding: var(--spacing-sm) var(--spacing-lg);
-            background: var(--bg-white);
-            color: var(--primary-purple);
-            border: 1px solid var(--primary-purple);
-            border-radius: var(--radius-md);
-            font-size: var(--font-md);
-            font-weight: 500;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-        
-        .btn-secondary:hover {
-            background: var(--bg-tag);
-        }
-        
+
         .alert {
-            padding: var(--spacing-md);
-            margin-bottom: var(--spacing-lg);
-            border-radius: var(--radius-md);
-            font-size: var(--font-md);
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        
+
         .alert-error {
             background: rgba(245, 101, 101, 0.1);
             color: #f56565;
             border: 1px solid #f56565;
         }
 
-        /* ▼▼▼ 4. 필수 입력(*) 마크 빨간색 스타일 추가 ▼▼▼ */
-        .required-mark {
-            color: var(--color-red); /* CSS 변수 사용 */
-            margin-left: 2px; /* 라벨 텍스트와 약간 간격 띄우기 */
+        .inquiry-form {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
         }
-        
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .required-mark {
+            color: #f56565;
+            margin-left: 2px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea.form-control {
+            min-height: 200px;
+            resize: vertical;
+        }
+
+        .form-group-grow {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group-grow textarea {
+            flex-grow: 1;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .btn-cancel {
+            padding: 12px 24px;
+            background: white;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-cancel:hover {
+            background: #f7fafc;
+        }
+
+        .btn-submit {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 반응형 */
+        @media (max-width: 1024px) {
+            .page-wrapper {
+                flex-direction: column;
+            }
+
+            .property-detail-column {
+                min-width: 100%;
+                max-width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .inquiry-form-column {
+                min-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-	<jsp:include page="/WEB-INF/views/common/header.jsp"/>
-	
+    <jsp:include page="/WEB-INF/views/common/header.jsp"/>
+    
     <div class="page-wrapper">
-        
+        <!-- 왼쪽: 매물 상세 정보 -->
         <div class="property-detail-column">
             <c:if test="${not empty property}">
-				<div class="detail-images">
+                <div class="detail-images">
                     <c:if test="${not empty thumbnail and not empty thumbnail.imgPath}">
                         <img src="${pageContext.request.contextPath}${thumbnail.imgPath}" alt="매물 썸네일" 
                              onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/images/property/placeholder.jpg';">
@@ -322,17 +329,17 @@
                 
                 <div class="detail-info">
                     <div class="detail-price">
-                        보증금 <fmt:formatNumber value="${property.deposit}" pattern="#,###" /> / 
-                        월세 <fmt:formatNumber value="${property.monthlyRent}" pattern="#,###" />
+                        보증금 <fmt:formatNumber value="${property.deposit}" pattern="#,###" />만 / 
+                        월세 <fmt:formatNumber value="${property.monthlyRent}" pattern="#,###" />만
                     </div>
                     <div class="detail-title">${property.propertyName}</div>
                     <div class="detail-location">
                         📍 ${property.roadAddress} ${property.addressDetail}
                     </div>
 
-					<div class="detail-section">
+                    <div class="detail-section">
                         <h3>기본 정보</h3>
-						<div class="detail-grid">
+                        <div class="detail-grid">
                             <div class="detail-item">
                                 <span class="detail-item-label">방 종류</span>
                                 <span class="detail-item-value">
@@ -405,75 +412,102 @@
 
                     <div class="detail-section">
                         <h3>상세 설명</h3>
-                        <div class="detail-description">
-                            ${property.description}
-                        </div>
+                        <div class="detail-description">${property.description}</div>
                     </div>
                 </div>
             </c:if>
+            
             <c:if test="${empty property}">
                 <div class="detail-info">
                     <div class="detail-title">매물 정보를 불러올 수 없습니다.</div>
-                    <div class="detail-description">
-                        이전 페이지로 돌아가 다시 시도해 주세요.
-                    </div>
+                    <div class="detail-description">이전 페이지로 돌아가 다시 시도해 주세요.</div>
                 </div>
             </c:if>
         </div>
 
+        <!-- 오른쪽: 문의 양식 -->
         <div class="inquiry-form-column">
-            <h2 class="page-title">
-                <i class="fa-solid fa-comment-dots"></i>
-                중개사 문의하기
-            </h2>
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-comment-dots"></i>
+                    중개사 문의하기
+                </h1>
+                <p>궁금한 사항을 문의하시면 빠르게 답변 드리겠습니다</p>
+            </div>
             
             <c:if test="${not empty error}">
-                <div class="alert alert-error">${error}</div>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    ${error}
+                </div>
             </c:if>
             
-            <form action="${pageContext.request.contextPath}/inquiry/realtor" method="post" style="display: flex; flex-direction: column; flex-grow: 1;">
-                
+            <form action="${pageContext.request.contextPath}/inquiries/realtor" method="post" class="inquiry-form">
                 <input type="hidden" name="propertyId" value="${property.propertyNo}">
                 <input type="hidden" name="realtorId" value="${property.realtorId}">
                 <input type="hidden" name="userId" value="${sessionScope.loginUser.userId}">
                 <input type="hidden" name="inquiryType" value="REALTOR">
 
                 <div class="form-group">
-                    <%-- ▼▼▼ 5. 별표(*)를 span 태그로 감싸기 ▼▼▼ --%>
-                    <label for="contactPhone" class="form-label">연락처<span class="required-mark">*</span></label>
+                    <label for="contactPhone" class="form-label">
+                        연락처<span class="required-mark">*</span>
+                    </label>
                     <input type="tel" 
                            id="contactPhone" 
                            name="contactPhone" 
                            class="form-control" 
-                           value="${sessionScope.loginUser.userPhone}" required>
+                           value="${sessionScope.loginUser.userPhone}" 
+                           placeholder="010-1234-5678"
+                           required>
                 </div>
+
                 <div class="form-group">
-                    <%-- ▼▼▼ 6. 별표(*)를 span 태그로 감싸기 ▼▼▼ --%>
-                    <label for="inquiryTitle" class="form-label">제목<span class="required-mark">*</span></label>
+                    <label for="inquiryCategory" class="form-label">
+                        문의 유형<span class="required-mark">*</span>
+                    </label>
+                    <select id="inquiryCategory" 
+                            name="inquiryCategory" 
+                            class="form-control" 
+                            required>
+                        <option value="">문의 유형을 선택하세요</option>
+                        <option value="VISIT">방문 문의</option>
+                        <option value="PRICE">가격 문의</option>
+                        <option value="CONTRACT">계약 문의</option>
+                        <option value="ETC">기타</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="inquiryTitle" class="form-label">
+                        제목<span class="required-mark">*</span>
+                    </label>
                     <input type="text" 
                            id="inquiryTitle" 
                            name="inquiryTitle"
                            class="form-control" 
-                           placeholder="제목을 입력하세요 (예: ${property.propertyName} 문의합니다)" 
+                           placeholder="문의 제목을 입력하세요 (예: ${property.propertyName} 방문 희망합니다)" 
                            required>
                 </div>
                 
-                <div class="form-group" style="flex-grow: 1; display: flex; flex-direction: column;">
-                    <%-- ▼▼▼ 7. 별표(*)를 span 태그로 감싸기 ▼▼▼ --%>
-                    <label for="inquiryContent" class="form-label">내용<span class="required-mark">*</span></label>
+                <div class="form-group form-group-grow">
+                    <label for="inquiryContent" class="form-label">
+                        내용<span class="required-mark">*</span>
+                    </label>
                     <textarea id="inquiryContent" 
                               name="inquiryContent" 
                               class="form-control" 
-                              placeholder="문의 할 내용을 입력하세요 (예: 방문 희망 시간: 평일 6시 이후)" 
-                              required style="flex-grow: 1;"></textarea>
+                              placeholder="문의 내용을 자세히 입력해주세요&#10;&#10;예시:&#10;- 방문 희망 시간: 평일 오후 6시 이후&#10;- 입주 희망일: 2025년 3월 1일&#10;- 기타 문의사항" 
+                              required></textarea>
                 </div>
                 
-                <div class="btn-area">
-                    <a href="javascript:history.back()" class="btn-secondary">
-                        <i class="fa-solid fa-arrow-left"></i> 취소
+                <div class="form-actions">
+                    <a href="javascript:history.back()" class="btn-cancel">
+                        <i class="fas fa-arrow-left"></i>
+                        취소
                     </a>
-                    <button type="submit" class="btn-primary">
-                        <i class="fa-solid fa-paper-plane"></i> 문의하기
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i>
+                        문의하기
                     </button>
                 </div>
             </form>
@@ -481,6 +515,5 @@
     </div>
     
     <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
-    
 </body>
 </html>
