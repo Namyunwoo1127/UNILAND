@@ -567,8 +567,8 @@
       <!-- 문의 목록 -->
       <ul class="inquiry-list">
         <c:forEach var="inquiry" items="${inquiryList}" varStatus="status">
-          <li class="inquiry-item ${inquiry.status == 'PENDING' ? 'new' : ''}" onclick="toggleInquiry(this)">
-            <div class="inquiry-header">
+          <li class="inquiry-item ${inquiry.status == 'PENDING' ? 'new' : ''}">
+            <div class="inquiry-header" onclick="toggleInquiry(this)">
               <div class="inquiry-left">
                 <div class="inquiry-user-info">
                   <div class="inquiry-avatar">
@@ -585,8 +585,8 @@
                   </div>
                 </div>
                 <div>
-                  <span class="inquiry-type type-${inquiry.inquiryType == 'ADMIN' ? 'ADMIN' : inquiry.inquiryType == 'PROPERTY' ? 'property' : 'contract'}">
-                    ${inquiry.inquiryType == 'ADMIN' ? '일반문의' : inquiry.inquiryType == 'PROPERTY' ? '매물문의' : '계약문의'}
+                  <span class="inquiry-type type-${inquiry.inquiryType == 'GENERAL' ? 'general' : inquiry.inquiryType == 'PROPERTY' ? 'property' : 'contract'}">
+                    ${inquiry.inquiryType == 'GENERAL' ? '일반문의' : inquiry.inquiryType == 'PROPERTY' ? '매물문의' : '계약문의'}
                   </span>
                   <c:if test="${not empty inquiry.category}">
                     <span class="inquiry-type type-general">${inquiry.category}</span>
@@ -694,8 +694,8 @@
         alert('답변 내용을 입력해주세요.');
         return false;
       }
-      if (textarea.value.trim().length < 10) {
-        alert('답변 내용을 10자 이상 입력해주세요.');
+      if (textarea.value.trim().length < 3) {
+        alert('답변 내용을 3자 이상 입력해주세요.');
         return false;
       }
       return confirm('답변을 전송하시겠습니까?');

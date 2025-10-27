@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
-@RequestMapping("/inquiries")
+@RequestMapping("/inquiry")
 @RequiredArgsConstructor
 @Slf4j
 public class InquiryController {

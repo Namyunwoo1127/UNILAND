@@ -683,54 +683,13 @@
             
             <!-- 내 문의내역 -->
             <div class="content-section" id="inquiries">
-                <div class="section-title">내 문의내역</div>
-                <c:choose>
-                    <c:when test="${not empty inquiries}">
-                        <c:forEach var="inquiry" items="${inquiries}">
-                            <div class="list-item" onclick="location.href='${pageContext.request.contextPath}/inquiries/${inquiry.inquiryId}'">
-                                <div>
-                                    <div class="list-title">${inquiry.title}</div>
-                                    <div class="list-date"><fmt:formatDate value="${inquiry.createdAt}" pattern="yyyy.MM.dd"/></div>
-                                </div>
-                                <div class="status-badge ${inquiry.status == 'ANSWERED' ? 'status-complete' : 'status-pending'}">
-                                    ${inquiry.status == 'ANSWERED' ? '답변완료' : '답변대기'}
-                                </div>
-                            </div>
-                        </c:forEach>
-                    </c:when>
-                    <c:otherwise>
-                        <!-- 샘플 데이터 -->
-                        <div class="list-item">
-                            <div>
-                                <div class="list-title">강남구 역삼동 아파트 문의</div>
-                                <div class="list-date">2024.03.12</div>
-                            </div>
-                            <div class="status-badge status-complete">답변완료</div>
-                        </div>
-                        <div class="list-item">
-                            <div>
-                                <div class="list-title">대출 관련 문의</div>
-                                <div class="list-date">2024.03.11</div>
-                            </div>
-                            <div class="status-badge status-pending">답변대기</div>
-                        </div>
-                        <div class="list-item">
-                            <div>
-                                <div class="list-title">매물 등록 방법 문의</div>
-                                <div class="list-date">2024.03.10</div>
-                            </div>
-                            <div class="status-badge status-complete">답변완료</div>
-                        </div>
-                        <div class="list-item">
-                            <div>
-                                <div class="list-title">계약서 작성 관련 문의</div>
-                                <div class="list-date">2024.03.08</div>
-                            </div>
-                            <div class="status-badge status-complete">답변완료</div>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <div class="section-title" style="margin-bottom: 0;">내 문의내역</div>
+                    
+                    <button class="btn-edit" onclick="location.href='${pageContext.request.contextPath}/inquiry/contact-admin'">
+                        <i class="fa-solid fa-headset"></i> 관리자에게 문의하기
+                    </button>
+                </div>
         </div>
     </div>
     

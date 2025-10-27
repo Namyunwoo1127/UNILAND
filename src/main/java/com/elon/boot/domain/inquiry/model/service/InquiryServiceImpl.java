@@ -45,6 +45,7 @@ public class InquiryServiceImpl implements InquiryService {
         return inquiryMapper.deleteInquiry(inquiryId);
     }
 
+//	관리자 문의 리스트
 	@Override
     public List<Inquiry> getAllInquiries() {
         return inquiryMapper.selectAllInquiriesForAdmin();
@@ -59,6 +60,11 @@ public class InquiryServiceImpl implements InquiryService {
         
         return inquiryMapper.updateInquiryAnswer(params);
     }
+
+	@Override
+	public List<Inquiry> getInquiriesByUserId(String userId) {
+		return inquiryMapper.selectInquiriesByUserId(userId);
+	}
 	
 	@Override
     public List<Inquiry> getRealtorInquiries(String realtorId) {
