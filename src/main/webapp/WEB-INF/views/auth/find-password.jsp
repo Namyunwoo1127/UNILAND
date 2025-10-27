@@ -11,40 +11,27 @@
         UNILAND 디자인 시스템 - CSS 변수
         ======================================== */
         :root {
-            /* 메인 컬러 */
             --primary-purple: #667eea;
             --primary-dark: #5568d3;
             --secondary-purple: #764ba2;
             --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
-            /* 텍스트 컬러 */
             --text-primary: #1a1a1a;
             --text-secondary: #555;
             --text-tertiary: #666;
             --text-light: #999;
-
-            /* 배경 컬러 */
             --bg-body: #f5f5f5;
             --bg-white: #ffffff;
             --bg-light-gray: #f0f0f0;
-            
-            /* 테두리 컬러 */
             --border-light: #e5e5e5;
             --border-medium: #d0d0d0;
-
-            /* 간격 (Spacing) */
             --spacing-sm: 12px;
             --spacing-md: 20px;
             --spacing-lg: 24px;
             --spacing-xl: 32px;
             --spacing-2xl: 40px;
-
-            /* 모서리 반경 (Border Radius) */
             --radius-md: 6px;
             --radius-lg: 8px;
             --radius-xl: 12px;
-
-            /* 폰트 크기 (Font Size) */
             --font-sm: 13px;
             --font-md: 14px;
             --font-base: 15px;
@@ -52,9 +39,6 @@
             --font-2xl: 24px;
         }
 
-        /* ========================================
-        스타일 초기화 및 기본 설정
-        ======================================== */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
         body {
@@ -67,9 +51,6 @@
             font-family: 'Noto Sans KR', sans-serif;
         }
 
-        /* ========================================
-        컴포넌트 스타일 (디자인 시스템 적용)
-        ======================================== */
         .find-password-container {
             width: 380px;
             padding: var(--spacing-2xl);
@@ -127,7 +108,7 @@
         
         .input-field {
             width: 100%;
-            padding: 14px; /* var(--spacing-sm) 보다 조금 더 여유있게 조정 */
+            padding: 14px;
             border: 1px solid var(--border-medium);
             border-radius: var(--radius-lg);
             font-size: var(--font-base);
@@ -258,18 +239,29 @@
             <div class="success-message">${successMsg}</div>
         </c:if>
 
-        <c:if test="${not empty user}">
+        <!-- 회원 정보 출력 -->
+        <c:if test="${not empty user or not empty realtor}">
             <div class="user-info">
                 <p><strong>회원 정보를 찾았습니다!</strong></p>
-                <p>아이디: ${user.userId}</p>
-                <p>이름: ${user.userName}</p>
-                <p style="color: #667eea; font-weight: bold;">비밀번호: ${user.userPassword}</p>
+                <c:if test="${not empty user}">
+                    <p>회원구분: 일반회원</p>
+                    <p>아이디: ${user.userId}</p>
+                    <p>이름: ${user.userName}</p>
+                    <p style="color: #667eea; font-weight: bold;">비밀번호: ${user.userPassword}</p>
+                </c:if>
+                <c:if test="${not empty realtor}">
+                    <p>회원구분: 중개사</p>
+                    <p>아이디: ${realtor.realtorId}</p>
+                    <p>이름: ${realtor.realtorName}</p>
+                    <p style="color: #667eea; font-weight: bold;">비밀번호: ${realtor.realtorPassword}</p>
+                </c:if>
                 <p style="font-size: 12px; color: #999; margin-top: 10px;">※ 보안을 위해 로그인 후 비밀번호를 변경해주세요.</p>
             </div>
             <a href="${pageContext.request.contextPath}/auth/login" class="main-button" style="display:block; width:100%; text-decoration:none; text-align:center; box-sizing:border-box;">로그인하러 가기</a>
         </c:if>
 
-        <c:if test="${empty user}">
+        <!-- 회원 정보 미발견 시 -->
+        <c:if test="${empty user and empty realtor}">
             <div class="tab-menu">
                 <div class="tab-item active" onclick="switchTab('email')">이메일로 찾기</div>
                 <div class="tab-item" onclick="switchTab('phone')">휴대폰으로 찾기</div>
@@ -321,43 +313,32 @@
             document.getElementById(tabName + '-find').classList.add('active');
         }
 
-        // 인증번호 생성 및 전송 (더미)
         function sendVerificationCode(type) {
             const emailInput = document.querySelector('#email-find input[name="userEmail"]');
             const phoneInput = document.querySelector('#phone-find input[name="userPhone"]');
 
-            if (type === 'email') {
-                if (!emailInput || !emailInput.value) {
-                    alert('이메일 주소를 입력해주세요.');
-                    return;
-                }
-            } else if (type === 'phone') {
-                if (!phoneInput || !phoneInput.value) {
-                    alert('휴대폰 번호를 입력해주세요.');
-                    return;
-                }
+            if (type === 'email' && (!emailInput || !emailInput.value)) {
+                alert('이메일 주소를 입력해주세요.');
+                return;
+            }
+            if (type === 'phone' && (!phoneInput || !phoneInput.value)) {
+                alert('휴대폰 번호를 입력해주세요.');
+                return;
             }
 
-            // 6자리 랜덤 인증번호 생성
             generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-            // 더미 데이터이므로 alert로 인증번호 표시
             alert('인증번호가 발송되었습니다.\n(테스트용 인증번호: ' + generatedCode + ')');
         }
 
-        // 폼 제출 전 인증번호 확인
         function validateForm(event, type) {
             const codeInput = event.target.querySelector('input[placeholder="인증번호 6자리"]');
-
             if (generatedCode && codeInput.value !== generatedCode) {
                 event.preventDefault();
                 alert('인증번호가 일치하지 않습니다.');
                 return false;
             }
-
             return true;
         }
     </script>
-
 </body>
 </html>
