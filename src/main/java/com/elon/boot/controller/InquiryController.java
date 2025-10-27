@@ -71,10 +71,52 @@ public class InquiryController {
     }
 
     // TODO: 중개사 문의 제출
-    // @PostMapping("/realtor")
-    // public String submitRealtorInquiry(Inquiry inquiry) {
-    //     return "redirect:/mypage?tab=inquiries";
-    // }
+    @PostMapping("/realtor")
+    public String submitRealtorInquiry(@ModelAttribute Inquiry inquiry,
+                                       @RequestParam("contactPhone") String contactPhone,
+                                       @RequestParam("inquiryCategory") String inquiryCategory,
+                                       @RequestParam("inquiryTitle") String inquiryTitle,
+                                       @RequestParam("inquiryContent") String inquiryContent,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes) {
+        
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/auth/login";
+        }
+        
+        try {
+            // Inquiry 객체 설정
+            inquiry.setUserId(loginUser.getUserId());
+            inquiry.setUserName(loginUser.getUserName());
+            inquiry.setUserPhone(contactPhone);
+            inquiry.setInquiryType("REALTOR");
+            inquiry.setCategory(inquiryCategory);
+            inquiry.setTitle(inquiryTitle);
+            inquiry.setContent(inquiryContent);
+            inquiry.setStatus("PENDING");
+            inquiry.setDeleteYn("N");
+            inquiry.setReadYn("N");
+            
+            log.info("중개사 문의 등록: {}", inquiry);
+            
+            int result = inquiryService.createInquiry(inquiry);
+            
+            if (result > 0) {
+                redirectAttributes.addFlashAttribute("message", "문의가 성공적으로 전송되었습니다.");
+                return "redirect:/mypage?tab=inquiries";
+            } else {
+                redirectAttributes.addFlashAttribute("error", "문의 등록에 실패했습니다.");
+                return "redirect:/inquiries/realtor?propertyId=" + inquiry.getPropertyId();
+            }
+            
+        } catch (Exception e) {
+            log.error("중개사 문의 등록 실패: ", e);
+            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다.");
+            return "redirect:/inquiries/realtor?propertyId=" + inquiry.getPropertyId();
+        }
+    }
 
     // TODO: 관리자 문의 페이지
     // @GetMapping("/admin")

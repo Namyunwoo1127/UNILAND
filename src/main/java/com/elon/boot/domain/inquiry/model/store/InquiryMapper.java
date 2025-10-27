@@ -25,6 +25,24 @@ public interface InquiryMapper {
 	List<Inquiry> selectAllInquiriesForAdmin();
 
 	int updateInquiryAnswer(Map<String, Object> params);
+	
+
+    // 중개사별 문의 조회 (매물명 포함)
+    List<Inquiry> selectInquiriesByRealtorId(String realtorId);
+    
+    // 중개사 전체 문의 수 조회
+    int countRealtorInquiries(String realtorId);
+    
+    // 중개사 상태별 문의 수 조회
+    int countRealtorInquiriesByStatus(@Param("realtorId") String realtorId, 
+                                      @Param("status") String status);
+    
+    // 중개사 오늘 받은 문의 수 조회
+    int countRealtorInquiriesToday(String realtorId);
+    
+    // 문의 읽음 처리
+    int updateInquiryReadStatus(Integer inquiryId);
+    
 
     // TODO: 문의 등록
     // int insertInquiry(Inquiry inquiry);
