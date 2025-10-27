@@ -60,6 +60,20 @@ optionMapper.insertOption(oReq);
 
 // 4) 이미지 INSERT (FK 세팅 + 파일 저장)
 if (images != null && !images.isEmpty()) {
+// uploadRoot 설정 확인
+if (uploadRoot == null || uploadRoot.trim().isEmpty()) {
+   throw new IllegalStateException("file.upload-dir 설정이 없습니다. application.properties를 확인하세요.");
+}
+
+// 업로드 디렉토리 생성 및 확인
+File uploadDir = new File(uploadRoot, "property");
+if (!uploadDir.exists()) {
+   boolean created = uploadDir.mkdirs();
+   if (!created) {
+       throw new RuntimeException("업로드 디렉토리 생성 실패: " + uploadDir.getAbsolutePath());
+   }
+}
+
 List<PropertyImg> imgList = new ArrayList<>();
 for (int i = 0; i < images.size(); i++) {
    MultipartFile image = images.get(i);
@@ -76,12 +90,11 @@ for (int i = 0; i < images.size(); i++) {
    img.setImgPath("/images/property/" + rename);  // 리소스 매핑 경로와 일치시키기
    imgList.add(img);
 
-   File target = new File(uploadRoot + "/property/" + rename);
-   target.getParentFile().mkdirs();
+   File target = new File(uploadDir, rename);
    try {
        image.transferTo(target);
    } catch (IOException | IllegalStateException e) {
-       throw new RuntimeException("이미지 저장 실패: " + original, e);
+       throw new RuntimeException("이미지 저장 실패: " + original + " (경로: " + target.getAbsolutePath() + ")", e);
    }
 }
 if (!imgList.isEmpty()) {

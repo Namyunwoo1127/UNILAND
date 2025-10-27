@@ -12,7 +12,7 @@ import com.elon.boot.domain.property.model.vo.PropertyOption;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
 
 public interface PropertyService {
-	
+
     Long register(PropertyAddRequest req,OptionAddRequest oReq,List<MultipartFile> images, String realtorId);
 
 	Property selectOneByNo(Long id);

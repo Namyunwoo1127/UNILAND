@@ -818,26 +818,97 @@
   /*  이미지 업로드용도        */
     const photoInput = document.getElementById('photoInput');
      const previewGrid = document.getElementById('previewGrid');
-     
-     photoInput.addEventListener('change',function() {
-        previewGrid.innerHTML = '';// 미리보기 초기화용
-        const files = Array.from(this.files);
-        
-        if(files.length > 0 ){
-           previewGrid.style.display = 'grid';
-           files.forEach(file => {
-              if(!file.type.startsWith('image/')) return; // 이미지 파일만 받게
-              const reader = new FileReader();
-              reader.onload = e => {
-                 const img = document.createElement('img');
-                 img.src = e.target.result;
-                 previewGrid.appendChild(img);
-              };
-              reader.readAsDataURL(file);
-           });
-        }else {
+     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+     let fileArray = []; // 파일 목록을 저장할 배열
+
+     // 미리보기 업데이트 함수
+     function updatePreview() {
+        previewGrid.innerHTML = '';
+
+        if(fileArray.length === 0) {
            previewGrid.style.display = 'none';
+           return;
         }
+
+        previewGrid.style.display = 'grid';
+
+        fileArray.forEach((file, index) => {
+           const reader = new FileReader();
+           reader.onload = e => {
+              // photo-preview wrapper 생성
+              const previewDiv = document.createElement('div');
+              previewDiv.className = 'photo-preview';
+
+              // 이미지 생성
+              const img = document.createElement('img');
+              img.src = e.target.result;
+
+              // 대표 사진 뱃지 (첫 번째 이미지만)
+              if(index === 0) {
+                 const badge = document.createElement('div');
+                 badge.className = 'photo-badge';
+                 badge.textContent = '대표';
+                 previewDiv.appendChild(badge);
+              }
+
+              // 삭제 버튼 추가
+              const removeBtn = document.createElement('button');
+              removeBtn.className = 'photo-remove';
+              removeBtn.type = 'button';
+              removeBtn.innerHTML = '×';
+              removeBtn.onclick = () => removeImage(index);
+
+              previewDiv.appendChild(img);
+              previewDiv.appendChild(removeBtn);
+              previewGrid.appendChild(previewDiv);
+           };
+           reader.readAsDataURL(file);
+        });
+
+        // input file 업데이트
+        updateFileInput();
+     }
+
+     // FileList 업데이트 함수
+     function updateFileInput() {
+        const dataTransfer = new DataTransfer();
+        fileArray.forEach(file => dataTransfer.items.add(file));
+        photoInput.files = dataTransfer.files;
+     }
+
+     // 이미지 삭제 함수
+     function removeImage(index) {
+        fileArray.splice(index, 1);
+        updatePreview();
+     }
+
+     photoInput.addEventListener('change', function() {
+        const newFiles = Array.from(this.files);
+
+        // 새 파일 추가
+        for(let file of newFiles) {
+           // 이미지 파일 체크
+           if(!file.type.startsWith('image/')) {
+              alert(file.name + '은(는) 이미지 파일이 아닙니다.');
+              continue;
+           }
+
+           // 파일 크기 체크
+           if(file.size > MAX_FILE_SIZE) {
+              alert(file.name + '의 크기가 5MB를 초과합니다. 더 작은 파일을 선택해주세요.');
+              continue;
+           }
+
+           // 최대 개수 체크
+           if(fileArray.length >= 10) {
+              alert('이미지는 최대 10장까지만 업로드 가능합니다.');
+              break;
+           }
+
+           fileArray.push(file);
+        }
+
+        updatePreview();
      });
 </script>
 </body>
