@@ -22,5 +22,7 @@ public interface PropertyService {
 	public List<PropertyImg> selectOnesImgs(Long id);
 
 	Realtor selectRealtorById(String rId);
-	
+
+	List<Property> getAllProperties();
+
 }

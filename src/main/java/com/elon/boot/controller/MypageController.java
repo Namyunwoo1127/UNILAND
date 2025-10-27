@@ -1,10 +1,14 @@
 package com.elon.boot.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.elon.boot.controller.dto.user.UserModRequest;
+import com.elon.boot.domain.inquiry.model.service.InquiryService;
+import com.elon.boot.domain.inquiry.model.vo.Inquiry;
 import com.elon.boot.domain.user.model.service.UserService;
 import com.elon.boot.domain.user.model.vo.User;
 
@@ -17,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class MypageController {
 
 	private final UserService uService;
+	private final InquiryService inquiryService;
 	
     // 일반 사용자 마이페이지
     @GetMapping
@@ -62,5 +67,21 @@ public class MypageController {
 
         session.invalidate();
         return "redirect:/";
+    }
+    
+    @GetMapping("/inquiries")
+    public String CheckInquiry(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+        
+        // 문의내역 조회
+        List<Inquiry> inquiries = inquiryService.getInquiriesByUserId(user.getUserId());
+        System.out.println(inquiries);
+        model.addAttribute("inquiries", inquiries);
+        model.addAttribute("user", user);
+        
+        return "mypage/realtor-mypage";
     }
 }

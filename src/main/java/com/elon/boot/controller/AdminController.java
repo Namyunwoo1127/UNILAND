@@ -163,59 +163,58 @@ public class AdminController {
         return "admin/content-management";
     }
 
-    // 문의관리
-    @GetMapping("/inquiry-management")
-    public String inquiryManagement(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-    	// 관리자 권한 체크
-        User loginUser = (User) session.getAttribute("loginUser");
-        if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
-            redirectAttributes.addFlashAttribute("error", "관리자 권한이 필요합니다.");
-            return "redirect:/";
-        }
-        
-        try {
-            // 전체 문의 목록 조회
-            List<Inquiry> inquiryList = inquiryService.getAllInquiries();
-            System.out.println(inquiryList);
-            model.addAttribute("inquiryList", inquiryList);
-            
-            // 통계 계산
-            int totalCount = inquiryList.size();
-            int pendingCount = 0;
-            int answeredCount = 0;
-            
-            for (Inquiry inquiry : inquiryList) {
-                if ("PENDING".equals(inquiry.getStatus())) {
-                    pendingCount++;
-                } else if ("ANSWERED".equals(inquiry.getStatus())) {
-                    answeredCount++;
-                }
-            }
-            
-            model.addAttribute("totalCount", totalCount);
-            model.addAttribute("pendingCount", pendingCount);
-            model.addAttribute("answeredCount", answeredCount);
-            
-            log.debug("문의 관리 페이지 로드: 전체 {} 건, 미답변 {} 건, 답변완료 {} 건", 
-                totalCount, pendingCount, answeredCount);
-            
-        } catch (Exception e) {
-            log.error("문의 관리 페이지 로드 실패: ", e);
-            model.addAttribute("error", "문의 목록을 불러올 수 없습니다.");
-        }
-        
-        return "admin/inquiry-management";
-    }
+//    // 문의관리
+//    @GetMapping("/inquiry-management")
+//    public String inquiryManagement(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+//    	// 관리자 권한 체크
+//        User loginUser = (User) session.getAttribute("loginUser");
+//        if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
+//            redirectAttributes.addFlashAttribute("error", "관리자 권한이 필요합니다.");
+//            return "redirect:/";
+//        }
+//        
+//        try {
+//            // 전체 문의 목록 조회
+//            List<Inquiry> inquiryList = inquiryService.getAllInquiries();
+//            System.out.println(inquiryList);
+//            model.addAttribute("inquiryList", inquiryList);
+//            
+//            // 통계 계산
+//            int totalCount = inquiryList.size();
+//            int pendingCount = 0;
+//            int answeredCount = 0;
+//            
+//            for (Inquiry inquiry : inquiryList) {
+//                if ("PENDING".equals(inquiry.getStatus())) {
+//                    pendingCount++;
+//                } else if ("ANSWERED".equals(inquiry.getStatus())) {
+//                    answeredCount++;
+//                }
+//            }
+//            
+//            model.addAttribute("totalCount", totalCount);
+//            model.addAttribute("pendingCount", pendingCount);
+//            model.addAttribute("answeredCount", answeredCount);
+//            
+//            log.debug("문의 관리 페이지 로드: 전체 {} 건, 미답변 {} 건, 답변완료 {} 건", 
+//                totalCount, pendingCount, answeredCount);
+//            
+//        } catch (Exception e) {
+//            log.error("문의 관리 페이지 로드 실패: ", e);
+//            model.addAttribute("error", "문의 목록을 불러올 수 없습니다.");
+//        }
+//        
+//        return "admin/inquiry-management";
+//    }
     
     /**
-     * 문의 상세 조회
-     * GET /admin/inquiry/{inquiryId}
+     * 문의 관리 페이지
+     * GET /admin/inquiry-management
      */
-    @GetMapping("/inquiry/{inquiryId}")
-    public String inquiryDetail(@PathVariable Integer inquiryId,
-                               Model model,
-                               HttpSession session,
-                               RedirectAttributes redirectAttributes) {
+    @GetMapping("/inquiry-management")
+    public String inquiryManagement(Model model, 
+                                   HttpSession session, 
+                                   RedirectAttributes redirectAttributes) {
         
         // 관리자 권한 체크
         User loginUser = (User) session.getAttribute("loginUser");
@@ -225,23 +224,18 @@ public class AdminController {
         }
         
         try {
-            Inquiry inquiry = inquiryService.getInquiryById(inquiryId);
+            // 관리자 문의 목록 조회 (INQUIRY_TYPE = 'ADMIN')
+            List<Inquiry> inquiryList = inquiryService.getAllInquiries();
+            model.addAttribute("inquiryList", inquiryList);
             
-            if (inquiry == null) {
-                redirectAttributes.addFlashAttribute("error", "존재하지 않는 문의입니다.");
-                return "redirect:/admin/inquiry-management";
-            }
-            
-            model.addAttribute("inquiry", inquiry);
-            log.debug("문의 상세 조회: ID={}, 제목={}", inquiryId, inquiry.getTitle());
+            log.debug("관리자 문의 목록 조회: {} 건", inquiryList.size());
             
         } catch (Exception e) {
-            log.error("문의 상세 조회 실패: ", e);
-            redirectAttributes.addFlashAttribute("error", "문의를 불러올 수 없습니다.");
-            return "redirect:/admin/inquiry-management";
+            log.error("관리자 문의 목록 조회 실패: ", e);
+            model.addAttribute("error", "문의 목록을 불러올 수 없습니다.");
         }
         
-        return "admin/inquiry-detail";
+        return "admin/inquiry-management";
     }
     
     /**
@@ -273,7 +267,6 @@ public class AdminController {
         }
         
         try {
-            // 문의 존재 여부 확인
             Inquiry inquiry = inquiryService.getInquiryById(inquiryId);
             
             if (inquiry == null) {
@@ -281,26 +274,29 @@ public class AdminController {
                 return "redirect:/admin/inquiry-management";
             }
             
-            // 이미 답변된 문의인지 확인
+            // 관리자 문의인지 확인
+            if (!"ADMIN".equals(inquiry.getInquiryType())) {
+                redirectAttributes.addFlashAttribute("error", "관리자 문의만 답변할 수 있습니다.");
+                return "redirect:/admin/inquiry-management";
+            }
+            
             if ("ANSWERED".equals(inquiry.getStatus())) {
                 redirectAttributes.addFlashAttribute("error", "이미 답변이 등록된 문의입니다.");
                 return "redirect:/admin/inquiry-management";
             }
             
-            // 답변 등록
             int result = inquiryService.answerInquiry(inquiryId, answer.trim());
             
             if (result > 0) {
                 redirectAttributes.addFlashAttribute("message", "답변이 등록되었습니다.");
-                log.info("문의 답변 등록 완료: inquiryId={}, adminId={}", inquiryId, loginUser.getUserId());
+                log.info("관리자 문의 답변 등록: inquiryId={}, adminId={}", inquiryId, loginUser.getUserId());
             } else {
                 redirectAttributes.addFlashAttribute("error", "답변 등록에 실패했습니다.");
-                log.warn("문의 답변 등록 실패: inquiryId={}", inquiryId);
             }
             
         } catch (Exception e) {
-            log.error("문의 답변 등록 중 오류 발생: inquiryId={}", inquiryId, e);
-            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다: " + e.getMessage());
+            log.error("답변 등록 실패: inquiryId={}", inquiryId, e);
+            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다.");
         }
         
         return "redirect:/admin/inquiry-management";
@@ -323,79 +319,21 @@ public class AdminController {
         }
         
         try {
-            // 문의 존재 여부 확인
-            Inquiry inquiry = inquiryService.getInquiryById(inquiryId);
-            
-            if (inquiry == null) {
-                redirectAttributes.addFlashAttribute("error", "존재하지 않는 문의입니다.");
-                return "redirect:/admin/inquiry-management";
-            }
-            
-            // 문의 삭제
             int result = inquiryService.deleteInquiry(inquiryId);
             
             if (result > 0) {
                 redirectAttributes.addFlashAttribute("message", "문의가 삭제되었습니다.");
-                log.info("문의 삭제 완료: inquiryId={}, adminId={}", inquiryId, loginUser.getUserId());
+                log.info("문의 삭제: inquiryId={}, adminId={}", inquiryId, loginUser.getUserId());
             } else {
                 redirectAttributes.addFlashAttribute("error", "문의 삭제에 실패했습니다.");
-                log.warn("문의 삭제 실패: inquiryId={}", inquiryId);
             }
             
         } catch (Exception e) {
-            log.error("문의 삭제 중 오류 발생: inquiryId={}", inquiryId, e);
-            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다: " + e.getMessage());
+            log.error("문의 삭제 실패: inquiryId={}", inquiryId, e);
+            redirectAttributes.addFlashAttribute("error", "오류가 발생했습니다.");
         }
         
         return "redirect:/admin/inquiry-management";
-    }
-    
-    /**
-     * 문의 필터링 (AJAX용)
-     * GET /admin/inquiry-filter
-     */
-    @GetMapping("/inquiry-filter")
-    public String filterInquiries(@RequestParam(required = false) String status,
-                                 @RequestParam(required = false) String type,
-                                 @RequestParam(required = false) String sort,
-                                 Model model,
-                                 HttpSession session,
-                                 RedirectAttributes redirectAttributes) {
-        
-        // 관리자 권한 체크
-        User loginUser = (User) session.getAttribute("loginUser");
-        if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
-            redirectAttributes.addFlashAttribute("error", "관리자 권한이 필요합니다.");
-            return "redirect:/";
-        }
-        
-        try {
-            // 전체 문의 조회 (필터링은 프론트엔드에서 처리 또는 서비스 레이어에서 구현)
-            List<Inquiry> inquiryList = inquiryService.getAllInquiries();
-            
-            // 상태별 필터링
-            if (status != null && !status.equals("전체")) {
-                inquiryList = inquiryList.stream()
-                    .filter(i -> status.equals(i.getStatus()))
-                    .toList();
-            }
-            
-            // 타입별 필터링
-            if (type != null && !type.equals("전체")) {
-                inquiryList = inquiryList.stream()
-                    .filter(i -> type.equals(i.getInquiryType()))
-                    .toList();
-            }
-            
-            model.addAttribute("inquiryList", inquiryList);
-            log.debug("문의 필터링 완료: status={}, type={}, count={}", status, type, inquiryList.size());
-            
-        } catch (Exception e) {
-            log.error("문의 필터링 실패: ", e);
-            model.addAttribute("error", "문의 목록을 불러올 수 없습니다.");
-        }
-        
-        return "admin/inquiry-management";
     }
 
     // 중개사 관리

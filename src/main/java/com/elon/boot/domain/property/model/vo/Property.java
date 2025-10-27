@@ -55,4 +55,7 @@ public class Property {
     private String elect;
     private String gas;
     private String internet;
+
+    // 지도/목록용 썸네일 이미지 경로 (DB 컬럼 아님, 조회 후 설정)
+    private String thumbnailPath;
 }

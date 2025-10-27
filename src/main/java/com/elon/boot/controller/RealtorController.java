@@ -3,6 +3,8 @@ package com.elon.boot.controller;
 import com.elon.boot.domain.realtor.model.service.FileStorageService;
 import com.elon.boot.domain.realtor.model.service.RealtorService;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
+import com.elon.boot.domain.inquiry.model.service.InquiryService;
+import com.elon.boot.domain.inquiry.model.vo.Inquiry;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,10 +14,14 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/realtor") 
+@Slf4j
 public class RealtorController {
 
     @Autowired
@@ -24,6 +30,9 @@ public class RealtorController {
     // ⭐ FileStorageService가 주입된 상태로 유지
     @Autowired
     private FileStorageService fileStorageService; 
+    
+    @Autowired
+    private InquiryService inquiryService;
 
     /** ✅ 사업자등록번호 중복 확인 (AJAX) */
     @PostMapping("/check-business-num")
@@ -158,10 +167,122 @@ public class RealtorController {
         return "realtor/property-register";
     }
 
-    /** ✅ 문의 관리 페이지 */
+    // ========================================
+    // 문의 관리 기능 (새로 추가)
+    // ========================================
+
+    /**
+     * 문의 관리 페이지
+     */
     @GetMapping("/inquiry-management")
-    public String inquiryManagementPage() {
+    public String inquiryManagementPage(HttpSession session, 
+                                       Model model,
+                                       RedirectAttributes redirectAttributes) {
+        
+        Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+        
+        if (loginRealtor == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/realtor/realtor-login";
+        }
+        
+        try {
+            String realtorId = loginRealtor.getRealtorId();
+            
+            // 1. 문의 목록 조회
+            List<Inquiry> inquiries = inquiryService.getRealtorInquiries(realtorId);
+            
+            // 2. 통계 조회
+            Map<String, Integer> stats = inquiryService.getRealtorInquiryStats(realtorId);
+            
+            model.addAttribute("inquiries", inquiries);
+            model.addAttribute("stats", stats);
+            
+            log.info("중개사 문의 목록 조회: {} 건", inquiries.size());
+            
+        } catch (Exception e) {
+            log.error("문의 목록 조회 실패: ", e);
+            redirectAttributes.addFlashAttribute("error", "문의 목록을 불러올 수 없습니다.");
+        }
+        
         return "realtor/inquiry-management";
+    }
+    
+    /**
+     * 문의 답변 작성
+     */
+    @PostMapping("/inquiry/answer")
+    @ResponseBody
+    public Map<String, Object> answerInquiry(@RequestParam("inquiryId") Integer inquiryId,
+                                            @RequestParam("answer") String answer,
+                                            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+        
+        if (loginRealtor == null) {
+            response.put("success", false);
+            response.put("message", "로그인이 필요합니다.");
+            return response;
+        }
+        
+        try {
+            // 답변 작성
+            int result = inquiryService.answerRealtorInquiry(inquiryId, answer);
+            
+            if (result > 0) {
+                response.put("success", true);
+                response.put("message", "답변이 전송되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "답변 전송에 실패했습니다.");
+            }
+            
+        } catch (Exception e) {
+            log.error("답변 작성 실패: ", e);
+            response.put("success", false);
+            response.put("message", "오류가 발생했습니다.");
+        }
+        
+        return response;
+    }
+    
+    /**
+     * 문의 읽음 처리
+     */
+    @PostMapping("/inquiry/read")
+    @ResponseBody
+    public Map<String, Object> markInquiryAsRead(@RequestParam("inquiryId") Integer inquiryId,
+                                                 HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+        
+        if (loginRealtor == null) {
+            response.put("success", false);
+            response.put("message", "로그인이 필요합니다.");
+            return response;
+        }
+        
+        try {
+            int result = inquiryService.markAsRead(inquiryId);
+            
+            if (result > 0) {
+                response.put("success", true);
+            } else {
+                response.put("success", false);
+                response.put("message", "이미 읽은 문의입니다.");
+            }
+            
+        } catch (Exception e) {
+            log.error("읽음 처리 실패: ", e);
+            response.put("success", false);
+            response.put("message", "오류가 발생했습니다.");
+        }
+        
+        return response;
     }
     
     /** ✅ 매물 수정 페이지 */

@@ -19,4 +19,5 @@ public interface PropertyMapper {
 	Property selectOneByNo(Long id);
 	List<PropertyImg> selectImagesByPropertyNo(Long id);
 	Realtor selectRealtorById(String rId);
+	List<Property> selectAllProperties();
 }
