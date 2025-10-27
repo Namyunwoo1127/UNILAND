@@ -115,7 +115,9 @@ return propNo;
 		return propertyMapper.selectRealtorById(rId);
 	}
 
-
-
+	@Override
+	public List<Property> getAllProperties() {
+		return propertyMapper.selectAllProperties();
+	}
 
 }

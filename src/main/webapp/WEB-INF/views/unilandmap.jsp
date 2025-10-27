@@ -1254,7 +1254,7 @@
     <div class="main-layout">
         <div class="sidebar">
             <div class="list-header">
-                <h2>매물 <span class="count">24</span>개</h2>
+                <h2>매물 <span class="count"><c:out value="${properties.size()}" default="0"/></span>개</h2>
                 <select class="sort-select">
                     <option>추천순</option>
                     <option>최신순</option>
@@ -1264,85 +1264,35 @@
             </div>
 
             <div class="property-list-content">
-                <div class="property-card" onclick="showPropertyDetail(1)">
+                <c:forEach items="${properties}" var="property">
+                <div class="property-card" onclick="showPropertyDetail(${property.propertyNo})">
                     <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" alt="원룸">
-                        <span class="card-badge">학생 우대</span>
+                        <c:choose>
+                            <c:when test="${not empty property.thumbnailPath}">
+                                <img src="${pageContext.request.contextPath}${property.thumbnailPath}" alt="${property.propertyType}"
+                                     onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop'">
+                            </c:when>
+                            <c:otherwise>
+                                <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" alt="${property.propertyType}">
+                            </c:otherwise>
+                        </c:choose>
+                        <c:if test="${property.studentPref == 'Y'}">
+                            <span class="card-badge">학생 우대</span>
+                        </c:if>
                     </div>
                     <div class="card-content">
-                        <div class="card-title">신촌역 5분거리 풀옵션 원룸</div>
-                        <div class="card-location">📍 서울 서대문구 창천동</div>
-                        <div class="card-price">500/55</div>
+                        <div class="card-title">${property.propertyName}</div>
+                        <div class="card-location">📍 ${property.district}</div>
+                        <div class="card-price">${property.deposit}/${property.monthlyRent}</div>
                         <div class="card-tags">
-                            <span>풀옵션</span>
-                            <span>역세권</span>
-                            <span>단기가능</span>
+                            <span>${property.propertyType}</span>
+                            <c:if test="${property.shortCont == 'Y'}">
+                                <span>단기가능</span>
+                            </c:if>
                         </div>
                     </div>
                 </div>
-
-                <div class="property-card" onclick="showPropertyDetail(2)">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop" alt="오피스텔">
-                        <span class="card-badge">NEW</span>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-title">연희동 깨끗한 오피스텔</div>
-                        <div class="card-location">📍 서울 서대문구 연희동</div>
-                        <div class="card-price">1000/60</div>
-                        <div class="card-tags">
-                            <span>신축</span>
-                            <span>주차</span>
-                            <span>엘베</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="property-card" onclick="showPropertyDetail(3)">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop" alt="원룸">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-title">홍대 캠퍼스 앞 저렴한 원룸</div>
-                        <div class="card-location">📍 서울 마포구 서교동</div>
-                        <div class="card-price">300/45</div>
-                        <div class="card-tags">
-                            <span>저렴</span>
-                            <span>학교근처</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="property-card" onclick="showPropertyDetail(4)">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=300&fit=crop" alt="원룸">
-                        <span class="card-badge">학생 우대</span>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-title">이대역 도보 3분 원룸</div>
-                        <div class="card-location">📍 서울 서대문구 대현동</div>
-                        <div class="card-price">700/55</div>
-                        <div class="card-tags">
-                            <span>역세권</span>
-                            <span>풀옵션</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="property-card" onclick="showPropertyDetail(5)">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=400&h=300&fit=crop" alt="투룸">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-title">성신여대 도보 5분 투룸</div>
-                        <div class="card-location">📍 서울 성북구 동선동</div>
-                        <div class="card-price">500/65</div>
-                        <div class="card-tags">
-                            <span>투룸</span>
-                            <span>단기가능</span>
-                        </div>
-                    </div>
-                </div>
+                </c:forEach>
             </div>
         </div>
 
@@ -1350,7 +1300,7 @@
             <div id="map"></div>
             
             <div class="property-counter">
-                현재 지도에 <span id="propertyCount">24</span>개 매물
+                현재 지도에 <span id="propertyCount"><c:out value="${properties.size()}" default="0"/></span>개 매물
             </div>
 
             <div class="map-controls">
@@ -1437,20 +1387,62 @@
 
         var map = new kakao.maps.Map(mapContainer, mapOption);
 
-        // 샘플 매물 데이터 (실제 위치 좌표)
+        // 실제 DB 데이터 (서버에서 전달)
         var properties = [
-            { id: 1, lat: 37.5592, lng: 126.9425, title: "신촌역 원룸", price: "500/55" },          // 신촌역 (서대문구 창천동)
-            { id: 2, lat: 37.5665, lng: 126.9361, title: "홍대 오피스텔", price: "1000/60" },      // 연희동
-            { id: 3, lat: 37.5506, lng: 126.9229, title: "홍대 캠퍼스 원룸", price: "300/45" },    // 홍대 서교동
-            { id: 4, lat: 37.5569, lng: 126.9464, title: "이대역 원룸", price: "700/55" },         // 이대역 (대현동)
-            { id: 5, lat: 37.5928, lng: 127.0167, title: "성신여대 투룸", price: "500/65" }        // 성신여대 (동선동)
+            <c:forEach items="${properties}" var="property" varStatus="status">
+            {
+                id: ${property.propertyNo},
+                lat: ${property.latitude != null ? property.latitude : 37.5592},
+                lng: ${property.longitude != null ? property.longitude : 126.9425},
+                title: '${property.propertyName}',
+                price: '${property.deposit}/${property.monthlyRent}',
+                propertyType: '${property.propertyType}',
+                district: '${property.district}',
+                roadAddress: '${property.roadAddress}',
+                thumbnailPath: '${not empty property.thumbnailPath ? property.thumbnailPath : ""}'
+            }<c:if test="${!status.last}">,</c:if>
+            </c:forEach>
         ];
 
         var overlays = []; // 오버레이 저장용
         var currentPropertyId = null; // ★ 1. 현재 선택된 매물 ID를 저장할 변수
 
+        // 같은 좌표의 마커를 흩뿌리기 위한 함수
+        function addJitter(properties) {
+            var coordMap = {}; // 좌표별 카운트
+
+            return properties.map(function(prop) {
+                var key = prop.lat.toFixed(4) + '_' + prop.lng.toFixed(4);
+
+                if (!coordMap[key]) {
+                    coordMap[key] = 0;
+                } else {
+                    coordMap[key]++;
+                }
+
+                // 같은 좌표가 있으면 약간씩 오프셋 추가 (약 10-30미터 정도)
+                var offsetLat = (coordMap[key] % 3 - 1) * 0.0001; // 약 11m
+                var offsetLng = (Math.floor(coordMap[key] / 3) % 3 - 1) * 0.0001;
+
+                return {
+                    id: prop.id,
+                    lat: prop.lat + offsetLat,
+                    lng: prop.lng + offsetLng,
+                    title: prop.title,
+                    price: prop.price,
+                    propertyType: prop.propertyType,
+                    district: prop.district,
+                    roadAddress: prop.roadAddress,
+                    thumbnailPath: prop.thumbnailPath
+                };
+            });
+        }
+
+        // 좌표 오프셋 적용
+        var adjustedProperties = addJitter(properties);
+
         // 마커 표시 (커스텀 오버레이만 사용)
-        properties.forEach(function(property) {
+        adjustedProperties.forEach(function(property) {
             var markerPosition = new kakao.maps.LatLng(property.lat, property.lng);
 
             var content = '<div class="custom-overlay" onclick="showPropertyDetail(' + property.id + ')">'
@@ -1751,54 +1743,38 @@
             updateRentDisplay();
         };
 
-        // 매물 상세정보 데이터
-        var propertyDetails = {
-            1: {
-                title: '신촌역 5분거리 풀옵션 원룸',
-                location: '📍 서울 서대문구 창천동',
-                price: '500/55',
-                image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop',
-                roomType: '원룸',
-                description: '신촌역에서 도보 5분 거리에 위치한 풀옵션 원룸입니다. 연세대, 이화여대 도보 통학 가능하며 주변 편의시설이 우수합니다. 최근 리모델링하여 깔끔한 상태이며, 보일러 개별 난방으로 관리비 부담이 적습니다.',
-                options: ['에어컨', '냉장고', '세탁기', '침대', '책상', '인터넷']
-            },
-            2: {
-                title: '연희동 깨끗한 오피스텔',
-                location: '📍 서울 서대문구 연희동',
-                price: '1000/60',
-                image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop',
-                roomType: '오피스텔',
-                description: '2023년 신축 오피스텔입니다. 주차 가능하며 엘리베이터, 택배보관함 등 편의시설이 완비되어 있습니다. 연세대학교 도보 10분 거리이며 조용한 주거환경이 장점입니다.',
-                options: ['에어컨', '냉장고', '세탁기', '주차', '엘리베이터', '인터넷']
-            },
-            3: {
-                title: '홍대 캠퍼스 앞 저렴한 원룸',
-                location: '📍 서울 마포구 서교동',
-                price: '300/45',
-                image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop',
-                roomType: '원룸',
-                description: '홍익대학교 캠퍼스 바로 앞에 위치한 저렴한 원룸입니다. 학교 통학이 매우 편리하며 홍대입구역도 가까워 교통이 편리합니다. 기본 옵션이 갖춰져 있어 바로 입주 가능합니다.',
-                options: ['에어컨', '냉장고', '책상', '인터넷']
-            },
-            4: {
-                title: '이대역 도보 3분 원룸',
-                location: '📍 서울 서대문구 대현동',
-                price: '700/55',
-                image: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=300&fit=crop',
-                roomType: '원룸',
-                description: '이대역 도보 3분 거리의 역세권 원룸입니다. 풀옵션으로 구비되어 있으며 남향으로 채광이 좋습니다. 이화여대 통학에 최적화된 위치입니다.',
-                options: ['에어컨', '냉장고', '세탁기', '침대', '책상', '신발장', '인터넷']
-            },
-            5: {
-                title: '성신여대 도보 5분 투룸',
-                location: '📍 서울 성북구 동선동',
-                price: '500/65',
-                image: 'https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=400&h=300&fit=crop',
-                roomType: '투룸',
-                description: '성신여대 도보 5분 거리의 투룸입니다. 룸메이트와 함께 거주하기 좋으며 각 방마다 독립적인 공간이 확보됩니다. 단기 계약 가능합니다.',
-                options: ['에어컨', '냉장고', '세탁기', '침대', '책상', '인터넷']
+        // 매물 상세정보 데이터 (properties를 기반으로 동적 생성)
+        var propertyDetails = {};
+        properties.forEach(function(prop) {
+            var imagePath;
+            if (prop.thumbnailPath && prop.thumbnailPath.trim() !== '') {
+                // thumbnailPath가 '/'로 시작하면 contextPath 추가, 아니면 기본 이미지
+                if (prop.thumbnailPath.startsWith('/')) {
+                    imagePath = '${pageContext.request.contextPath}' + prop.thumbnailPath;
+                } else if (prop.thumbnailPath.startsWith('images/')) {
+                    // 'images/property/...' 형태면 앞에 '/' 추가
+                    imagePath = '${pageContext.request.contextPath}/' + prop.thumbnailPath;
+                } else if (prop.thumbnailPath.indexOf('/') === -1) {
+                    // 파일명만 있는 경우 전체 경로 구성
+                    imagePath = '${pageContext.request.contextPath}/images/property/' + prop.thumbnailPath;
+                } else {
+                    // 기타 예외 상황
+                    imagePath = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop';
+                }
+            } else {
+                imagePath = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop';
             }
-        };
+
+            propertyDetails[prop.id] = {
+                title: prop.title,
+                location: '📍 ' + prop.roadAddress,
+                price: prop.price,
+                image: imagePath,
+                roomType: prop.propertyType,
+                description: '상세 설명은 전체 상세보기에서 확인하실 수 있습니다.',
+                options: ['기본 옵션'] // 기본 옵션
+            };
+        });
 
         // 상세정보 열기
         function showPropertyDetail(propertyId) {
@@ -1835,7 +1811,7 @@
                 return;
             }
             // 'contact-realtor.jsp' 페이지로 propertyId를 쿼리 스트링으로 넘깁니다.
-            window.location.href = '${pageContext.request.contextPath}/inquiry/realtor?propertyId=' + currentPropertyId;
+            window.location.href = '${pageContext.request.contextPath}/inquiries/realtor?propertyId=' + currentPropertyId;
         }
 
         // 전체 상세 페이지로 이동
