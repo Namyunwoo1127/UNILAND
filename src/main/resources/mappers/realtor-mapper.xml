@@ -22,51 +22,19 @@
     </resultMap>
 
     <select id="countByBusinessNum" resultType="int">
-	    SELECT COUNT(*)
-	    FROM REALTOR_TBL
-	    WHERE BUSINESS_NUM = #{businessNum, jdbcType=VARCHAR}
-	</select>
+        SELECT COUNT(*)
+        FROM REALTOR_TBL
+        WHERE BUSINESS_NUM = #{businessNum, jdbcType=VARCHAR}
+    </select>
     
     <select id="countByRealtorRegNum" resultType="int">
-	    SELECT COUNT(*)
-	    FROM REALTOR_TBL
-	    WHERE REALTOR_REG_NUM = #{realtorRegNum}
-	</select>
-
+        SELECT COUNT(*)
+        FROM REALTOR_TBL
+        WHERE REALTOR_REG_NUM = #{realtorRegNum}
+    </select>
 
     <insert id="insertRealtor" parameterType="com.elon.boot.domain.realtor.model.vo.Realtor">
         INSERT INTO REALTOR_TBL (
-	        REALTOR_ID,
-	        REALTOR_PASSWORD,
-	        OFFICE_NAME,
-	        REALTOR_NAME,
-	        REALTOR_ADDRESS,
-	        REALTOR_PHONE,
-	        REALTOR_EMAIL,
-	        BUSINESS_NUM,
-            REALTOR_REG_NUM,                 REALTOR_IMAGE,                   
-            CREATED_AT,
-            UPDATED_AT,
-	        DELETE_YN,
-            APPROVAL_STATUS
-	    ) VALUES (
-	        #{realtorId, jdbcType=VARCHAR},
-	        #{realtorPassword, jdbcType=VARCHAR},
-	        #{officeName, jdbcType=VARCHAR},
-	        #{realtorName, jdbcType=VARCHAR},
-	        #{realtorAddress, jdbcType=VARCHAR},
-	        #{realtorPhone, jdbcType=VARCHAR},
-	        #{realtorEmail, jdbcType=VARCHAR},
-	        #{businessNum, jdbcType=VARCHAR},
-            #{realtorRegNum, jdbcType=VARCHAR},      NULL,                          
-            CURRENT_TIMESTAMP,
-            CURRENT_TIMESTAMP,
-	        'N',
-            #{approvalStatus, jdbcType=VARCHAR}  )
-    </insert>
-
-    <select id="findByLoginInfo" resultMap="realtorResultMap">
-        SELECT
             REALTOR_ID,
             REALTOR_PASSWORD,
             OFFICE_NAME,
@@ -75,12 +43,33 @@
             REALTOR_PHONE,
             REALTOR_EMAIL,
             BUSINESS_NUM,
-            REALTOR_IMAGE,
             REALTOR_REG_NUM,
+            REALTOR_IMAGE,
             CREATED_AT,
             UPDATED_AT,
             DELETE_YN,
-            APPROVAL_STATUS  FROM REALTOR_TBL
+            APPROVAL_STATUS
+        ) VALUES (
+            #{realtorId, jdbcType=VARCHAR},
+            #{realtorPassword, jdbcType=VARCHAR},
+            #{officeName, jdbcType=VARCHAR},
+            #{realtorName, jdbcType=VARCHAR},
+            #{realtorAddress, jdbcType=VARCHAR},
+            #{realtorPhone, jdbcType=VARCHAR},
+            #{realtorEmail, jdbcType=VARCHAR},
+            #{businessNum, jdbcType=VARCHAR},
+            #{realtorRegNum, jdbcType=VARCHAR},
+            #{realtorImage, jdbcType=VARCHAR},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            'N',
+            #{approvalStatus, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <select id="findByLoginInfo" resultMap="realtorResultMap">
+        SELECT *
+        FROM REALTOR_TBL
         WHERE REALTOR_ID = #{realtorId}
           AND REALTOR_PASSWORD = #{password}
           AND BUSINESS_NUM = #{businessNumber}
@@ -88,21 +77,7 @@
     </select>
 
     <select id="findById" resultMap="realtorResultMap">
-        SELECT
-            REALTOR_ID,
-            REALTOR_PASSWORD,
-            OFFICE_NAME,
-            REALTOR_NAME,
-            REALTOR_ADDRESS,
-            REALTOR_PHONE,
-            REALTOR_EMAIL,
-            BUSINESS_NUM,
-            REALTOR_IMAGE,
-            REALTOR_REG_NUM,
-            CREATED_AT,
-            UPDATED_AT,
-            DELETE_YN,
-            APPROVAL_STATUS
+        SELECT *
         FROM REALTOR_TBL
         WHERE REALTOR_ID = #{realtorId}
     </select>
@@ -136,5 +111,21 @@
         WHERE REALTOR_ID = #{realtorId}
           AND DELETE_YN = 'N'
     </update>
+
+    <!-- ⭐ 추가: 이메일로 중개사 조회 -->
+    <select id="findByEmail" resultMap="realtorResultMap">
+        SELECT *
+        FROM REALTOR_TBL
+        WHERE REALTOR_EMAIL = #{email}
+          AND DELETE_YN = 'N'
+    </select>
+
+    <!-- ⭐ 추가: 전화번호로 중개사 조회 -->
+    <select id="findByPhone" resultMap="realtorResultMap">
+        SELECT *
+        FROM REALTOR_TBL
+        WHERE REALTOR_PHONE = #{phone}
+          AND DELETE_YN = 'N'
+    </select>
 
 </mapper>
