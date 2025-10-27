@@ -79,7 +79,10 @@ public class PropertyController {
             return "redirect:/realtor/realtor-dashboard";
         }
 
-        pService.register(req,oReq,images, realtor.getRealtorId());
+        Long result = pService.register(req,oReq,images, realtor.getRealtorId());
+        if( result == 0 ) {
+        	return "redirect:/errror";
+        }
         
         return "redirect:/realtor/property-management";
     }
