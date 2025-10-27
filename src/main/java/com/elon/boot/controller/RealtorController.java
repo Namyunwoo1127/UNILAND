@@ -130,7 +130,8 @@ public class RealtorController {
             
         } else {
             // 3. 로그인 정보 불일치
-            model.addAttribute("loginError", "아이디, 비밀번호 또는 사업자등록번호가 올바르지 않습니다.");
+ 
+        	model.addAttribute("loginError", "아이디, 비밀번호 또는 사업자등록번호가 올바르지 않습니다.");
             return "auth/realtor-login";
         }
     }
