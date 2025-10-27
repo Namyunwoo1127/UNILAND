@@ -1,179 +1,82 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.elon.boot.domain.inquiry.model.store.InquiryMapper">
 
-    	<!-- TODO: resultMap 정의 -->
-	    <resultMap id="inquiryResultMap" type="com.elon.boot.domain.inquiry.model.vo.Inquiry">
-	        <id property="inquiryId" column="INQUIRY_ID"/>
-	        <result property="userId" column="USER_ID"/>
-	        <result property="inquiryType" column="INQUIRY_TYPE"/>
-	        <result property="category" column="CATEGORY"/>
-	        <result property="propertyId" column="PROPERTY_ID"/>
-	        <result property="realtorId" column="REALTOR_ID"/>
-	        <result property="title" column="TITLE"/>
-	        <result property="content" column="CONTENT"/>
-	        <result property="status" column="STATUS"/>
-	        <result property="answer" column="ANSWER"/>
-	        <result property="createdAt" column="CREATED_AT"/>
-	        <result property="answeredAt" column="ANSWERED_AT"/>
-	        <result property="userName" column="USER_NAME"/>
-	        <result property="deleteYn" column="DELETE_YN"/>
-	        <result property="usersPhone" column="USER_PHONE"/>
-	    </resultMap>
+  <!-- resultMap: 카멜케이스 자동매핑을 안쓴다는 가정으로 안전하게 명시 매핑 -->
+  <resultMap id="InquiryMap" type="com.elon.boot.domain.inquiry.model.vo.Inquiry">
+    <id     property="inquiryId"  column="INQUIRY_ID"/>
+    <result property="userId"     column="USER_ID"/>
+    <result property="inquiryType" column="INQUIRY_TYPE"/>
+    <result property="category"    column="CATEGORY"/>
+    <result property="propertyId"  column="PROPERTY_ID"/>
+    <result property="realtorId"   column="REALTOR_ID"/>
+    <result property="title"       column="TITLE"/>
+    <result property="content"     column="CONTENT"/>    
+    <result property="status"      column="STATUS"/>
+    <result property="answer"      column="ANSWER"/>     
+    <result property="createdAt"   column="CREATED_AT"/>
+    <result property="answeredAt"  column="ANSWERED_AT"/>
+    <result property="userName"    column="USER_NAME"/>
+    <result property="deleteYn"    column="DELETE_YN"/>
+    <result property="usersPhone"  column="USER_PHONE"/>
+  </resultMap>
 
-    	<!-- TODO: 문의 등록 -->
-    	<insert id="insertInquiry">
-	        INSERT INTO INQUIRY_TBL (
-	            INQUIRY_ID,
-	            USER_ID,
-	            INQUIRY_TYPE,
-	            USER_NAME,
-	            TITLE,
-	            CONTENT,
-	            CATEGORY,
-	            PROPERTY_ID,
-	            REALTOR_ID,
-	            STATUS,
-	            CREATED_AT,
-	            DELETE_YN,
-	            USER_PHONE
-	        ) VALUES (
-	            INQUIRY_SEQ.NEXTVAL,
-	            #{userId},
-	            #{inquiryType},
-	            #{userName},
-	            #{title},
-	            #{content},
-	            #{category},
-	            #{propertyId},
-	            #{realtorId},
-	            'PENDING',
-	            SYSTIMESTAMP,
-	            'N',
-	            #{usersPhone}
-	        )
-    	</insert>
+  <!-- 전체(관리자용) -->
+  <select id="selectAllInquiriesForAdmin" resultMap="InquiryMap">
+    SELECT *
+      FROM INQUIRY_TBL
+     WHERE DELETE_YN = 'N'
+     ORDER BY CREATED_AT DESC
+  </select>
 
-    	<!-- TODO: 사용자별 문의 조회 (중개사) -->
-    	<select id="selectInquiriesByUserIdForRealtor" resultMap="inquiryResultMap">
-	        SELECT 
-	            INQUIRY_ID,
-	            USER_ID,
-	            USER_NAME,
-	            TITLE,
-	            CONTENT,
-	            CATEGORY,
-	            PROPERTY_ID,
-	            REALTOR_ID,
-	            STATUS,
-	            ANSWER,
-	            CREATED_AT,
-	            ANSWERED_AT,
-	            DELETE_YN
-	        FROM INQUIRY_TBL
-	        WHERE USER_ID = #{userId}
-	          AND DELETE_YN = 'N'
-	        ORDER BY CREATED_AT DESC
-	    </select>
-	    
-	    <!-- TODO: 사용자별 문의 조회 (관리자) -->
-    	<select id="selectAllInquiriesForAdmin" resultType="com.elon.boot.domain.inquiry.model.vo.Inquiry">
-	        SELECT * 
-<!-- 		        INQUIRY_ID,
-		        USER_ID,
-		        USER_NAME,
-		        TITLE,
-		        CONTENT,
-		        CATEGORY,ss
-		        STATUS,
-		        ANSWER,
-		        CREATED_AT,
-		        ANSWERED_AT,
-		        DELETE_YN -->
-		        FROM INQUIRY_TBL
-		    WHERE DELETE_YN = 'N'
-		    ORDER BY CREATED_AT DESC
-	    </select>
+  <!-- 단건 -->
+  <select id="selectInquiryById" parameterType="int" resultMap="InquiryMap">
+    SELECT *
+      FROM INQUIRY_TBL
+     WHERE INQUIRY_ID = #{value}
+  </select>
 
-    	<!-- TODO: 문의 상세 조회 -->
-    	<select id="selectInquiryById" resultMap="inquiryResultMap">
-	        SELECT 
-		        INQUIRY_ID, USER_ID, USER_NAME, INQUIRY_TYPE, CATEGORY, 
-		        PROPERTY_ID, REALTOR_ID, TITLE, CONTENT, STATUS, 
-		        ANSWER, CREATED_AT, ANSWERED_AT, DELETE_YN, USER_PHONE
-		    FROM INQUIRY_TBL
-		    WHERE INQUIRY_ID = #{inquiryId}
-	    </select>
+  <!-- 사용자별 -->
+  <select id="selectInquiriesByUserId" parameterType="string" resultMap="InquiryMap">
+    SELECT *
+      FROM INQUIRY_TBL
+     WHERE USER_ID = #{value}
+       AND DELETE_YN = 'N'
+     ORDER BY CREATED_AT DESC
+  </select>
 
-    	<!-- TODO: 문의 답변 등록 (중개사) -->
-    	<update id="updateInquiryAnswerForRealtor">
-	        UPDATE INQUIRY_TBL
-	        SET 
-	            ANSWER = #{answer},
-	            STATUS = 'ANSWERED',
-	            ANSWERED_AT = SYSTIMESTAMP
-	        WHERE INQUIRY_ID = #{inquiryId}
-	    </update>
-    
-    	<!-- TODO: 문의 답변 등록 (관리자) -->
-	    <update id="updateInquiryAnswerForAdmin">
-	        UPDATE INQUIRY_TBL
-	        SET 
-	            ANSWER = #{answer},
-	            STATUS = 'ANSWERED',
-	            ANSWERED_AT = SYSTIMESTAMP
-	        WHERE INQUIRY_ID = #{inquiryId}
-	    </update>
+  <!-- 등록 -->
+  <insert id="insertInquiry" parameterType="com.elon.boot.domain.inquiry.model.vo.Inquiry">
+    INSERT INTO INQUIRY_TBL (
+      INQUIRY_ID, USER_ID, INQUIRY_TYPE, CATEGORY, PROPERTY_ID, REALTOR_ID,
+      TITLE, CONTENT, STATUS, ANSWER, CREATED_AT, ANSWERED_AT,
+      USER_NAME, DELETE_YN, USER_PHONE
+    )
+    VALUES (
+      SEQ_INQUIRY_ID.NEXTVAL,
+      #{userId}, #{inquiryType}, #{category}, #{propertyId}, #{realtorId},
+      #{title}, #{content}, NVL(#{status}, 'PENDING'), #{answer},
+      SYSDATE, #{answeredAt},
+      #{userName}, NVL(#{deleteYn}, 'N'), #{usersPhone}
+    )
+  </insert>
 
-    	<!-- TODO: 중개사 문의 조회 -->
-    	<select id="selectAllInquiriesForRealtor" resultMap="inquiryResultMap">
-	        SELECT 
-	            INQUIRY_ID,
-	            USER_ID,
-	            USER_NAME,
-	            TITLE,
-	            CONTENT,
-	            CATEGORY,
-	            STATUS,
-	            ANSWER,
-	            PROPERTY_ID,
-	            REALTOR_ID,
-	            CREATED_AT,
-	            ANSWERED_AT,
-	            DELETE_YN
-	        FROM INQUIRY_TBL
-	        WHERE DELETE_YN = 'N'
-	        ORDER BY 
-	            CASE WHEN STATUS = 'PENDING' THEN 0 ELSE 1 END,
-	            CREATED_AT DESC
-	    </select>
-	    
-	    <select id="selectInquiriesByUserIdForAdmin" resultMap="inquiryResultMap">
-		    SELECT 
-		        INQUIRY_ID,
-		        USER_ID,
-		        USER_NAME,
-		        TITLE,
-		        CONTENT,
-		        CATEGORY,
-		        STATUS,
-		        ANSWER,
-		        CREATED_AT,
-		        ANSWERED_AT,
-		        DELETE_YN,
-		        USER_PHONE  FROM INQUIRY_TBL
-		    WHERE USER_ID = #{userId}
-		      AND DELETE_YN = 'N'
-		    ORDER BY CREATED_AT DESC
-		</select>
-    
-	<!-- TODO: 문의 삭제 -->
-		<update id="deleteInquiry">
-	        UPDATE INQUIRY_TBL
-	        SET delete_yn = 'Y'
-	        WHERE inquiry_id = #{inquiryId}
-	    </update>
-	    
+  <!-- 답변 업데이트 -->
+  <update id="updateInquiryAnswer" parameterType="map">
+    UPDATE INQUIRY_TBL
+       SET ANSWER = #{answer},
+           STATUS = 'ANSWERED',
+           ANSWERED_AT = SYSDATE
+     WHERE INQUIRY_ID = #{inquiryId}
+  </update>
+
+  <!-- 삭제 플래그 -->
+  <update id="deleteInquiry" parameterType="int">
+    UPDATE INQUIRY_TBL
+       SET DELETE_YN = 'Y'
+     WHERE INQUIRY_ID = #{value}
+  </update>
+
 </mapper>

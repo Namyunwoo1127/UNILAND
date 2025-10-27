@@ -119,7 +119,7 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public RealtorApproval getRealtorApprovalData() {
 		List<Realtor> pendingRealtors = adminMapper.selectRealtorsByStatus("PENDING");
-        List<Realtor> approvedRealtors = adminMapper.selectRealtorsByStatus("APPROVED");
+        List<Realtor> approvedRealtors = adminMapper.selectRealtorsByStatus("APPROVAL");
         List<Realtor> rejectedRealtors = adminMapper.selectRealtorsByStatus("REJECTED");
         
         log.debug("중개사 승인 데이터 조회: 대기 {} 건, 승인 {} 건, 거부 {} 건",
@@ -132,7 +132,7 @@ public class AdminServiceImpl implements AdminService {
 	public int approveRealtor(String realtorId) {
 		Map<String, Object> params = new HashMap<>();
         params.put("realtorId", realtorId);
-        params.put("approvalStatus", "APPROVED");
+        params.put("approvalStatus", "APPROVAL");
         params.put("status", "ACTIVE");
         
         log.debug("중개사 승인 처리: {}", realtorId);

@@ -22,6 +22,9 @@ public interface InquiryService {
     
     int answerInquiry(Integer inquiryId, String answer);
 
+    // 회원 문의 확인
+	List<Inquiry> getInquiriesByUserId(String userId);
+
     // TODO: 중개사 문의 생성
     // int createRealtorInquiry(Inquiry inquiry);
 

@@ -31,6 +31,8 @@ public class Inquiry {
     private String userName;			// 문의자 이름
     private String deleteYn;            // 삭제 여부 (Y/N)
     private String usersPhone;		   	// 문의자 휴대폰 번호
+    private String readYn;				// 읽기 여부 (Y/N)
+    private Date readAt;				// 읽은 시간
 
     // TODO: 필요시 추가 필드 정의
     // - userName (조인용)

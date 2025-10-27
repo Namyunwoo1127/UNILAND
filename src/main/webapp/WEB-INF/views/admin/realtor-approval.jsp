@@ -318,7 +318,7 @@
                 </c:if>
                 
                 <!-- 승인완료 상태 -->
-                <c:if test="${realtor.approvalStatus == 'APPROVED'}">
+                <c:if test="${realtor.approvalStatus == 'APPROVAL'}">
                   <form action="${pageContext.request.contextPath}/admin/realtor-cancel/${realtor.realtorId}" 
                         method="post" style="display:inline;">
                     <button type="submit" class="btn-reject" 
