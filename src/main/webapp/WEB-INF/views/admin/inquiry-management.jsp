@@ -550,8 +550,10 @@
           <select class="filter-select">
             <option>전체</option>
             <option>일반문의</option>
-            <option>매물문의</option>
+            <option>건의사항</option>
+            <option>허위매물신고</option>
             <option>계약문의</option>
+            <option>기타</option>
           </select>
         </div>
         <div class="filter-group">
@@ -601,7 +603,7 @@
                 <span class="inquiry-badge ${inquiry.status == 'PENDING' ? 'badge-pending' : 'badge-answered'}">
                   ${inquiry.status == 'PENDING' ? '미답변' : '답변완료'}
                 </span>
-                <c:if test="${inquiry.status == 'PENDING'}">
+                <c:if test="${inquiry.status == 'PENDING' && inquiry.inquiryType == 'ADMIN'}">
                   <button class="btn-answer" onclick="event.stopPropagation(); showReplyForm(this)">
                     <i class="fa-solid fa-reply"></i> 답변하기
                   </button>

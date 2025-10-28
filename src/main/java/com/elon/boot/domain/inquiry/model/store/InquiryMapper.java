@@ -42,6 +42,14 @@ public interface InquiryMapper {
     
     // 문의 읽음 처리
     int updateInquiryReadStatus(Integer inquiryId);
+
+	int markInquiryAsRead(int inquiryId);
+
+	List<Inquiry> selectAdminInquiriesByUserId(String userId);
+
+	List<Inquiry> selectRealtorInquiriesByUserId(String userId);
+
+	int selectUnreadInquiryCount(String userId);
     
 
     // TODO: 문의 등록

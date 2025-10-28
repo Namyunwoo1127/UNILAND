@@ -14,10 +14,12 @@ import com.elon.boot.domain.user.model.vo.User;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/mypage")
 @RequiredArgsConstructor
+@Slf4j
 public class MypageController {
 
 	private final UserService uService;
@@ -32,6 +34,8 @@ public class MypageController {
             return "redirect:/auth/login"; // 미로그인 시 로그인 페이지로
         }
 //        User userInfo = uService.getUserById(loginUser.getUserId());
+        List<Inquiry> inquiries = inquiryService.getInquiriesByUserId(loginUser.getUserId());
+        model.addAttribute("inquiries", inquiries);
         model.addAttribute("user" ,uService.getUserById(loginUser.getUserId()));
         
         return "mypage/real-estate-mypage";
@@ -70,10 +74,67 @@ public class MypageController {
     }
     
     @GetMapping("/inquiries")
-    public String CheckInquiry(HttpSession session, Model model) {
+    public String CheckInquiry(@RequestParam(value = "tab", required = false) String tab, HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/auth/login";
+        }
+        
+        log.info("마이페이지 접근: userId={}, tab={}", user.getUserId(), tab);
+        
+        try {
+            // 사용자 정보 최신화 (DB에서 다시 조회)
+            User updatedUser = uService.getUserById(user.getUserId());
+            if (updatedUser != null) {
+                session.setAttribute("user", updatedUser);
+                model.addAttribute("user", updatedUser);
+            } else {
+                model.addAttribute("user", user);
+            }
+            
+            // ========== 문의내역 조회 ==========
+            
+            // 전체 문의 목록
+            List<Inquiry> inquiries = inquiryService.getInquiriesByUserId(user.getUserId());
+            model.addAttribute("inquiries", inquiries);
+            
+            // 관리자 문의만
+            List<Inquiry> adminInquiries = inquiryService.getAdminInquiriesByUserId(user.getUserId());
+            model.addAttribute("adminInquiries", adminInquiries);
+            
+            // 중개사 문의만
+            List<Inquiry> realtorInquiries = inquiryService.getRealtorInquiriesByUserId(user.getUserId());
+            model.addAttribute("realtorInquiries", realtorInquiries);
+            
+            // 미읽음 문의 개수
+            int unreadCount = inquiryService.getUnreadInquiryCount(user.getUserId());
+            model.addAttribute("unreadCount", unreadCount);
+            
+            log.info("문의내역 조회 완료 - 전체: {}, 관리자: {}, 중개사: {}, 미읽음: {}", 
+                    inquiries.size(), adminInquiries.size(), realtorInquiries.size(), unreadCount);
+            
+            // ========== TODO: 다른 데이터 조회 ==========
+            
+            // 계약 현황 조회
+            // List<Contract> contracts = contractService.getContractsByUserId(user.getUserId());
+            // model.addAttribute("contracts", contracts);
+            
+            // 찜매물 조회
+            // List<Property> wishlist = propertyService.getWishlistByUserId(user.getUserId());
+            // model.addAttribute("wishlist", wishlist);
+            
+            // 최근 본 매물 조회
+            // List<Property> recentProperties = propertyService.getRecentPropertiesByUserId(user.getUserId());
+            // model.addAttribute("recentProperties", recentProperties);
+            
+        } catch (Exception e) {
+            log.error("마이페이지 데이터 조회 중 오류 발생: userId={}", user.getUserId(), e);
+            model.addAttribute("error", "데이터를 불러오는 중 오류가 발생했습니다.");
+        }
+        
+        // 활성화할 탭 전달
+        if (tab != null) {
+            model.addAttribute("activeTab", tab);
         }
         
         // 문의내역 조회

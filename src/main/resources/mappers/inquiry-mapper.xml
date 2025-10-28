@@ -6,23 +6,23 @@
 
   <!-- resultMap: 카멜케이스 자동매핑을 안쓴다는 가정으로 안전하게 명시 매핑 -->
   <resultMap id="InquiryMap" type="com.elon.boot.domain.inquiry.model.vo.Inquiry">
-    <id     property="inquiryId"  column="INQUIRY_ID"/>
-    <result property="userId"     column="USER_ID"/>
-    <result property="inquiryType" column="INQUIRY_TYPE"/>
-    <result property="category"    column="CATEGORY"/>
-    <result property="propertyId"  column="PROPERTY_ID"/>
-    <result property="realtorId"   column="REALTOR_ID"/>
-    <result property="title"       column="TITLE"/>
-    <result property="content"     column="CONTENT"/>    
-    <result property="status"      column="STATUS"/>
-    <result property="answer"      column="ANSWER"/>     
-    <result property="createdAt"   column="CREATED_AT"/>
-    <result property="answeredAt"  column="ANSWERED_AT"/>
-    <result property="userName"    column="USER_NAME"/>
-    <result property="deleteYn"    column="DELETE_YN"/>
-    <result property="userPhone"   column="USER_PHONE"/>  <!-- ⭐ 수정: usersPhone → userPhone -->
-    <result property="readYn" column="READ_YN"/>
-    <result property="readAt" column="READ_AT"/>
+    <id     property="inquiryId"  	column="INQUIRY_ID"/>
+    <result property="userId"     	column="USER_ID"/>
+    <result property="inquiryType" 	column="INQUIRY_TYPE"/>
+    <result property="category"    	column="CATEGORY"/>
+    <result property="propertyId"  	column="PROPERTY_ID"/>
+    <result property="realtorId"   	column="REALTOR_ID"/>
+    <result property="title"       	column="TITLE"/>
+    <result property="content"     	column="CONTENT"/>    
+    <result property="status"      	column="STATUS"/>
+    <result property="answer"      	column="ANSWER"/>     
+    <result property="createdAt"   	column="CREATED_AT"/>
+    <result property="answeredAt"  	column="ANSWERED_AT"/>
+    <result property="userName"    	column="USER_NAME"/>
+    <result property="deleteYn"    	column="DELETE_YN"/>
+    <result property="userPhone"   	column="USER_PHONE"/>  <!-- ⭐ 수정: usersPhone → userPhone -->
+    <result property="readYn" 	   	column="READ_YN"/>
+    <result property="readAt" 		column="READ_AT"/>
     <result property="propertyName" column="PROPERTY_NAME"/>
   </resultMap>
 
@@ -45,9 +45,69 @@
   <select id="selectInquiriesByUserId" parameterType="string" resultMap="InquiryMap">
     SELECT *
       FROM INQUIRY_TBL
-     WHERE USER_ID = #{value}
-       AND DELETE_YN = 'N'
-     ORDER BY CREATED_AT DESC
+     WHERE USER_ID = #{userId}
+          AND DELETE_YN = 'N'
+        ORDER BY 
+            CASE WHEN READ_YN = 'N' THEN 0 ELSE 1 END,
+            CREATED_AT DESC
+  </select>
+  
+  <!-- 사용자별 관리자 문의 목록 조회 -->
+  <select id="selectAdminInquiriesByUserId" parameterType="string" resultMap="InquiryMap">
+      SELECT 
+          INQUIRY_ID,
+          USER_ID,
+          INQUIRY_TYPE,
+          CATEGORY,
+          PROPERTY_ID,
+          REALTOR_ID,
+          TITLE,
+          CONTENT,
+          STATUS,
+          ANSWER,
+          CREATED_AT,
+          ANSWERED_AT,
+          USER_NAME,
+          DELETE_YN,
+          USER_PHONE,
+          READ_YN,
+          READ_AT
+      FROM INQUIRY_TBL
+      WHERE USER_ID = #{userId}
+        AND INQUIRY_TYPE = 'ADMIN'
+        AND DELETE_YN = 'N'
+      ORDER BY 
+          CASE WHEN READ_YN = 'N' THEN 0 ELSE 1 END,
+          CREATED_AT DESC
+  </select>
+  
+  <!-- 사용자별 중개사 문의 목록 조회 -->
+  <select id="selectRealtorInquiriesByUserId" parameterType="string" resultMap="InquiryMap">
+      SELECT 
+          INQUIRY_ID,
+          USER_ID,
+          INQUIRY_TYPE,
+          CATEGORY,
+          PROPERTY_ID,
+          REALTOR_ID,
+          TITLE,
+          CONTENT,
+          STATUS,
+          ANSWER,
+          CREATED_AT,
+          ANSWERED_AT,
+          USER_NAME,
+          DELETE_YN,
+          USER_PHONE,
+          READ_YN,
+          READ_AT
+      FROM INQUIRY_TBL
+      WHERE USER_ID = #{userId}
+        AND INQUIRY_TYPE = 'REALTOR'
+        AND DELETE_YN = 'N'
+      ORDER BY 
+          CASE WHEN READ_YN = 'N' THEN 0 ELSE 1 END,
+          CREATED_AT DESC
   </select>
 
   <!-- 등록 -->
@@ -59,7 +119,10 @@
     )
     VALUES (
       INQUIRY_ID.NEXTVAL,
-      #{userId}, #{inquiryType}, #{category}, #{propertyId}, #{realtorId},
+      #{userId}, #{inquiryType}, 
+      #{category, jdbcType=VARCHAR},
+      #{propertyId, jdbcType=NUMERIC},
+      #{realtorId, jdbcType=VARCHAR},
       #{title}, #{content}, NVL(#{status}, 'PENDING'), 
       #{answer, jdbcType=CLOB},
       SYSDATE, 
@@ -75,13 +138,6 @@
            STATUS = 'ANSWERED',
            ANSWERED_AT = SYSDATE
      WHERE INQUIRY_ID = #{inquiryId}
-  </update>
-
-  <!-- 삭제 플래그 -->
-  <update id="deleteInquiry" parameterType="int">
-    UPDATE INQUIRY_TBL
-       SET DELETE_YN = 'Y'
-     WHERE INQUIRY_ID = #{value}
   </update>
   
   <select id="selectInquiriesByRealtorId" parameterType="string" resultMap="InquiryMap">
@@ -135,5 +191,38 @@
         WHERE INQUIRY_ID = #{value}
           AND READ_YN = 'N'
     </update>
+    
+    <!-- 문의 삭제 (논리적 삭제) -->
+    <update id="deleteInquiry" parameterType="int">
+        UPDATE INQUIRY_TBL
+        SET DELETE_YN = 'Y'
+        WHERE INQUIRY_ID = #{inquiryId}
+    </update>
+
+    <!-- 문의 읽음 처리 -->
+    <update id="markInquiryAsRead" parameterType="int">
+        UPDATE INQUIRY_TBL
+        SET 
+            READ_YN = 'Y',
+            READ_AT = SYSDATE
+        WHERE INQUIRY_ID = #{inquiryId}
+    </update>
+
+    <!-- 문의 상태별 개수 조회 -->
+    <select id="selectInquiryCountByStatus" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM INQUIRY_TBL
+        WHERE STATUS = #{status}
+          AND DELETE_YN = 'N'
+    </select>
+
+    <!-- 미읽음 문의 개수 조회 -->
+    <select id="selectUnreadInquiryCount" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM INQUIRY_TBL
+        WHERE USER_ID = #{userId}
+          AND READ_YN = 'N'
+          AND DELETE_YN = 'N'
+    </select>
 
 </mapper>

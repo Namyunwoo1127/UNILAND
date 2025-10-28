@@ -42,6 +42,16 @@ public interface InquiryService {
     // 회원 문의 확인
 	List<Inquiry> getInquiriesByUserId(String userId);
 
+	int insertInquiry(Inquiry inquiry);
+
+	int markInquiryAsRead(int inquiryId);
+
+	List<Inquiry> getAdminInquiriesByUserId(String userId);
+
+	List<Inquiry> getRealtorInquiriesByUserId(String userId);
+
+	int getUnreadInquiryCount(String userId);
+
     // TODO: 중개사 문의 생성
     // int createRealtorInquiry(Inquiry inquiry);
 

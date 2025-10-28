@@ -110,4 +110,39 @@ public class InquiryServiceImpl implements InquiryService {
     public int markAsRead(Integer inquiryId) {
         return inquiryMapper.updateInquiryReadStatus(inquiryId);
     }
+
+	@Override
+	public int insertInquiry(Inquiry inquiry) {
+		log.info("문의 등록: {}", inquiry.getTitle());
+        return inquiryMapper.insertInquiry(inquiry);
+	}
+
+	@Override
+	public int markInquiryAsRead(int inquiryId) {
+		log.info("문의 읽음 처리: inquiryId={}", inquiryId);
+        return inquiryMapper.markInquiryAsRead(inquiryId);
+	}
+
+	@Override
+    @Transactional(readOnly = true)
+    public List<Inquiry> getAdminInquiriesByUserId(String userId) {
+        log.info("사용자별 관리자 문의 조회: userId={}", userId);
+        return inquiryMapper.selectAdminInquiriesByUserId(userId);
+    }
+
+	@Override
+    @Transactional(readOnly = true)
+    public List<Inquiry> getRealtorInquiriesByUserId(String userId) {
+        log.info("사용자별 중개사 문의 조회: userId={}", userId);
+        return inquiryMapper.selectRealtorInquiriesByUserId(userId);
+    }
+
+	@Override
+    @Transactional(readOnly = true)
+    public int getUnreadInquiryCount(String userId) {
+        log.info("미읽음 문의 개수 조회: userId={}", userId);
+        return inquiryMapper.selectUnreadInquiryCount(userId);
+    }
+    
+    
 }
