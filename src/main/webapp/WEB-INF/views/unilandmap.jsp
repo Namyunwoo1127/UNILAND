@@ -2182,6 +2182,9 @@
                         const filter = JSON.parse(filterJson);
                         console.log('AI 검색 필터 자동 적용:', filter);
 
+                        // 조건보기 UI에 필터 반영
+                        applyFilterToUI(filter);
+
                         // 알림 표시
                         if (query) {
                             alert('AI 검색: "' + query + '"\n조건이 자동으로 적용되었습니다.');
@@ -2196,6 +2199,108 @@
 
                     } catch (e) {
                         console.error('AI 검색 결과 적용 실패:', e);
+                    }
+                }
+            }
+        }
+
+        // AI 필터를 UI에 반영
+        function applyFilterToUI(filter) {
+            // 지역 필터 반영
+            if (filter.regions && filter.regions.length > 0) {
+                selectedRegions = filter.regions;
+                updateSelectedRegions();
+            }
+
+            // 학교 필터 반영
+            if (filter.schoolLocations && filter.schoolLocations.length > 0) {
+                selectedSchools = filter.schoolLocations.map(s => s.name);
+                updateSelectedSchools();
+
+                // 학교 반경 설정
+                if (filter.schoolRadius) {
+                    document.getElementById('schoolRadius').value = filter.schoolRadius;
+                }
+            }
+
+            // 보증금 필터 반영
+            if (filter.depositMin !== null && filter.depositMin !== undefined) {
+                document.getElementById('depositMin').value = filter.depositMin;
+            }
+            if (filter.depositMax !== null && filter.depositMax !== undefined) {
+                document.getElementById('depositMax').value = filter.depositMax;
+            }
+            updateDepositDisplay();
+
+            // 월세 필터 반영
+            if (filter.rentMin !== null && filter.rentMin !== undefined) {
+                document.getElementById('rentMin').value = filter.rentMin;
+            }
+            if (filter.rentMax !== null && filter.rentMax !== undefined) {
+                document.getElementById('rentMax').value = filter.rentMax;
+            }
+            updateRentDisplay();
+
+            // 매물 유형 필터 반영
+            if (filter.propertyTypes && filter.propertyTypes.length > 0) {
+                var propertyTypeButtons = document.querySelectorAll('.filter-row')[2].querySelectorAll('.filter-btn');
+                var typeMapping = {
+                    'oneRoom': 0,
+                    'twoRoom': 1,
+                    'threeRoom': 2,
+                    'officetel': 3
+                };
+
+                filter.propertyTypes.forEach(function(type) {
+                    var index = typeMapping[type];
+                    if (index !== undefined && propertyTypeButtons[index]) {
+                        propertyTypeButtons[index].classList.add('active');
+                    }
+                });
+            }
+
+            // 학생 특화 필터 반영
+            var studentPrefButtons = document.querySelectorAll('.filter-row')[3].querySelectorAll('.filter-btn');
+            if (filter.studentPref === true && studentPrefButtons[0]) {
+                studentPrefButtons[0].classList.add('active');
+            }
+            if (filter.shortCont === true && studentPrefButtons[1]) {
+                studentPrefButtons[1].classList.add('active');
+            }
+
+            // 옵션 필터 반영
+            var optionMapping = {
+                airConditioner: [4, 0],  // [filter-row 인덱스, 버튼 인덱스]
+                heater: [4, 1],
+                refrigerator: [5, 0],
+                microwave: [5, 1],
+                induction: [5, 2],
+                gasStove: [5, 3],
+                washer: [6, 0],
+                dryer: [6, 1],
+                bed: [6, 2],
+                desk: [6, 3],
+                wardrobe: [6, 4],
+                shoeRack: [6, 5],
+                tv: [6, 6],
+                parking: [7, 0],
+                elevator: [7, 1],
+                security: [7, 2],
+                petAllowed: [7, 3]
+            };
+
+            for (var optionKey in optionMapping) {
+                if (filter[optionKey] === true) {
+                    var mapping = optionMapping[optionKey];
+                    var rowIndex = mapping[0];
+                    var btnIndex = mapping[1];
+                    var filterRows = document.querySelectorAll('.filter-row');
+
+                    if (filterRows[rowIndex]) {
+                        var buttons = filterRows[rowIndex].querySelectorAll('.filter-btn');
+                        if (buttons[btnIndex]) {
+                            buttons[btnIndex].classList.add('active');
+                        }
                     }
                 }
             }

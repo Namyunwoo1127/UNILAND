@@ -239,20 +239,22 @@ public class GeminiService {
             - 종합운동장역: 37.5110, 127.0735
 
             도보 시간 변환:
-            - 도보 5분 = 0.4km
-            - 도보 10분 = 0.8km
-            - 도보 15분 = 1.2km
-            - "역 근처" = 0.5km (기본)
+            - 도보 5분 = 0.5km
+            - 도보 10분 = 1.0km
+            - 도보 15분 = 1.5km
+            - 도보 20분 = 2.0km
+            - "역 근처" = 1.0km (기본)
 
             참고:
             - 언급되지 않은 조건은 null로 설정
             - 가격은 만원 단위로 변환
             - 학교가 언급되면 반경은 기본 2km
-            - 역이 언급되고 거리가 없으면 반경 0.5km (도보 5-10분)
+            - 역이 언급되고 거리가 없으면 반경 1.0km (기본)
             - "도보 X분"이 언급되면 위 변환표 사용
             - 역 이름은 schoolLocations 배열에 포함 (학교와 동일하게 처리)
-            - 예: "강남역 근처" → schoolLocations: [{"name": "강남역", "latitude": 37.4979, "longitude": 127.0276}], schoolRadius: 0.5
-            - 예: "홍대 도보 10분" → schoolLocations: [{"name": "홍대입구역", "latitude": 37.5571, "longitude": 126.9240}], schoolRadius: 0.8
+            - 예: "강남역 근처" → schoolLocations: [{"name": "강남역", "latitude": 37.4979, "longitude": 127.0276}], schoolRadius: 1.0
+            - 예: "홍대 도보 10분" → schoolLocations: [{"name": "홍대입구역", "latitude": 37.5571, "longitude": 126.9240}], schoolRadius: 1.0
+            - 예: "신촌역 도보 5분" → schoolLocations: [{"name": "신촌역", "latitude": 37.5559, "longitude": 126.9364}], schoolRadius: 0.5
             - JSON만 반환하고 다른 텍스트는 포함하지 마세요
             """.formatted(userQuery);
     }
