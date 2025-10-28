@@ -136,6 +136,29 @@
       transition: background 0.3s ease;
     }
     .btn-search:hover { background: #5a67d8; }
+    
+    .btn-reset {
+      background: #718096;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .btn-reset:hover { background: #4a5568; }
+
+    /* 섹션 타이틀 */
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
     /* 테이블 */
     table {
@@ -145,6 +168,7 @@
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-bottom: 40px;
     }
     th, td {
       padding: 14px 12px;
@@ -170,7 +194,7 @@
     }
     .badge.active { background: #48bb78; }
     .badge.inactive { background: #e53e3e; }
-    .badge.PENDING {background: gray;}
+    .badge.PENDING {background: #ed8936;}
     .badge.APPROVAL { background: #48bb78;}
     .badge.REJECTED {background: #e53e3e;}
 
@@ -188,6 +212,36 @@
     .btn-edit:hover { background: #38a169; }
     .btn-delete { background: #e53e3e; color: white; }
     .btn-delete:hover { background: #c53030; }
+
+    /* 검색 결과 메시지 */
+    .search-result-message {
+      background: #e6f7ff;
+      border: 1px solid #91d5ff;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      color: #0050b3;
+      font-size: 14px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .search-result-message.active {
+      display: flex;
+    }
+
+    /* 검색 결과 없음 */
+    .no-result {
+      text-align: center;
+      padding: 40px 20px;
+      color: #718096;
+      font-size: 14px;
+    }
+    .no-result i {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
 
     /* 푸터 */
     footer {
@@ -238,18 +292,32 @@
       <!-- 검색 박스 -->
       <div class="search-box">
         <select id="searchCategory">
+          <option value="all">전체</option>
           <option value="name">이름</option>
           <option value="id">아이디</option>
           <option value="email">이메일</option>
-          <option value="date">가입일자</option>
+          <option value="phone">연락처</option>
+          <option value="office">사무소명</option>
         </select>
-        <input type="text" id="searchInput" placeholder="검색어를 입력하세요">
-        <button class="btn-search" onclick="searchMember()">검색</button>
+        <input type="text" id="searchInput" placeholder="검색어를 입력하세요" onkeypress="if(event.keyCode==13) searchMember()">
+        <button class="btn-search" onclick="searchMember()">
+          <i class="fa-solid fa-search"></i> 검색
+        </button>
+        <button class="btn-reset" onclick="resetSearch()">
+          <i class="fa-solid fa-rotate-right"></i> 초기화
+        </button>
+      </div>
+
+      <!-- 검색 결과 메시지 -->
+      <div class="search-result-message" id="searchResultMessage">
+        <i class="fa-solid fa-info-circle"></i>
+        <span id="searchResultText"></span>
       </div>
 
       <!-- 일반 회원 목록 -->
       <h3 class="section-title">
         <i class="fa-solid fa-user"></i> 일반 회원 목록
+        <span style="color: #667eea; font-size: 16px;">(<span id="userCount">0</span>명)</span>
       </h3>
       <table>
         <thead>
@@ -258,7 +326,7 @@
             <th>이름</th>
             <th>아이디</th>
             <th>이메일</th>
-            <th>회원유형</th>
+            <th>연락처</th>
             <th>상태</th>
             <th>가입일</th>
             <th>관리</th>
@@ -267,12 +335,15 @@
         <tbody id="memberTable">
           <c:forEach var="user" items="${userList}" varStatus="status">
             <c:if test="${user.adminYn == 'N'}">
-              <tr>
+              <tr data-name="${user.userName}" 
+                  data-id="${user.userId}" 
+                  data-email="${user.userEmail}"
+                  data-phone="${user.userPhone}">
                 <td>${status.count}</td>
                 <td>${user.userName}</td>
                 <td>${user.userId}</td>
                 <td>${user.userEmail}</td>
-                <td>일반회원</td>
+                <td>${user.userPhone}</td>
                 <td>
                   <span class="badge ${user.deleteYn == 'N' ? 'active' : 'inactive'}">
                     ${user.deleteYn == 'N' ? '활성' : '탈퇴'}
@@ -298,19 +369,17 @@
               </tr>
             </c:if>
           </c:forEach>
-          <c:if test="${empty userList}">
-            <tr>
-              <td colspan="8">등록된 회원이 없습니다.</td>
-            </tr>
-          </c:if>
         </tbody>
       </table>
-      
-      <br>
+      <div id="noUserResult" class="no-result" style="display: none;">
+        <i class="fa-solid fa-inbox"></i>
+        <div>검색 결과가 없습니다.</div>
+      </div>
 
       <!-- 중개사 회원 목록 -->
       <h3 class="section-title">
         <i class="fa-solid fa-building"></i> 중개사 회원 목록
+        <span style="color: #667eea; font-size: 16px;">(<span id="realtorCount">0</span>명)</span>
       </h3>
       <table>
         <thead>
@@ -320,6 +389,7 @@
             <th>아이디</th>
             <th>사무소명</th>
             <th>연락처</th>
+            <th>이메일</th>
             <th>승인상태</th>
             <th>가입일</th>
             <th>관리</th>
@@ -327,12 +397,17 @@
         </thead>
         <tbody id="realtorTable">
           <c:forEach var="realtor" items="${realtorList}" varStatus="status">
-            <tr>
+            <tr data-name="${realtor.realtorName}"
+                data-id="${realtor.realtorId}"
+                data-email="${realtor.realtorEmail}"
+                data-phone="${realtor.realtorPhone}"
+                data-office="${realtor.officeName}">
               <td>${status.count}</td>
               <td>${realtor.realtorName}</td>
               <td>${realtor.realtorId}</td>
               <td>${realtor.officeName}</td>
               <td>${realtor.realtorPhone}</td>
+              <td>${realtor.realtorEmail}</td>
               <td>
                 <c:choose>
                   <c:when test="${realtor.approvalStatus == 'APPROVAL'}">
@@ -345,7 +420,7 @@
                     <span class="badge ${realtor.approvalStatus}">반려</span>
                   </c:when>
                   <c:otherwise>
-                    <span class="badge_inactive">-</span>
+                    <span class="badge inactive">-</span>
                   </c:otherwise>
                 </c:choose>
               </td>
@@ -370,8 +445,12 @@
           </c:forEach>
         </tbody>
       </table>
-    </main> <!-- ✅ main 닫음 -->
-  </div> <!-- ✅ admin-container 닫음 -->
+      <div id="noRealtorResult" class="no-result" style="display: none;">
+        <i class="fa-solid fa-inbox"></i>
+        <div>검색 결과가 없습니다.</div>
+      </div>
+    </main>
+  </div>
 
   <!-- 푸터 -->
   <footer>
@@ -379,20 +458,158 @@
   </footer>
 
   <script>
+    // 검색 기능
     function searchMember() {
       const category = document.getElementById('searchCategory').value;
-      const keyword = document.getElementById('searchInput').value.toLowerCase();
-      const rows = document.querySelectorAll('#memberTable tr');
-      rows.forEach(row => {
-        const cells = row.getElementsByTagName('td');
-        let text = '';
-        if (category === 'name') text = cells[1].textContent;
-        else if (category === 'id') text = cells[2].textContent;
-        else if (category === 'email') text = cells[3].textContent;
-        else if (category === 'date') text = cells[6].textContent;
-        row.style.display = text.toLowerCase().includes(keyword) ? '' : 'none';
+      const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+      
+      if (!keyword) {
+        alert('검색어를 입력하세요.');
+        return;
+      }
+
+      // 일반 회원 검색
+      const userRows = document.querySelectorAll('#memberTable tr');
+      let userVisibleCount = 0;
+      
+      userRows.forEach(row => {
+        const name = row.getAttribute('data-name') || '';
+        const id = row.getAttribute('data-id') || '';
+        const email = row.getAttribute('data-email') || '';
+        const phone = row.getAttribute('data-phone') || '';
+        
+        let isMatch = false;
+        
+        if (category === 'all') {
+          isMatch = name.toLowerCase().includes(keyword) ||
+                   id.toLowerCase().includes(keyword) ||
+                   email.toLowerCase().includes(keyword) ||
+                   phone.toLowerCase().includes(keyword);
+        } else if (category === 'name') {
+          isMatch = name.toLowerCase().includes(keyword);
+        } else if (category === 'id') {
+          isMatch = id.toLowerCase().includes(keyword);
+        } else if (category === 'email') {
+          isMatch = email.toLowerCase().includes(keyword);
+        } else if (category === 'phone') {
+          isMatch = phone.toLowerCase().includes(keyword);
+        }
+        
+        if (isMatch) {
+          row.style.display = '';
+          userVisibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
       });
+
+      // 중개사 검색
+      const realtorRows = document.querySelectorAll('#realtorTable tr');
+      let realtorVisibleCount = 0;
+      
+      realtorRows.forEach(row => {
+        const name = row.getAttribute('data-name') || '';
+        const id = row.getAttribute('data-id') || '';
+        const email = row.getAttribute('data-email') || '';
+        const phone = row.getAttribute('data-phone') || '';
+        const office = row.getAttribute('data-office') || '';
+        
+        let isMatch = false;
+        
+        if (category === 'all') {
+          isMatch = name.toLowerCase().includes(keyword) ||
+                   id.toLowerCase().includes(keyword) ||
+                   email.toLowerCase().includes(keyword) ||
+                   phone.toLowerCase().includes(keyword) ||
+                   office.toLowerCase().includes(keyword);
+        } else if (category === 'name') {
+          isMatch = name.toLowerCase().includes(keyword);
+        } else if (category === 'id') {
+          isMatch = id.toLowerCase().includes(keyword);
+        } else if (category === 'email') {
+          isMatch = email.toLowerCase().includes(keyword);
+        } else if (category === 'phone') {
+          isMatch = phone.toLowerCase().includes(keyword);
+        } else if (category === 'office') {
+          isMatch = office.toLowerCase().includes(keyword);
+        }
+        
+        if (isMatch) {
+          row.style.display = '';
+          realtorVisibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      	// 검색 결과 메시지
+		const totalCount = userVisibleCount + realtorVisibleCount;
+		const searchResultMessage = document.getElementById('searchResultMessage');
+		const searchResultText = document.getElementById('searchResultText');
+		
+/* 		if (totalCount > 0) {
+		  searchResultText.textContent = `'${keyword}' 검색 결과: 일반 ${userVisibleCount}명, 중개사 ${realtorVisibleCount}명`;
+		  searchResultMessage.classList.add('active');
+		} else {
+		  searchResultText.textContent = `'${keyword}' 검색 결과가 없습니다.`;
+		  searchResultMessage.classList.add('active');
+		}
+		 */
+		document.getElementById('userCount').textContent = userVisibleCount;
+		document.getElementById('realtorCount').textContent = realtorVisibleCount;
+		document.getElementById('searchResultText').textContent = totalCount;
+
+      // 카운트 업데이트
+      updateCounts();
+      
+      
     }
+
+    // 검색 초기화
+    function resetSearch() {
+      document.getElementById('searchCategory').value = 'all';
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchResultMessage').classList.remove('active');
+      
+      // 모든 행 표시
+      document.querySelectorAll('#memberTable tr, #realtorTable tr').forEach(row => {
+        row.style.display = '';
+      });
+      
+      // 결과 없음 메시지 숨김
+      document.getElementById('noUserResult').style.display = 'none';
+      document.getElementById('noRealtorResult').style.display = 'none';
+
+      // 카운트 업데이트
+      updateCounts();
+      
+      window.searchMember = searchMember;
+    }
+
+    // 카운트 업데이트
+    function updateCounts() {
+      const userRows = document.querySelectorAll('#memberTable tr');
+      const realtorRows = document.querySelectorAll('#realtorTable tr');
+      
+      let userVisibleCount = 0;
+      let realtorVisibleCount = 0;
+      
+      userRows.forEach(row => {
+        if (row.style.display !== 'none') userVisibleCount++;
+      });
+      
+      realtorRows.forEach(row => {
+        if (row.style.display !== 'none') realtorVisibleCount++;
+      });
+      
+      document.getElementById('userCount').textContent = userVisibleCount;
+      document.getElementById('realtorCount').textContent = realtorVisibleCount;
+    }
+
+    // 페이지 로드 시 초기 카운트
+    window.addEventListener('DOMContentLoaded', function() {
+      updateCounts();
+    });
 
     // 사이드바 메뉴 클릭
     document.querySelectorAll('.sidebar li').forEach((item, index) => {
@@ -420,19 +637,11 @@
     });
 
     // 로그아웃
-    document.querySelector('.btn-login').addEventListener('click', function() {
+    function logout() {
       if (confirm('로그아웃 하시겠습니까?')) {
-        alert('로그아웃되었습니다.');
         window.location.href = '${pageContext.request.contextPath}/auth/logout';
       }
-    });
-
-    // 수정 버튼 (준비중)
-    document.querySelectorAll('.btn-edit').forEach(btn => {
-      btn.addEventListener('click', function() {
-        alert('회원 수정 기능은 준비중입니다.');
-      });
-    });
+    }
   </script>
 </body>
 </html>

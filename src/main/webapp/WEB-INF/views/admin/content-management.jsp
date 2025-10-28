@@ -40,9 +40,9 @@
     }
 
     .logo img {
-      	height: 60px;
-        object-fit: contain;
-        object-position: center;
+      height: 60px;
+      object-fit: contain;
+      object-position: center;
     }
 
     .btn-login {
@@ -138,40 +138,51 @@
 
     /* 검색 박스 */
     .search-box {
-    background: white;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 30px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
     .search-box select, .search-box input {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 14px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
     }
 
     .search-box select { width: 130px; }
     .search-box input { flex: 1; }
 
     .btn-search {
-    background: #667eea;
-    color: white;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease;
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
     }
 
     .btn-search:hover { background: #5a67d8; }
-
+  
+    .btn-reset {
+      background: #718096;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .btn-reset:hover { background: #4a5568; }
 
     /* 테이블 */
     table {
@@ -205,21 +216,21 @@
     }
     
     .badge {
-    	display: inline-block;
-    	padding: 4px 8px;
-    	border-radius: 4px;
-    	font-size: 11px;
-     	font-weight: 600;
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
     }
         
     .badge-important {
-    	background: #f56565;
-      	color: white;
+      background: #f56565;
+      color: white;
     }
         
     .badge-new {
-    	background: #48bb78;
-    	color: white;
+      background: #48bb78;
+      color: white;
     }
 
     .btn-edit, .btn-delete {
@@ -231,20 +242,54 @@
       font-weight: 600;
     }
 
-	.notice-title a {
-  		text-decoration: none;
-  		color: #1a1a1a; /* 링크 색상 통일 (필요 시 조정) */
-  		transition: color 0.2s;
-	}
+    .notice-title a {
+      text-decoration: none;
+      color: #1a1a1a;
+      transition: color 0.2s;
+    }
 
-	.notice-title a:hover {
-  		color: #667eea; /* 마우스 오버 시 포인트 컬러 */
-	}
+    .notice-title a:hover {
+      color: #667eea;
+    }
 
     .btn-edit { background: #48bb78; color: white; }
     .btn-delete { background: #e53e3e; color: white; }
     .btn-edit:hover { background: #38a169; }
     .btn-delete:hover { background: #c53030; }
+    
+    /* 검색 결과 메시지 */
+    .search-result-message {
+      background: #e6f7ff;
+      border: 1px solid #91d5ff;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      color: #0050b3;
+      font-size: 14px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .search-result-message.active {
+      display: flex;
+    }
+
+    /* 검색 결과 없음 */
+    .no-result {
+      text-align: center;
+      padding: 40px 20px;
+      color: #718096;
+      font-size: 14px;
+      display: none;
+    }
+    .no-result.active {
+      display: block;
+    }
+    .no-result i {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }    
 
     /* 푸터 */
     footer {
@@ -281,30 +326,41 @@
         <li><i class="fa-solid fa-building"></i> 매물관리</li>
         <li class="active"><i class="fa-solid fa-bullhorn"></i> 공지사항관리</li>
         <li><i class="fa-solid fa-envelope"></i> 문의관리</li>
-              <li><i class="fa-solid fa-user-check"></i> 중개사 승인</li>
+        <li><i class="fa-solid fa-user-check"></i> 중개사 승인</li>
       </ul>
     </aside>
 
     <!-- 메인 콘텐츠 -->
     <main class="main-content">
       <div class="page-header">
-        <h2>공지사항관리</h2>
+        <h2>공지사항관리 (<span id="noticeCount">0</span>건)</h2>
         <button class="btn-create" onclick="location.href='/uniland/community/notice-write'">
-			<i class="fa-solid fa-pen"></i> 공지 작성
-		</button>
+          <i class="fa-solid fa-pen"></i> 공지 작성
+        </button>
+      </div>
+
+      <!-- 검색 결과 메시지 -->
+      <div class="search-result-message" id="searchResultMessage">
+        <i class="fa-solid fa-info-circle"></i>
+        <span id="searchResultText"></span>
       </div>
 
       <!-- 검색 박스 -->
-    <div class="search-box">
-    <select id="searchCategory">
-        <option value="title">제목</option>
-        <option value="writer">작성자</option>
-        <option value="date">작성일</option>
-    </select>
-    <input type="text" id="searchInput" placeholder="검색어를 입력하세요">
-    <button class="btn-search" onclick="searchNotice()">검색</button>
-    </div>
-
+      <div class="search-box">
+        <select id="searchCategory">
+          <option value="all">전체</option>
+          <option value="title">제목</option>
+          <option value="writer">작성자</option>
+          <option value="date">작성일</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="검색어를 입력하세요" onkeypress="if(event.keyCode==13) searchNotice()">
+        <button class="btn-search" onclick="searchNotice()">
+          <i class="fa-solid fa-search"></i> 검색
+        </button>
+        <button class="btn-reset" onclick="resetSearch()">
+          <i class="fa-solid fa-rotate-right"></i> 초기화
+        </button>
+      </div>
 
       <!-- 공지 목록 테이블 -->
       <table>
@@ -318,19 +374,21 @@
             <th>관리</th>
           </tr>
         </thead>
-        <tbody>
-          	<c:forEach var="notice" items="${noticeList}">
-            <tr>
+        <tbody id="noticeTable">
+          <c:forEach var="notice" items="${noticeList}">
+            <tr data-title="${notice.noticeSubject}"
+                data-writer="${notice.noticeWriter}"
+                data-date="<fmt:formatDate value="${notice.noticeCreateat}" pattern="yyyy-MM-dd" />">
               <td>${notice.noticeNo}</td>
               <td class="notice-title">
                 <a href="${pageContext.request.contextPath}/community/notice/${notice.noticeNo}">
-                	<c:if test="${notice.noticeImportant == 'Y'}">
-                    	<span class="badge badge-important">중요</span>
-                    </c:if>
-                    <c:if test="${notice.noticeIsnew == 'Y'}">
-                        <span class="badge badge-new">NEW</span>
-                    </c:if>
-                  	${notice.noticeSubject}
+                  <c:if test="${notice.noticeImportant == 'Y'}">
+                    <span class="badge badge-important">중요</span>
+                  </c:if>
+                  <c:if test="${notice.noticeIsnew == 'Y'}">
+                    <span class="badge badge-new">NEW</span>
+                  </c:if>
+                  ${notice.noticeSubject}
                 </a>
               </td>
               <td>${notice.noticeWriter}</td>
@@ -350,13 +408,22 @@
               </td>
             </tr>
           </c:forEach>
-          <c:if test="${empty noticeList}">
-            <tr>
-              <td colspan="6">등록된 공지사항이 없습니다.</td>
-            </tr>
-          </c:if>
         </tbody>
       </table>
+      
+      <!-- 검색 결과 없음 -->
+      <div id="noResult" class="no-result">
+        <i class="fa-solid fa-inbox"></i>
+        <div>검색 결과가 없습니다.</div>
+      </div>
+      
+      <!-- 공지사항 없음 -->
+      <c:if test="${empty noticeList}">
+        <div class="no-result active">
+          <i class="fa-solid fa-inbox"></i>
+          <div>등록된 공지사항이 없습니다.</div>
+        </div>
+      </c:if>
     </main>
   </div>
 
@@ -366,51 +433,139 @@
   </footer>
 
   <script>
+    // 검색 기능
+    function searchNotice() {
+      const category = document.getElementById('searchCategory').value;
+      // 검색 시 대소문자를 구분하지 않도록 toLowerCase()를 사용
+      const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+      
+      if (!keyword) {
+        alert('검색어를 입력하세요.');
+        return;
+      }
+
+      const rows = document.querySelectorAll('#noticeTable tr');
+      let visibleCount = 0; // 검색된 행의 수
+      
+      rows.forEach(row => {
+        // data- 속성 값을 가져올 때 null 체크를 위해 || '' 사용
+        const title = row.getAttribute('data-title')?.toLowerCase() || '';
+        const writer = row.getAttribute('data-writer')?.toLowerCase() || '';
+        const date = row.getAttribute('data-date') || ''; // 날짜는 대소문자 구분 불필요
+        
+        let isMatch = false;
+        
+        if (category === 'all') {
+          isMatch = title.includes(keyword) ||
+                    writer.includes(keyword) ||
+                    date.includes(keyword);
+        } else if (category === 'title') {
+          isMatch = title.includes(keyword);
+        } else if (category === 'writer') {
+          isMatch = writer.includes(keyword);
+        } else if (category === 'date') {
+          isMatch = date.includes(keyword);
+        }
+        
+        if (isMatch) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      // 검색 결과 메시지 및 카운트 업데이트
+      const searchResultMessage = document.getElementById('searchResultMessage');
+      const searchResultText = document.getElementById('searchResultText');
+      const noResultDiv = document.getElementById('noResult');
+      
+      // 검색 결과 메시지 표시/숨김
+      searchResultMessage.classList.add('active');
+      
+      if (visibleCount > 0) {
+    	  searchResultText.textContent = "'" + keyword + "' 검색 결과";
+        noResultDiv.classList.remove('active'); // 검색 결과가 있으면 숨김
+      } else {
+    	  searchResultText.textContent = "'" + keyword + "' 검색 결과가 없습니다.";
+        noResultDiv.classList.add('active'); // 검색 결과가 없으면 표시
+      }
+     
+      // 최종 카운트 업데이트
+      document.getElementById('noticeCount').textContent = visibleCount;
+    }
+
+ // 검색 초기화
+    function resetSearch() {
+      // 1. 입력 필드 및 카테고리 초기화
+      document.getElementById('searchCategory').value = 'all';
+      document.getElementById('searchInput').value = '';
+      
+      // 2. 검색 결과 메시지 숨김 및 텍스트 초기화 (🌟 이 부분이 중요합니다)
+      document.getElementById('searchResultMessage').classList.remove('active');
+      document.getElementById('searchResultText').textContent = ''; // 👈 이 코드를 추가하거나 확인하세요
+      
+      // 3. 모든 행 표시
+      document.querySelectorAll('#noticeTable tr').forEach(row => {
+        row.style.display = '';
+      });
+      
+      // 4. '검색 결과 없음' 메시지 숨김
+      document.getElementById('noResult').classList.remove('active');
+
+      // 5. 최종 카운트 업데이트 (전체 목록 수로 복원)
+      updateCount();
+    }
+
+ // 카운트 업데이트
+    function updateCount() {
+      const rows = document.querySelectorAll('#noticeTable tr');
+      let visibleCount = 0;
+      
+      rows.forEach(row => {
+        // display 속성이 'none'이 아닌 경우만 카운트
+        if (row.style.display !== 'none') visibleCount++; 
+      });
+      
+      // 최종 카운트 업데이트
+      document.getElementById('noticeCount').textContent = visibleCount;
+    }
+
+    // 페이지 로드 시 초기 카운트
+    window.addEventListener('DOMContentLoaded', function() {
+      updateCount();
+    });
+
     // 사이드바 메뉴 클릭
     document.querySelectorAll('.sidebar li').forEach((item, index) => {
       item.addEventListener('click', function() {
         document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
         this.classList.add('active');
 
-        const pages = ['${pageContext.request.contextPath}/admin/dashboard', '${pageContext.request.contextPath}/admin/user-management', '${pageContext.request.contextPath}/admin/property-management', '${pageContext.request.contextPath}/admin/content-management', '${pageContext.request.contextPath}/admin/inquiry-management', '${pageContext.request.contextPath}/admin/realtor-approval'];
+        const pages = [
+          '${pageContext.request.contextPath}/admin/dashboard',
+          '${pageContext.request.contextPath}/admin/user-management',
+          '${pageContext.request.contextPath}/admin/property-management',
+          '${pageContext.request.contextPath}/admin/content-management',
+          '${pageContext.request.contextPath}/admin/inquiry-management',
+          '${pageContext.request.contextPath}/admin/realtor-approval'
+        ];
         if (pages[index]) {
           window.location.href = pages[index];
         }
       });
     });
 
- 	// 로고 클릭
+    // 로고 클릭
     document.querySelector('.logo').addEventListener('click', function() {
       window.location.href = '${pageContext.request.contextPath}/uniland';
     });
 
     // 로그아웃
-    document.querySelector('.btn-login').addEventListener('click', function() {
+    function logout() {
       if (confirm('로그아웃 하시겠습니까?')) {
-        alert('로그아웃되었습니다.');
         window.location.href = '${pageContext.request.contextPath}/auth/logout';
       }
-    });
-
-    // 글쓰기 버튼
-    document.querySelector('.btn-write').addEventListener('click', function() {
-      alert('공지사항 작성 기능은 준비중입니다.');
-    });
-
-    // 수정/삭제 버튼
-    document.querySelectorAll('.btn-edit').forEach(btn => {
-      btn.addEventListener('click', function() {
-        alert('공지사항 수정 기능은 준비중입니다.');
-      });
-    });
-
-    document.querySelectorAll('.btn-delete').forEach(btn => {
-      btn.addEventListener('click', function() {
-        if (confirm('정말 삭제하시겠습니까?')) {
-          alert('삭제되었습니다.');
-        }
-      });
-    });
+    }
   </script>
 </body>
-</html>
