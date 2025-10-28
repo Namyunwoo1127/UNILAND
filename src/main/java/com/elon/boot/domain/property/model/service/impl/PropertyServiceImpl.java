@@ -2,6 +2,7 @@ package com.elon.boot.domain.property.model.service.impl;
 
 import com.elon.boot.controller.dto.property.OptionAddRequest;
 import com.elon.boot.controller.dto.property.PropertyAddRequest;
+import com.elon.boot.controller.dto.property.PropertyFilterRequest;
 import com.elon.boot.domain.property.model.service.PropertyService;
 import com.elon.boot.domain.property.model.store.OptionMapper;
 import com.elon.boot.domain.property.model.store.PropertyMapper;
@@ -131,6 +132,11 @@ return propNo;
 	@Override
 	public List<Property> getAllProperties() {
 		return propertyMapper.selectAllProperties();
+	}
+
+	@Override
+	public List<Property> getFilteredProperties(PropertyFilterRequest filter) {
+		return propertyMapper.selectPropertiesWithFilter(filter);
 	}
 
 }

@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.elon.boot.controller.dto.property.OptionAddRequest;
 import com.elon.boot.controller.dto.property.PropertyAddRequest;
+import com.elon.boot.controller.dto.property.PropertyFilterRequest;
 import com.elon.boot.domain.property.model.vo.Property;
 import com.elon.boot.domain.property.model.vo.PropertyImg;
 import com.elon.boot.domain.property.model.vo.PropertyOption;
@@ -24,5 +25,7 @@ public interface PropertyService {
 	Realtor selectRealtorById(String rId);
 
 	List<Property> getAllProperties();
+
+	List<Property> getFilteredProperties(PropertyFilterRequest filter);
 
 }
