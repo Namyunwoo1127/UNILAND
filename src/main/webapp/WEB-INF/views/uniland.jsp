@@ -1082,12 +1082,48 @@
             const query = searchInput.value.trim();
 
             if (query) {
-                // TODO: AI 검색 페이지로 이동
-                alert('AI 검색 기능은 준비 중입니다.');
+                performAiSearch(query);
             } else {
                 alert('검색어를 입력해주세요.');
             }
         });
+
+        // AI 검색 실행
+        function performAiSearch(query) {
+            // 로딩 표시
+            var button = document.querySelector('.search-button');
+            var originalText = button.innerHTML;
+            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> AI 분석 중...';
+            button.disabled = true;
+
+            // AI API 호출
+            fetch('${pageContext.request.contextPath}/api/properties/ai-search?query=' + encodeURIComponent(query), {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('AI가 추출한 필터:', data.filter);
+
+                    // 필터를 세션 스토리지에 저장
+                    sessionStorage.setItem('aiSearchFilter', JSON.stringify(data.filter));
+                    sessionStorage.setItem('aiSearchQuery', query);
+
+                    // 지도 페이지로 이동
+                    window.location.href = '${pageContext.request.contextPath}/map?ai=true';
+                } else {
+                    alert('AI 검색 실패: ' + (data.message || '오류가 발생했습니다.'));
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('AI 검색 오류:', error);
+                alert('AI 검색 중 오류가 발생했습니다.');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        }
 
         // 검색창 엔터키
         document.querySelector('.search-input').addEventListener('keypress', function(e) {
