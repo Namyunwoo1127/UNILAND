@@ -196,26 +196,30 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .login-footer {
-            display: flex;
-            justify-content: center;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-xl);
-            font-size: var(--font-md);
-        }
-
-        .login-footer a {
-            color: var(--text-tertiary);
-            text-decoration: none;
-        }
-
-        .login-footer a:hover {
-            color: var(--primary-purple);
-        }
-
-        .divider {
-            color: var(--border-light);
-        }
+		.login-footer {
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    gap: 15px;
+		    margin-top: var(--spacing-xl);
+		    font-size: var(--font-md);
+		}
+		
+		.login-footer a {
+		    color: var(--text-tertiary);
+		    text-decoration: none;
+		    transition: color 0.2s;
+		    white-space: nowrap;
+		}
+		
+		.login-footer a:hover {
+		    color: var(--primary-purple);
+		}
+		
+		.divider {
+		    color: var(--text-light);
+		    font-weight: 300;
+		}
 
         .error-message {
             color: #f56565;
