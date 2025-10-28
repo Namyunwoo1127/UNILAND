@@ -64,11 +64,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 9px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
+            padding: 10px 18px;
+            background: white;
+            color: #2d3748;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
@@ -76,11 +76,19 @@
         }
 
         .filter-toggle-btn:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6a4091 100%);
+            background: #f7fafc;
+            border-color: #a0aec0;
+        }
+
+        .filter-toggle-btn.active {
+            background: #f7fafc;
+            border-color: #4a5568;
         }
 
         .filter-toggle-btn .arrow {
             transition: transform 0.3s;
+            font-size: 12px;
+            color: #718096;
         }
 
         .filter-toggle-btn.active .arrow {
@@ -1102,7 +1110,7 @@
             <div class="filter-row">
                 <div class="filter-label">매물 유형</div>
                 <div class="filter-buttons">
-                    <button class="filter-btn active" onclick="toggleFilterBtn(this)">원룸</button>
+                    <button class="filter-btn" onclick="toggleFilterBtn(this)">원룸</button>
                     <button class="filter-btn" onclick="toggleFilterBtn(this)">투룸</button>
                     <button class="filter-btn" onclick="toggleFilterBtn(this)">쓰리룸</button>
                     <button class="filter-btn" onclick="toggleFilterBtn(this)">오피스텔</button>
@@ -1254,7 +1262,7 @@
     <div class="main-layout">
         <div class="sidebar">
             <div class="list-header">
-                <h2>매물 <span class="count"><c:out value="${properties.size()}" default="0"/></span>개</h2>
+                <h2>매물 <span class="count" id="sidebarCount">0</span>개</h2>
                 <select class="sort-select">
                     <option>추천순</option>
                     <option>최신순</option>
@@ -1263,36 +1271,8 @@
                 </select>
             </div>
 
-            <div class="property-list-content">
-                <c:forEach items="${properties}" var="property">
-                <div class="property-card" onclick="showPropertyDetail(${property.propertyNo})">
-                    <div class="card-image">
-                        <c:choose>
-                            <c:when test="${not empty property.thumbnailPath}">
-                                <img src="${pageContext.request.contextPath}${property.thumbnailPath}" alt="${property.propertyType}"
-                                     onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop'">
-                            </c:when>
-                            <c:otherwise>
-                                <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" alt="${property.propertyType}">
-                            </c:otherwise>
-                        </c:choose>
-                        <c:if test="${property.studentPref == 'Y'}">
-                            <span class="card-badge">학생 우대</span>
-                        </c:if>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-title">${property.propertyName}</div>
-                        <div class="card-location">📍 ${property.district}</div>
-                        <div class="card-price">${property.deposit}/${property.monthlyRent}</div>
-                        <div class="card-tags">
-                            <span>${property.propertyType}</span>
-                            <c:if test="${property.shortCont == 'Y'}">
-                                <span>단기가능</span>
-                            </c:if>
-                        </div>
-                    </div>
-                </div>
-                </c:forEach>
+            <div class="property-list-content" id="propertyListContent">
+                <!-- 매물 목록이 JavaScript로 동적 생성됩니다 -->
             </div>
         </div>
 
@@ -1399,7 +1379,28 @@
                 propertyType: '${property.propertyType}',
                 district: '${property.district}',
                 roadAddress: '${property.roadAddress}',
-                thumbnailPath: '${not empty property.thumbnailPath ? property.thumbnailPath : ""}'
+                thumbnailPath: '${not empty property.thumbnailPath ? property.thumbnailPath : ""}',
+                studentPref: '${property.studentPref}',
+                shortCont: '${property.shortCont}',
+                options: {
+                    airConditioner: '${property.propertyOption != null ? property.propertyOption.airConditioner : "N"}',
+                    heater: '${property.propertyOption != null ? property.propertyOption.heater : "N"}',
+                    refrigerator: '${property.propertyOption != null ? property.propertyOption.refrigerator : "N"}',
+                    microwave: '${property.propertyOption != null ? property.propertyOption.microwave : "N"}',
+                    induction: '${property.propertyOption != null ? property.propertyOption.induction : "N"}',
+                    gasStove: '${property.propertyOption != null ? property.propertyOption.gasStove : "N"}',
+                    washer: '${property.propertyOption != null ? property.propertyOption.washer : "N"}',
+                    dryer: '${property.propertyOption != null ? property.propertyOption.dryer : "N"}',
+                    bed: '${property.propertyOption != null ? property.propertyOption.bed : "N"}',
+                    desk: '${property.propertyOption != null ? property.propertyOption.desk : "N"}',
+                    wardrobe: '${property.propertyOption != null ? property.propertyOption.wardrobe : "N"}',
+                    shoeRack: '${property.propertyOption != null ? property.propertyOption.shoeRack : "N"}',
+                    tv: '${property.propertyOption != null ? property.propertyOption.tv : "N"}',
+                    parking: '${property.propertyOption != null ? property.propertyOption.parking : "N"}',
+                    elevator: '${property.propertyOption != null ? property.propertyOption.elevator : "N"}',
+                    security: '${property.propertyOption != null ? property.propertyOption.security : "N"}',
+                    petAllowed: '${property.propertyOption != null ? property.propertyOption.petAllowed : "N"}'
+                }
             }<c:if test="${!status.last}">,</c:if>
             </c:forEach>
         ];
@@ -1433,7 +1434,10 @@
                     propertyType: prop.propertyType,
                     district: prop.district,
                     roadAddress: prop.roadAddress,
-                    thumbnailPath: prop.thumbnailPath
+                    thumbnailPath: prop.thumbnailPath,
+                    studentPref: prop.studentPref,
+                    shortCont: prop.shortCont,
+                    options: prop.options
                 };
             });
         }
@@ -1459,9 +1463,29 @@
         });
 
         // 지역/학교 데이터
-        var regions = ['강남구', '서초구', '송파구', '강동구', '마포구', '서대문구', '종로구', '성북구', '강서구', '양천구', '영등포구', '동작구', '관악구', '구로구', '금천구', '광진구', '성동구', '중랑구', '동대문구', '노원구', '도봉구', '은평구', '서대문구', '용산구', '중구'];
-        var schools = ['연세대학교', '고려대학교', '서울대학교', '홍익대학교', '성균관대학교', '이화여자대학교', '한양대학교', '건국대학교', '동국대학교', '중앙대학교', '경희대학교', '서울시립대학교', '숙명여자대학교', '성신여자대학교', '국민대학교'];
-        
+        var regions = ['강남구', '서초구', '송파구', '강동구', '마포구', '서대문구', '종로구', '성북구', '강서구', '양천구', '영등포구', '동작구', '관악구', '구로구', '금천구', '광진구', '성동구', '중랑구', '동대문구', '노원구', '도봉구', '은평구', '용산구', '중구'];
+
+        // 학교 좌표 데이터 (학교명: {위도, 경도})
+        var schoolCoordinates = {
+            '연세대학교': { lat: 37.5665, lng: 126.9387 },
+            '고려대학교': { lat: 37.5906, lng: 127.0267 },
+            '서울대학교': { lat: 37.4601, lng: 126.9520 },
+            '홍익대학교': { lat: 37.5509, lng: 126.9227 },
+            '성균관대학교': { lat: 37.5943, lng: 126.9895 },
+            '이화여자대학교': { lat: 37.5616, lng: 126.9468 },
+            '한양대학교': { lat: 37.5559, lng: 127.0448 },
+            '건국대학교': { lat: 37.5412, lng: 127.0786 },
+            '동국대학교': { lat: 37.5582, lng: 126.9989 },
+            '중앙대학교': { lat: 37.5040, lng: 126.9570 },
+            '경희대학교': { lat: 37.5971, lng: 127.0519 },
+            '서울시립대학교': { lat: 37.5838, lng: 127.0581 },
+            '숙명여자대학교': { lat: 37.5450, lng: 126.9654 },
+            '성신여자대학교': { lat: 37.5927, lng: 127.0187 },
+            '국민대학교': { lat: 37.6108, lng: 126.9958 }
+        };
+
+        var schools = Object.keys(schoolCoordinates);
+
         var selectedRegions = [];
         var selectedSchools = [];
 
@@ -1485,28 +1509,34 @@
                 var html = filtered.map(function(region) {
                     var selectedClass = selectedRegions.includes(region) ? 'selected' : '';
                     return '<div class="dropdown-item ' + selectedClass + '"' +
-                           ' onclick="toggleRegion(\'' + region + '\')">' + region + '</div>';
+                           ' onclick="toggleRegion(\'' + region + '\', event)">' + region + '</div>';
                 }).join('');
                 dropdown.innerHTML = html;
             }
         }
 
         // 지역 선택/해제
-        function toggleRegion(region) {
+        function toggleRegion(region, event) {
+            if (event) {
+                event.stopPropagation(); // 이벤트 버블링 방지
+            }
             if (selectedRegions.includes(region)) {
                 selectedRegions = selectedRegions.filter(r => r !== region);
             } else {
                 selectedRegions.push(region);
             }
             updateSelectedRegions();
-            filterRegions() ;
+            filterRegions();
+
+            // 드롭다운 닫기
+            document.getElementById('regionDropdown').classList.remove('active');
         }
 
         // 선택된 지역 표시
         function updateSelectedRegions() {
             var container = document.getElementById('selectedRegions');
             container.innerHTML = selectedRegions.map(function(region) {
-                return '<div class="tag">' + region + ' <span class="remove" onclick="toggleRegion(\'' + region + '\')">×</span></div>';
+                return '<div class="tag">' + region + ' <span class="remove" onclick="toggleRegion(\'' + region + '\', event)">×</span></div>';
             }).join('');
         }
 
@@ -1530,14 +1560,17 @@
                 var html = filtered.map(function(school) {
                     var selectedClass = selectedSchools.includes(school) ? 'selected' : '';
                     return '<div class="dropdown-item ' + selectedClass + '"' +
-                           ' onclick="toggleSchool(\'' + school + '\')">' + school + '</div>';
+                           ' onclick="toggleSchool(\'' + school + '\', event)">' + school + '</div>';
                 }).join('');
                 dropdown.innerHTML = html;
             }
         }
 
         // 학교 선택/해제
-        function toggleSchool(school) {
+        function toggleSchool(school, event) {
+            if (event) {
+                event.stopPropagation(); // 이벤트 버블링 방지
+            }
             if (selectedSchools.includes(school)) {
                 selectedSchools = selectedSchools.filter(s => s !== school);
             } else {
@@ -1545,24 +1578,28 @@
             }
             updateSelectedSchools();
             filterSchools();
+
+            // 드롭다운 닫기
+            document.getElementById('schoolDropdown').classList.remove('active');
         }
 
         // 선택된 학교 표시
         function updateSelectedSchools() {
             var container = document.getElementById('selectedSchools');
             container.innerHTML = selectedSchools.map(function(school) {
-                return '<div class="tag">' + school + ' <span class="remove" onclick="toggleSchool(\'' + school + '\')">×</span></div>';
+                return '<div class="tag">' + school + ' <span class="remove" onclick="toggleSchool(\'' + school + '\', event)">×</span></div>';
             }).join('');
         }
 
         // 드롭다운 외부 클릭 시 닫기
         document.addEventListener('click', function(e) {
+            // 드롭다운은 외부 클릭 시에만 닫고, 내부 클릭 시엔 유지
             if (!e.target.closest('.search-dropdown')) {
                 document.getElementById('regionDropdown').classList.remove('active');
                 document.getElementById('schoolDropdown').classList.remove('active');
             }
 
-            // 필터 외부 클릭 시 닫기
+            // 필터 외부 클릭 시 닫기 (단, 드롭다운 클릭은 제외)
             if (!e.target.closest('.accordion-filter') && !e.target.closest('.filter-toggle-btn')) {
                 var filter = document.getElementById('accordionFilter');
                 var btn = document.querySelector('.filter-toggle-btn');
@@ -1674,47 +1711,333 @@
             document.getElementById('regionSearch').value = '';
             document.getElementById('schoolSearch').value = '';
             document.getElementById('schoolRadius').value = '2';
-            
-            // 버튼 초기화
+
+            // 모든 버튼 초기화 (원룸도 체크 해제)
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            // 원룸은 기본 선택
-            var roomTypeButtons = document.querySelectorAll('.filter-row')[2].querySelectorAll('.filter-btn');
-            if (roomTypeButtons[0]) roomTypeButtons[0].classList.add('active');
-            
+
             // 슬라이더 초기화
             document.getElementById('depositMin').value = '0';
             document.getElementById('depositMax').value = '5000';
             updateDepositDisplay();
-            
+
             document.getElementById('rentMin').value = '0';
             document.getElementById('rentMax').value = '200';
             updateRentDisplay();
         }
 
+        // 매물 유형 매핑 (화면 텍스트 -> DB 값)
+        var propertyTypeMapping = {
+            '원룸': 'oneRoom',
+            '투룸': 'twoRoom',
+            '쓰리룸': 'threeRoom',
+            '오피스텔': 'officetel'
+        };
+
         // 필터 적용
         function applyFilters() {
             // 선택된 필터 수집
-            var filters = {
-                regions: selectedRegions,
-                schools: selectedSchools,
-                schoolRadius: document.getElementById('schoolRadius').value,
-                depositMin: document.getElementById('depositMin').value,
-                depositMax: document.getElementById('depositMax').value,
-                rentMin: document.getElementById('rentMin').value,
-                rentMax: document.getElementById('rentMax').value,
-                propertyTypes: [],
-                options: []
-            };
-            
-            document.querySelectorAll('.filter-btn.active').forEach(btn => {
-                filters.propertyTypes.push(btn.textContent);
+            var propertyTypes = [];
+            var filterButtons = document.querySelectorAll('.filter-row')[2].querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                if (btn.classList.contains('active')) {
+                    var displayText = btn.textContent.trim();
+                    // DB에 저장된 값으로 변환
+                    var dbValue = propertyTypeMapping[displayText] || displayText;
+                    propertyTypes.push(dbValue);
+                }
             });
-            
-            console.log('적용된 필터:', filters);
-            alert('필터 적용 중...\n지역: ' + filters.regions.join(', ') + '\n학교: ' + filters.schools.join(', ') + ' (반경 ' + filters.schoolRadius + 'km)');
-            
+
+            // 학생 특화 필터
+            var studentPrefButtons = document.querySelectorAll('.filter-row')[3].querySelectorAll('.filter-btn');
+            var studentPref = studentPrefButtons[0] && studentPrefButtons[0].classList.contains('active') ? true : null;
+            var shortCont = studentPrefButtons[1] && studentPrefButtons[1].classList.contains('active') ? true : null;
+
+            // 옵션 필터
+            var optionButtons = {
+                airConditioner: null,
+                heater: null,
+                refrigerator: null,
+                microwave: null,
+                induction: null,
+                gasStove: null,
+                washer: null,
+                dryer: null,
+                bed: null,
+                desk: null,
+                wardrobe: null,
+                shoeRack: null,
+                tv: null,
+                parking: null,
+                elevator: null,
+                security: null,
+                petAllowed: null
+            };
+
+            // 냉난방
+            var coolingHeatingButtons = document.querySelectorAll('.filter-row')[4].querySelectorAll('.filter-btn');
+            if (coolingHeatingButtons[0]) {
+                optionButtons.airConditioner = coolingHeatingButtons[0].classList.contains('active') ? true : null;
+            }
+            if (coolingHeatingButtons[1]) {
+                optionButtons.heater = coolingHeatingButtons[1].classList.contains('active') ? true : null;
+            }
+
+            // 주방
+            var kitchenButtons = document.querySelectorAll('.filter-row')[5].querySelectorAll('.filter-btn');
+            if (kitchenButtons[0]) {
+                optionButtons.refrigerator = kitchenButtons[0].classList.contains('active') ? true : null;
+            }
+            if (kitchenButtons[1]) {
+                optionButtons.microwave = kitchenButtons[1].classList.contains('active') ? true : null;
+            }
+            if (kitchenButtons[2]) {
+                optionButtons.induction = kitchenButtons[2].classList.contains('active') ? true : null;
+            }
+            if (kitchenButtons[3]) {
+                optionButtons.gasStove = kitchenButtons[3].classList.contains('active') ? true : null;
+            }
+
+            // 가구/가전
+            var furnitureButtons = document.querySelectorAll('.filter-row')[6].querySelectorAll('.filter-btn');
+            if (furnitureButtons[0]) {
+                optionButtons.washer = furnitureButtons[0].classList.contains('active') ? true : null;
+            }
+            if (furnitureButtons[1]) {
+                optionButtons.dryer = furnitureButtons[1].classList.contains('active') ? true : null;
+            }
+            if (furnitureButtons[2]) {
+                optionButtons.bed = furnitureButtons[2].classList.contains('active') ? true : null;
+            }
+            if (furnitureButtons[3]) {
+                optionButtons.desk = furnitureButtons[3].classList.contains('active') ? true : null;
+            }
+            if (furnitureButtons[4]) {
+                optionButtons.wardrobe = furnitureButtons[4].classList.contains('active') ? true : null;
+            }
+            if (furnitureButtons[5]) {
+                optionButtons.shoeRack = furnitureButtons[5].classList.contains('active') ? true : null;
+            }
+            if (furnitureButtons[6]) {
+                optionButtons.tv = furnitureButtons[6].classList.contains('active') ? true : null;
+            }
+
+            // 시설
+            var facilityButtons = document.querySelectorAll('.filter-row')[7].querySelectorAll('.filter-btn');
+            if (facilityButtons[0]) {
+                optionButtons.parking = facilityButtons[0].classList.contains('active') ? true : null;
+            }
+            if (facilityButtons[1]) {
+                optionButtons.elevator = facilityButtons[1].classList.contains('active') ? true : null;
+            }
+            if (facilityButtons[2]) {
+                optionButtons.security = facilityButtons[2].classList.contains('active') ? true : null;
+            }
+            if (facilityButtons[3]) {
+                optionButtons.petAllowed = facilityButtons[3].classList.contains('active') ? true : null;
+            }
+
+            // 보증금/월세 값 가져오기
+            var depositMin = parseInt(document.getElementById('depositMin').value);
+            var depositMax = parseInt(document.getElementById('depositMax').value);
+            var rentMin = parseInt(document.getElementById('rentMin').value);
+            var rentMax = parseInt(document.getElementById('rentMax').value);
+
+            // 필터 요청 객체 생성 (null 값 제외)
+            var filterRequest = {};
+
+            // 지역 필터
+            if (selectedRegions.length > 0) {
+                filterRequest.regions = selectedRegions;
+            }
+
+            // 학교 필터 (학교 좌표 포함)
+            if (selectedSchools.length > 0) {
+                filterRequest.schoolLocations = selectedSchools.map(school => ({
+                    name: school,
+                    latitude: schoolCoordinates[school].lat,
+                    longitude: schoolCoordinates[school].lng
+                }));
+                filterRequest.schoolRadius = parseFloat(document.getElementById('schoolRadius').value);
+            }
+
+            // 보증금 필터 (기본값이 아닐 때만)
+            if (depositMin !== 0 || depositMax !== 5000) {
+                filterRequest.depositMin = depositMin;
+                filterRequest.depositMax = depositMax;
+            }
+
+            // 월세 필터 (기본값이 아닐 때만)
+            if (rentMin !== 0 || rentMax !== 200) {
+                filterRequest.rentMin = rentMin;
+                filterRequest.rentMax = rentMax;
+            }
+
+            // 매물 유형 필터
+            if (propertyTypes.length > 0) {
+                filterRequest.propertyTypes = propertyTypes;
+            }
+
+            // 학생 특화 필터
+            if (studentPref === true) {
+                filterRequest.studentPref = true;
+            }
+            if (shortCont === true) {
+                filterRequest.shortCont = true;
+            }
+
+            // 옵션 필터 (true인 것만 포함)
+            if (optionButtons.airConditioner === true) filterRequest.airConditioner = true;
+            if (optionButtons.heater === true) filterRequest.heater = true;
+            if (optionButtons.refrigerator === true) filterRequest.refrigerator = true;
+            if (optionButtons.microwave === true) filterRequest.microwave = true;
+            if (optionButtons.induction === true) filterRequest.induction = true;
+            if (optionButtons.gasStove === true) filterRequest.gasStove = true;
+            if (optionButtons.washer === true) filterRequest.washer = true;
+            if (optionButtons.dryer === true) filterRequest.dryer = true;
+            if (optionButtons.bed === true) filterRequest.bed = true;
+            if (optionButtons.desk === true) filterRequest.desk = true;
+            if (optionButtons.wardrobe === true) filterRequest.wardrobe = true;
+            if (optionButtons.shoeRack === true) filterRequest.shoeRack = true;
+            if (optionButtons.tv === true) filterRequest.tv = true;
+            if (optionButtons.parking === true) filterRequest.parking = true;
+            if (optionButtons.elevator === true) filterRequest.elevator = true;
+            if (optionButtons.security === true) filterRequest.security = true;
+            if (optionButtons.petAllowed === true) filterRequest.petAllowed = true;
+
+            console.log('적용된 필터:', filterRequest);
+
+            // AJAX 요청으로 필터링된 매물 조회
+            fetch('${pageContext.request.contextPath}/api/properties/filter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(filterRequest)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('필터링된 매물:', data.properties);
+
+                    // 기존 마커 제거
+                    overlays.forEach(overlay => overlay.setMap(null));
+                    overlays = [];
+
+                    // properties 배열 업데이트
+                    properties = data.properties.map(property => ({
+                        id: property.propertyNo,
+                        lat: property.latitude || 37.5592,
+                        lng: property.longitude || 126.9425,
+                        title: property.propertyName,
+                        price: property.deposit + '/' + property.monthlyRent,
+                        propertyType: property.propertyType,
+                        district: property.district,
+                        roadAddress: property.roadAddress,
+                        thumbnailPath: property.thumbnailPath || '',
+                        studentPref: property.studentPref,
+                        shortCont: property.shortCont,
+                        options: property.propertyOption ? {
+                            airConditioner: property.propertyOption.airConditioner || 'N',
+                            heater: property.propertyOption.heater || 'N',
+                            refrigerator: property.propertyOption.refrigerator || 'N',
+                            microwave: property.propertyOption.microwave || 'N',
+                            induction: property.propertyOption.induction || 'N',
+                            gasStove: property.propertyOption.gasStove || 'N',
+                            washer: property.propertyOption.washer || 'N',
+                            dryer: property.propertyOption.dryer || 'N',
+                            bed: property.propertyOption.bed || 'N',
+                            desk: property.propertyOption.desk || 'N',
+                            wardrobe: property.propertyOption.wardrobe || 'N',
+                            shoeRack: property.propertyOption.shoeRack || 'N',
+                            tv: property.propertyOption.tv || 'N',
+                            parking: property.propertyOption.parking || 'N',
+                            elevator: property.propertyOption.elevator || 'N',
+                            security: property.propertyOption.security || 'N',
+                            petAllowed: property.propertyOption.petAllowed || 'N'
+                        } : {}
+                    }));
+
+                    // 좌표 오프셋 적용
+                    adjustedProperties = addJitter(properties);
+
+                    // propertyDetails 업데이트
+                    propertyDetails = {};
+                    properties.forEach(function(prop) {
+                        var imagePath;
+                        if (prop.thumbnailPath && prop.thumbnailPath.trim() !== '') {
+                            if (prop.thumbnailPath.startsWith('/')) {
+                                imagePath = '${pageContext.request.contextPath}' + prop.thumbnailPath;
+                            } else if (prop.thumbnailPath.startsWith('images/')) {
+                                imagePath = '${pageContext.request.contextPath}/' + prop.thumbnailPath;
+                            } else if (prop.thumbnailPath.indexOf('/') === -1) {
+                                imagePath = '${pageContext.request.contextPath}/images/property/' + prop.thumbnailPath;
+                            } else {
+                                imagePath = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop';
+                            }
+                        } else {
+                            imagePath = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop';
+                        }
+
+                        var optionList = [];
+                        if (prop.options) {
+                            for (var key in prop.options) {
+                                if (prop.options[key] === 'Y') {
+                                    optionList.push(optionNameMap[key] || key);
+                                }
+                            }
+                        }
+
+                        if (optionList.length === 0) {
+                            optionList = ['등록된 옵션이 없습니다'];
+                        }
+
+                        propertyDetails[prop.id] = {
+                            title: prop.title,
+                            location: '📍 ' + prop.roadAddress,
+                            price: prop.price,
+                            image: imagePath,
+                            roomType: prop.propertyType,
+                            description: '상세 설명은 전체 상세보기에서 확인하실 수 있습니다.',
+                            options: optionList
+                        };
+                    });
+
+                    // 새 마커 표시
+                    adjustedProperties.forEach(function(property) {
+                        var markerPosition = new kakao.maps.LatLng(property.lat, property.lng);
+                        var content = '<div class="custom-overlay" onclick="showPropertyDetail(' + property.id + ')">'
+                            + property.price + '</div>';
+
+                        var customOverlay = new kakao.maps.CustomOverlay({
+                            position: markerPosition,
+                            content: content,
+                            yAnchor: 1.5
+                        });
+
+                        customOverlay.setMap(map);
+                        overlays.push(customOverlay);
+                    });
+
+                    // 지도 영역 내 매물 업데이트
+                    updateVisibleProperties();
+
+                    // 검색된 매물이 있으면 해당 위치로 지도 이동
+                    if (adjustedProperties.length > 0) {
+                        moveMapToProperties(adjustedProperties);
+                    }
+
+                    alert('필터가 적용되었습니다. ' + data.count + '개의 매물이 검색되었습니다.');
+                } else {
+                    alert('매물 조회 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('매물 조회 중 오류가 발생했습니다.');
+            });
+
             // 필터 닫기
             toggleFilter();
         }
@@ -1733,14 +2056,405 @@
             }
         }
 
+        // 현재 지도 영역 내의 매물 필터링
+        function getPropertiesInBounds() {
+            var bounds = map.getBounds();
+            var swLatLng = bounds.getSouthWest();
+            var neLatLng = bounds.getNorthEast();
+
+            return adjustedProperties.filter(function(property) {
+                return property.lat >= swLatLng.getLat() &&
+                       property.lat <= neLatLng.getLat() &&
+                       property.lng >= swLatLng.getLng() &&
+                       property.lng <= neLatLng.getLng();
+            });
+        }
+
+        // 사이드바 매물 리스트 렌더링
+        function renderPropertyList(propertiesToShow) {
+            var listContainer = document.getElementById('propertyListContent');
+            var countElement = document.getElementById('sidebarCount');
+
+            // 매물 개수 업데이트
+            countElement.textContent = propertiesToShow.length;
+            document.getElementById('propertyCount').textContent = propertiesToShow.length;
+
+            // 매물 카드 HTML 생성
+            var html = '';
+            propertiesToShow.forEach(function(property) {
+                var imagePath = property.thumbnailPath && property.thumbnailPath.trim() !== ''
+                    ? '${pageContext.request.contextPath}' + property.thumbnailPath
+                    : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop';
+
+                var studentPref = property.studentPref === 'Y';
+                var shortCont = property.shortCont === 'Y';
+
+                html += '<div class="property-card" onclick="showPropertyDetail(' + property.id + ')">';
+                html += '  <div class="card-image">';
+                html += '    <img src="' + imagePath + '" alt="' + property.propertyType + '" ';
+                html += '         onerror="this.src=\'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop\'">';
+                if (studentPref) {
+                    html += '    <span class="card-badge">학생 우대</span>';
+                }
+                html += '  </div>';
+                html += '  <div class="card-content">';
+                html += '    <div class="card-title">' + property.title + '</div>';
+                html += '    <div class="card-location">📍 ' + property.district + '</div>';
+                html += '    <div class="card-price">' + property.price + '</div>';
+                html += '    <div class="card-tags">';
+                html += '      <span>' + property.propertyType + '</span>';
+                if (shortCont) {
+                    html += '      <span>단기가능</span>';
+                }
+                html += '    </div>';
+                html += '  </div>';
+                html += '</div>';
+            });
+
+            listContainer.innerHTML = html;
+        }
+
+        // 지도 영역이 변경될 때마다 매물 리스트 업데이트
+        function updateVisibleProperties() {
+            var visibleProperties = getPropertiesInBounds();
+            renderPropertyList(visibleProperties);
+        }
+
+        // 지도 이동/확대 이벤트 리스너
         kakao.maps.event.addListener(map, 'idle', function() {
-            console.log('지도 영역 변경됨');
+            updateVisibleProperties();
         });
 
-        // 페이지 로드 시 슬라이더 초기화
+        // 매물 위치로 지도 이동
+        function moveMapToProperties(propertiesToShow) {
+            if (!propertiesToShow || propertiesToShow.length === 0) {
+                return;
+            }
+
+            // 매물이 1개인 경우 해당 위치로 이동
+            if (propertiesToShow.length === 1) {
+                var center = new kakao.maps.LatLng(propertiesToShow[0].lat, propertiesToShow[0].lng);
+                map.setCenter(center);
+                map.setLevel(3); // 줌 레벨 3으로 설정 (가까이 보기)
+                return;
+            }
+
+            // 매물이 여러 개인 경우 중심점 계산
+            var bounds = new kakao.maps.LatLngBounds();
+
+            propertiesToShow.forEach(function(property) {
+                var position = new kakao.maps.LatLng(property.lat, property.lng);
+                bounds.extend(position);
+            });
+
+            // 모든 매물이 보이도록 지도 영역 설정
+            map.setBounds(bounds);
+
+            // 너무 가까워지는 것 방지 (최소 줌 레벨 설정)
+            setTimeout(function() {
+                if (map.getLevel() < 3) {
+                    map.setLevel(3);
+                }
+            }, 100);
+        }
+
+        // 페이지 로드 시 슬라이더 초기화 및 초기 매물 리스트 렌더링
         window.onload = function() {
             updateDepositDisplay();
             updateRentDisplay();
+            updateVisibleProperties(); // 초기 매물 리스트 표시
+
+            // AI 검색 결과 자동 적용
+            checkAiSearchResult();
+        };
+
+        // AI 검색 결과 확인 및 자동 적용
+        function checkAiSearchResult() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isAiSearch = urlParams.get('ai');
+
+            if (isAiSearch === 'true') {
+                const filterJson = sessionStorage.getItem('aiSearchFilter');
+                const query = sessionStorage.getItem('aiSearchQuery');
+
+                if (filterJson) {
+                    try {
+                        const filter = JSON.parse(filterJson);
+                        console.log('AI 검색 필터 자동 적용:', filter);
+
+                        // 조건보기 UI에 필터 반영
+                        applyFilterToUI(filter);
+
+                        // 알림 표시
+                        if (query) {
+                            alert('AI 검색: "' + query + '"\n조건이 자동으로 적용되었습니다.');
+                        }
+
+                        // 필터 적용 (AJAX 호출)
+                        applyAiFilter(filter);
+
+                        // 세션 스토리지 클리어
+                        sessionStorage.removeItem('aiSearchFilter');
+                        sessionStorage.removeItem('aiSearchQuery');
+
+                    } catch (e) {
+                        console.error('AI 검색 결과 적용 실패:', e);
+                    }
+                }
+            }
+        }
+
+        // AI 필터를 UI에 반영
+        function applyFilterToUI(filter) {
+            // 지역 필터 반영
+            if (filter.regions && filter.regions.length > 0) {
+                selectedRegions = filter.regions;
+                updateSelectedRegions();
+            }
+
+            // 학교 필터 반영
+            if (filter.schoolLocations && filter.schoolLocations.length > 0) {
+                selectedSchools = filter.schoolLocations.map(s => s.name);
+                updateSelectedSchools();
+
+                // 학교 반경 설정
+                if (filter.schoolRadius) {
+                    document.getElementById('schoolRadius').value = filter.schoolRadius;
+                }
+            }
+
+            // 보증금 필터 반영
+            if (filter.depositMin !== null && filter.depositMin !== undefined) {
+                document.getElementById('depositMin').value = filter.depositMin;
+            }
+            if (filter.depositMax !== null && filter.depositMax !== undefined) {
+                document.getElementById('depositMax').value = filter.depositMax;
+            }
+            updateDepositDisplay();
+
+            // 월세 필터 반영
+            if (filter.rentMin !== null && filter.rentMin !== undefined) {
+                document.getElementById('rentMin').value = filter.rentMin;
+            }
+            if (filter.rentMax !== null && filter.rentMax !== undefined) {
+                document.getElementById('rentMax').value = filter.rentMax;
+            }
+            updateRentDisplay();
+
+            // 매물 유형 필터 반영
+            if (filter.propertyTypes && filter.propertyTypes.length > 0) {
+                var propertyTypeButtons = document.querySelectorAll('.filter-row')[2].querySelectorAll('.filter-btn');
+                var typeMapping = {
+                    'oneRoom': 0,
+                    'twoRoom': 1,
+                    'threeRoom': 2,
+                    'officetel': 3
+                };
+
+                filter.propertyTypes.forEach(function(type) {
+                    var index = typeMapping[type];
+                    if (index !== undefined && propertyTypeButtons[index]) {
+                        propertyTypeButtons[index].classList.add('active');
+                    }
+                });
+            }
+
+            // 학생 특화 필터 반영
+            var studentPrefButtons = document.querySelectorAll('.filter-row')[3].querySelectorAll('.filter-btn');
+            if (filter.studentPref === true && studentPrefButtons[0]) {
+                studentPrefButtons[0].classList.add('active');
+            }
+            if (filter.shortCont === true && studentPrefButtons[1]) {
+                studentPrefButtons[1].classList.add('active');
+            }
+
+            // 옵션 필터 반영
+            var optionMapping = {
+                airConditioner: [4, 0],  // [filter-row 인덱스, 버튼 인덱스]
+                heater: [4, 1],
+                refrigerator: [5, 0],
+                microwave: [5, 1],
+                induction: [5, 2],
+                gasStove: [5, 3],
+                washer: [6, 0],
+                dryer: [6, 1],
+                bed: [6, 2],
+                desk: [6, 3],
+                wardrobe: [6, 4],
+                shoeRack: [6, 5],
+                tv: [6, 6],
+                parking: [7, 0],
+                elevator: [7, 1],
+                security: [7, 2],
+                petAllowed: [7, 3]
+            };
+
+            for (var optionKey in optionMapping) {
+                if (filter[optionKey] === true) {
+                    var mapping = optionMapping[optionKey];
+                    var rowIndex = mapping[0];
+                    var btnIndex = mapping[1];
+                    var filterRows = document.querySelectorAll('.filter-row');
+
+                    if (filterRows[rowIndex]) {
+                        var buttons = filterRows[rowIndex].querySelectorAll('.filter-btn');
+                        if (buttons[btnIndex]) {
+                            buttons[btnIndex].classList.add('active');
+                        }
+                    }
+                }
+            }
+        }
+
+        // AI 필터 적용
+        function applyAiFilter(filterRequest) {
+            fetch('${pageContext.request.contextPath}/api/properties/filter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(filterRequest)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('AI 필터링된 매물:', data.properties);
+
+                    // 기존 마커 제거
+                    overlays.forEach(overlay => overlay.setMap(null));
+                    overlays = [];
+
+                    // properties 배열 업데이트
+                    properties = data.properties.map(property => ({
+                        id: property.propertyNo,
+                        lat: property.latitude || 37.5592,
+                        lng: property.longitude || 126.9425,
+                        title: property.propertyName,
+                        price: property.deposit + '/' + property.monthlyRent,
+                        propertyType: property.propertyType,
+                        district: property.district,
+                        roadAddress: property.roadAddress,
+                        thumbnailPath: property.thumbnailPath || '',
+                        studentPref: property.studentPref,
+                        shortCont: property.shortCont,
+                        options: property.propertyOption ? {
+                            airConditioner: property.propertyOption.airConditioner || 'N',
+                            heater: property.propertyOption.heater || 'N',
+                            refrigerator: property.propertyOption.refrigerator || 'N',
+                            microwave: property.propertyOption.microwave || 'N',
+                            induction: property.propertyOption.induction || 'N',
+                            gasStove: property.propertyOption.gasStove || 'N',
+                            washer: property.propertyOption.washer || 'N',
+                            dryer: property.propertyOption.dryer || 'N',
+                            bed: property.propertyOption.bed || 'N',
+                            desk: property.propertyOption.desk || 'N',
+                            wardrobe: property.propertyOption.wardrobe || 'N',
+                            shoeRack: property.propertyOption.shoeRack || 'N',
+                            tv: property.propertyOption.tv || 'N',
+                            parking: property.propertyOption.parking || 'N',
+                            elevator: property.propertyOption.elevator || 'N',
+                            security: property.propertyOption.security || 'N',
+                            petAllowed: property.propertyOption.petAllowed || 'N'
+                        } : {}
+                    }));
+
+                    // 좌표 오프셋 적용
+                    adjustedProperties = addJitter(properties);
+
+                    // propertyDetails 업데이트
+                    propertyDetails = {};
+                    properties.forEach(function(prop) {
+                        var imagePath;
+                        if (prop.thumbnailPath && prop.thumbnailPath.trim() !== '') {
+                            if (prop.thumbnailPath.startsWith('/')) {
+                                imagePath = '${pageContext.request.contextPath}' + prop.thumbnailPath;
+                            } else if (prop.thumbnailPath.startsWith('images/')) {
+                                imagePath = '${pageContext.request.contextPath}/' + prop.thumbnailPath;
+                            } else if (prop.thumbnailPath.indexOf('/') === -1) {
+                                imagePath = '${pageContext.request.contextPath}/images/property/' + prop.thumbnailPath;
+                            } else {
+                                imagePath = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop';
+                            }
+                        } else {
+                            imagePath = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop';
+                        }
+
+                        var optionList = [];
+                        if (prop.options) {
+                            for (var key in prop.options) {
+                                if (prop.options[key] === 'Y') {
+                                    optionList.push(optionNameMap[key] || key);
+                                }
+                            }
+                        }
+
+                        if (optionList.length === 0) {
+                            optionList = ['등록된 옵션이 없습니다'];
+                        }
+
+                        propertyDetails[prop.id] = {
+                            title: prop.title,
+                            location: '📍 ' + prop.roadAddress,
+                            price: prop.price,
+                            image: imagePath,
+                            roomType: prop.propertyType,
+                            description: '상세 설명은 전체 상세보기에서 확인하실 수 있습니다.',
+                            options: optionList
+                        };
+                    });
+
+                    // 새 마커 표시
+                    adjustedProperties.forEach(function(property) {
+                        var markerPosition = new kakao.maps.LatLng(property.lat, property.lng);
+                        var content = '<div class="custom-overlay" onclick="showPropertyDetail(' + property.id + ')">'
+                            + property.price + '</div>';
+
+                        var customOverlay = new kakao.maps.CustomOverlay({
+                            position: markerPosition,
+                            content: content,
+                            yAnchor: 1.5
+                        });
+
+                        customOverlay.setMap(map);
+                        overlays.push(customOverlay);
+                    });
+
+                    // 지도 영역 내 매물 업데이트
+                    updateVisibleProperties();
+
+                    // 검색된 매물이 있으면 해당 위치로 지도 이동
+                    if (adjustedProperties.length > 0) {
+                        moveMapToProperties(adjustedProperties);
+                    }
+
+                } else {
+                    alert('AI 검색 결과 적용 실패: ' + (data.message || ''));
+                }
+            })
+            .catch(error => {
+                console.error('AI 검색 결과 적용 오류:', error);
+            });
+        }
+
+        // 옵션 이름 매핑
+        var optionNameMap = {
+            airConditioner: '에어컨',
+            heater: '히터',
+            refrigerator: '냉장고',
+            microwave: '전자레인지',
+            induction: '인덕션',
+            gasStove: '가스레인지',
+            washer: '세탁기',
+            dryer: '건조기',
+            bed: '침대',
+            desk: '책상',
+            wardrobe: '옷장',
+            shoeRack: '신발장',
+            tv: 'TV',
+            parking: '주차가능',
+            elevator: '엘리베이터',
+            security: '보안시스템',
+            petAllowed: '반려동물'
         };
 
         // 매물 상세정보 데이터 (properties를 기반으로 동적 생성)
@@ -1765,6 +2479,21 @@
                 imagePath = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop';
             }
 
+            // 실제 옵션 데이터 추출 (Y인 것만)
+            var optionList = [];
+            if (prop.options) {
+                for (var key in prop.options) {
+                    if (prop.options[key] === 'Y') {
+                        optionList.push(optionNameMap[key] || key);
+                    }
+                }
+            }
+
+            // 옵션이 없으면 기본 메시지
+            if (optionList.length === 0) {
+                optionList = ['등록된 옵션이 없습니다'];
+            }
+
             propertyDetails[prop.id] = {
                 title: prop.title,
                 location: '📍 ' + prop.roadAddress,
@@ -1772,7 +2501,7 @@
                 image: imagePath,
                 roomType: prop.propertyType,
                 description: '상세 설명은 전체 상세보기에서 확인하실 수 있습니다.',
-                options: ['기본 옵션'] // 기본 옵션
+                options: optionList
             };
         });
 

@@ -1,6 +1,7 @@
 package com.elon.boot.domain.property.model.store;
 
 import com.elon.boot.controller.dto.property.PropertyAddRequest;
+import com.elon.boot.controller.dto.property.PropertyFilterRequest;
 import com.elon.boot.domain.property.model.vo.Property;
 import com.elon.boot.domain.property.model.vo.PropertyImg;
 import com.elon.boot.domain.property.model.vo.PropertyOption;
@@ -19,4 +20,5 @@ public interface PropertyMapper {
 	List<PropertyImg> selectImagesByPropertyNo(Long id);
 	Realtor selectRealtorById(String rId);
 	List<Property> selectAllProperties();
+	List<Property> selectPropertiesWithFilter(@Param("filter") PropertyFilterRequest filter);
 }
