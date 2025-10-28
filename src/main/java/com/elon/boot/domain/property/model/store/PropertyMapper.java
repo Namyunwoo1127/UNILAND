@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map; // Map 타입을 사용하기 위해 추가
 
 @Mapper
 public interface PropertyMapper {
@@ -21,4 +22,44 @@ public interface PropertyMapper {
 	Realtor selectRealtorById(String rId);
 	List<Property> selectAllProperties();
 	List<Property> selectPropertiesWithFilter(@Param("filter") PropertyFilterRequest filter);
+
+    // =========================================================================
+    // ⭐ PropertyService 구현에 맞춰 추가된 매소드
+    // =========================================================================
+
+    /**
+     * 중개사 ID를 기반으로 매물의 상태별 카운트를 조회합니다.
+     * @param realtorId 중개사 ID
+     * @return 상태별 카운트가 담긴 Map (예: {ALL_COUNT: 10, ACTIVE_COUNT: 5, ...})
+     */
+    Map<String, Integer> selectPropertyStatsByRealtorId(String realtorId);
+
+    /**
+     * 필터/검색 조건에 맞는 매물의 총 개수를 조회합니다. (페이징 카운트용)
+     * @param filterParams 필터/검색 조건 Map (realtorId, STATUS, TYPE, searchKeyword 등 포함)
+     * @return 매물 총 개수
+     */
+    int selectPropertyCount(Map<String, String> filterParams);
+
+    /**
+     * 필터/검색 조건과 페이징 정보에 맞는 매물 목록을 조회합니다.
+     * @param filterParams 필터/검색 조건 Map (realtorId, startRow, limit 등 포함)
+     * @return 매물 목록
+     */
+    List<Property> selectPropertyList(Map<String, String> filterParams);
+
+    /**
+     * 특정 매물의 상태를 업데이트합니다.
+     * @param params 매물 번호(propertyNo)와 새로운 상태(newStatus)를 담은 Map
+     * @return 업데이트된 행의 수 (성공 시 1)
+     */
+    int updatePropertyStatus(Map<String, Object> params);
+
+    /**
+     * 특정 매물을 'DELETED' 상태로 변경하여 비활성화(Soft Delete)합니다.
+     * 중개사 ID를 함께 사용하여 소유권이 일치하는지 확인합니다.
+     * @param params 매물 번호(propertyNo)와 중개사 ID(realtorId)를 담은 Map
+     * @return 업데이트된 행의 수 (성공 시 1)
+     */
+    int softDeleteProperty(Map<String, Object> params);
 }

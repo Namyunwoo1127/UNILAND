@@ -10,6 +10,7 @@ import com.elon.boot.domain.property.model.vo.Property;
 import com.elon.boot.domain.property.model.vo.PropertyOption;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
 import com.elon.boot.domain.property.model.vo.PropertyImg;
+import com.elon.boot.domain.realtor.model.vo.Pagination; // Pagination 사용을 위해 임포트 (가정)
 import com.elon.boot.util.Util;
 
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.time.LocalDate;
 import java.util.*;
+
+// Lombok의 @Slf4j를 추가하여 로깅 기능을 사용할 수 있도록 가정합니다.
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j // 로깅 기능 추가
 public class PropertyServiceImpl implements PropertyService {
 
     private final PropertyMapper propertyMapper;
@@ -45,72 +49,75 @@ public class PropertyServiceImpl implements PropertyService {
             List<MultipartFile> images,
             String realtorId) {
 
-// 1) 세션값 주입 후 매물 INSERT (selectKey가 DTO pReq.propertyNo에 꽂힘)
-pReq.setRealtorId(realtorId);
-propertyMapper.insertProperty(pReq);
+        // 1) 세션값 주입 후 매물 INSERT (selectKey가 DTO pReq.propertyNo에 꽂힘)
+        pReq.setRealtorId(realtorId);
+        propertyMapper.insertProperty(pReq);
 
-// 2) PK는 INSERT "직후" 꺼내고, 메서드 전체에서 쓸 수 있도록 같은 스코프에 선언
-final Long propNo = pReq.getPropertyNo();
-if (propNo == null) {
-throw new IllegalStateException("propertyNo null (selectKey 매핑/parameterType 확인)");
-}
+        // 2) PK는 INSERT "직후" 꺼내고, 메서드 전체에서 쓸 수 있도록 같은 스코프에 선언
+        final Long propNo = pReq.getPropertyNo();
+        if (propNo == null) {
+            log.error("매물 등록 실패: propertyNo가 null입니다. (selectKey 매핑/parameterType 확인)");
+            throw new IllegalStateException("propertyNo null (selectKey 매핑/parameterType 확인)");
+        }
 
-// 3) 옵션 INSERT (FK 세팅)
-oReq.setPropertyNo(propNo);
-optionMapper.insertOption(oReq);
+        // 3) 옵션 INSERT (FK 세팅)
+        oReq.setPropertyNo(propNo);
+        optionMapper.insertOption(oReq);
 
-// 4) 이미지 INSERT (FK 세팅 + 파일 저장)
-if (images != null && !images.isEmpty()) {
-// uploadRoot 설정 확인
-if (uploadRoot == null || uploadRoot.trim().isEmpty()) {
-   throw new IllegalStateException("file.upload-dir 설정이 없습니다. application.properties를 확인하세요.");
-}
+        // 4) 이미지 INSERT (FK 세팅 + 파일 저장)
+        if (images != null && !images.isEmpty()) {
+            if (uploadRoot == null || uploadRoot.trim().isEmpty()) {
+               throw new IllegalStateException("file.upload-dir 설정이 없습니다. application.properties를 확인하세요.");
+            }
 
-// 업로드 디렉토리 생성 및 확인
-File uploadDir = new File(uploadRoot, "property");
-if (!uploadDir.exists()) {
-   boolean created = uploadDir.mkdirs();
-   if (!created) {
-       throw new RuntimeException("업로드 디렉토리 생성 실패: " + uploadDir.getAbsolutePath());
-   }
-}
+            File uploadDir = new File(uploadRoot, "property");
+            if (!uploadDir.exists()) {
+               boolean created = uploadDir.mkdirs();
+               if (!created) {
+                   throw new RuntimeException("업로드 디렉토리 생성 실패: " + uploadDir.getAbsolutePath());
+               }
+            }
 
-List<PropertyImg> imgList = new ArrayList<>();
-for (int i = 0; i < images.size(); i++) {
-   MultipartFile image = images.get(i);
-   if (image == null || image.isEmpty()) continue;
+            List<PropertyImg> imgList = new ArrayList<>();
+            for (int i = 0; i < images.size(); i++) {
+               MultipartFile image = images.get(i);
+               if (image == null || image.isEmpty()) continue;
 
-   String original = image.getOriginalFilename();
-   String rename   = Util.fileRename(original);
+               String original = image.getOriginalFilename();
+               String rename   = Util.fileRename(original);
 
-   PropertyImg img = new PropertyImg();
-   img.setPropertyNo(propNo);                     // ★ 같은 스코프의 propNo 사용
-   img.setImgOrder(i);
-   img.setImgOriginalName(original);
-   img.setImgRename(rename);
-   img.setImgPath("/images/property/" + rename);  // 리소스 매핑 경로와 일치시키기
-   imgList.add(img);
+               PropertyImg img = new PropertyImg();
+               img.setPropertyNo(propNo);
+               img.setImgOrder(i);
+               img.setImgOriginalName(original);
+               img.setImgRename(rename);
+               img.setImgPath("/images/property/" + rename);
+               imgList.add(img);
 
-   File target = new File(uploadDir, rename);
-   try {
-       image.transferTo(target);
-   } catch (IOException | IllegalStateException e) {
-       throw new RuntimeException("이미지 저장 실패: " + original + " (경로: " + target.getAbsolutePath() + ")", e);
-   }
-}
-if (!imgList.isEmpty()) {
-   propertyMapper.insertPropertyImages(imgList);
-}
-}
+               File target = new File(uploadDir, rename);
+               try {
+                   image.transferTo(target);
+               } catch (IOException | IllegalStateException e) {
+                   log.error("이미지 저장 실패: {}", original, e);
+                   throw new RuntimeException("이미지 저장 실패: " + original, e);
+               }
+            }
+            if (!imgList.isEmpty()) {
+               propertyMapper.insertPropertyImages(imgList);
+            }
+        }
 
-// 5) 반환도 propNo 사용 (new Property().getPropertyNo() 사용 금지)
-return propNo;
-}
+        log.info("새 매물 등록 완료. PropertyNo: {}", propNo);
+        return propNo;
+    }
+
+    // =========================================================================
+    // ✅ 기존 메소드 - 유지
+    // =========================================================================
 
 	@Override
 	public Property selectOneByNo(Long id) {
 		return propertyMapper.selectOneByNo(id);
-		
 	}
 
 	@Override
@@ -120,8 +127,7 @@ return propNo;
 
 	@Override
 	public List<PropertyImg> selectOnesImgs(Long id) {
-		List<PropertyImg> imgs = propertyMapper.selectImagesByPropertyNo(id);
-		return imgs;
+		return propertyMapper.selectImagesByPropertyNo(id);
 	}
 
 	@Override
@@ -139,4 +145,87 @@ return propNo;
 		return propertyMapper.selectPropertiesWithFilter(filter);
 	}
 
+    // =========================================================================
+    // ⭐ PropertyService 인터페이스에 맞춰 추가된 메소드 구현
+    // =========================================================================
+
+    /**
+     * 중개사 ID 기준으로 매물 상태별 통계를 조회합니다.
+     */
+    @Override
+    public Map<String, Integer> getPropertyStatsByRealtor(String realtorId) {
+        // Mapper에서 Map<String, Integer>를 리턴하는 Mapper 메소드가 있다고 가정하고 호출합니다.
+        Map<String, Integer> stats = propertyMapper.selectPropertyStatsByRealtorId(realtorId);
+
+        // 결과가 null이거나 일부 키가 없을 경우를 대비하여 기본값으로 채워 Map을 리턴할 수 있습니다.
+        if (stats == null) {
+            stats = new HashMap<>();
+        }
+
+        // NullPointerException 방지를 위해 기본값을 넣어줍니다.
+        stats.putIfAbsent("ALL_COUNT", 0);
+        stats.putIfAbsent("ACTIVE_COUNT", 0);
+        stats.putIfAbsent("RESERVED_COUNT", 0);
+        stats.putIfAbsent("COMPLETED_COUNT", 0);
+
+        return stats;
+    }
+
+    /**
+     * 중개사의 필터/검색 조건에 맞는 전체 매물 개수를 조회합니다.
+     */
+    @Override
+    public int getPropertyCount(Map<String, String> filterParams) {
+        return propertyMapper.selectPropertyCount(filterParams);
+    }
+
+    /**
+     * 중개사의 필터/검색 조건 및 페이징 정보에 맞는 매물 목록을 조회합니다.
+     */
+    @Override
+    public List<Property> selectPropertyList(Map<String, String> filterParams, Pagination pager) {
+        // filterParams 맵에 startRow, limit 등의 정보를 추가하여 Mapper로 전달한다고 가정합니다.
+        filterParams.put("startRow", String.valueOf(pager.getStartRow()));
+        filterParams.put("limit", String.valueOf(pager.getBoardLimit()));
+
+        return propertyMapper.selectPropertyList(filterParams);
+    }
+
+    /**
+     * 특정 매물의 상태를 변경합니다.
+     */
+    @Transactional
+    @Override
+    public int updatePropertyStatus(int propertyNo, String newStatus) {
+        // 매물 번호와 새로운 상태를 담은 Map을 생성
+        Map<String, Object> params = new HashMap<>();
+        params.put("propertyNo", propertyNo);
+        params.put("newStatus", newStatus);
+
+        return propertyMapper.updatePropertyStatus(params);
+    }
+
+    /**
+     * 특정 매물을 삭제합니다. (중개사 소유권 확인 로직 포함)
+     */
+    @Transactional
+    @Override
+    public int deleteProperty(int propertyNo, String realtorId) {
+
+        // 매물 번호와 중개사 ID를 담은 Map 생성
+        Map<String, Object> params = new HashMap<>();
+        params.put("propertyNo", propertyNo);
+        params.put("realtorId", realtorId);
+
+        // *안전한 방식: 상태만 'DELETED'로 변경 (Soft Delete)*
+        int result = propertyMapper.softDeleteProperty(params);
+
+        if (result > 0) {
+            log.warn("매물 {}이 중개사 {}에 의해 soft-delete 처리되었습니다.", propertyNo, realtorId);
+        } else {
+            log.warn("매물 {} soft-delete 실패: 소유권 불일치 또는 매물 없음.", propertyNo);
+        }
+
+        return result;
+    }
 }

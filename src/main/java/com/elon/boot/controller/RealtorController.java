@@ -5,6 +5,12 @@ import com.elon.boot.domain.realtor.model.service.RealtorService;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
 import com.elon.boot.domain.inquiry.model.service.InquiryService;
 import com.elon.boot.domain.inquiry.model.vo.Inquiry;
+import com.elon.boot.domain.property.model.service.PropertyService;
+import com.elon.boot.domain.property.model.vo.Property;
+import com.elon.boot.domain.property.model.vo.PropertyOption;
+import com.elon.boot.domain.property.model.vo.PropertyImg;
+import com.elon.boot.domain.realtor.model.vo.Pagination; 
+
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors; 
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,12 +34,14 @@ public class RealtorController {
     @Autowired
     private RealtorService realtorService;
     
-    // ⭐ FileStorageService가 주입된 상태로 유지
     @Autowired
     private FileStorageService fileStorageService; 
     
     @Autowired
     private InquiryService inquiryService;
+    
+    @Autowired
+    private PropertyService propertyService; 
 
     /** ✅ 사업자등록번호 중복 확인 (AJAX) */
     @PostMapping("/check-business-num")
@@ -47,7 +56,6 @@ public class RealtorController {
         return res;
     }
     
-    // ⭐ 추가: 중개사 등록번호 중복 확인 (AJAX)
     /** 중개사 등록번호 중복 여부를 확인합니다. (AJAX) */
     @PostMapping("/check-realtor-reg-num")
     @ResponseBody
@@ -60,7 +68,6 @@ public class RealtorController {
         res.put("message", isDuplicate ? "이미 등록된 중개사 등록번호입니다." : "사용 가능한 중개사 등록번호입니다.");
         return res;
     }
-
 
     /** ✅ 회원가입 폼 제출 처리 */
     @PostMapping("/register")
@@ -75,18 +82,16 @@ public class RealtorController {
             return res;
         }
         
-        // 2. ⭐ 중개사 등록번호 중복 체크
+        // 2. 중개사 등록번호 중복 체크
         if (realtorService.isRealtorRegNumDuplicate(realtor.getRealtorRegNum())) {
              res.put("success", false);
              res.put("message", "이미 등록된 중개사 등록번호입니다.");
              return res;
         }
 
-
         // 회원가입 처리
         boolean success = realtorService.registerRealtor(realtor);
         if (success) {
-            // ⭐ 문구 수정: 관리자 승인 대기 상태임을 명시
             res.put("success", true);
             res.put("message", "회원가입 신청이 완료되었습니다. 관리자 승인을 기다려주세요.");
         } else {
@@ -97,10 +102,7 @@ public class RealtorController {
         return res;
     }
 
-    // =========================================================================
-    // ⭐ 수정된 로그인 처리 메소드
-    // =========================================================================
-    /** ✅ 로그인 처리 (수정: APPROVAL_STATUS 확인, 대문자 비교) */
+    /** ✅ 로그인 처리 (APPROVAL_STATUS 확인) */
     @PostMapping("/realtor-login")
     public String realtorLogin(@RequestParam("realtorId") String realtorId,
                                @RequestParam("password") String password,
@@ -108,46 +110,33 @@ public class RealtorController {
                                HttpSession session,
                                Model model) {
 
-        // 1. 아이디, 비밀번호, 사업자등록번호로 중개사 정보 조회
         Realtor realtor = realtorService.getRealtorByLogin(realtorId, password, businessNumber);
 
         if (realtor != null) {
-            // 2. 로그인 정보가 일치하는 경우, 승인 상태(APPROVAL_STATUS) 확인
-            // ⭐ Realtor 객체에 getApprovalStatus()가 있다고 가정하며, 값은 PENDING, APPROVAL, REJECTED
             String status = realtor.getApprovalStatus(); 
 
             if ("APPROVAL".equals(status)) { 
-                // 2-1. ✅ 승인된 상태 (로그인 성공)
                 session.setAttribute("loginRealtor", realtor);
                 return "redirect:/realtor/realtor-dashboard";
 
             } else if ("PENDING".equals(status)) { 
-                // 2-2. ⏳ 승인 대기 상태
                 model.addAttribute("loginError", "회원가입 승인 대기 중입니다. 관리자의 승인을 기다려주세요.");
                 return "auth/realtor-login"; 
 
             } else if ("REJECTED".equals(status)) { 
-                // 2-3. ❌ 승인 거절 상태
                 model.addAttribute("loginError", "죄송합니다. 회원가입 신청이 거절되었습니다. 고객센터에 문의해주세요.");
                 return "auth/realtor-login";
 
             } else {
-                 // 2-4. 기타/알 수 없는 상태
                 model.addAttribute("loginError", "계정 상태를 확인할 수 없습니다. 고객센터에 문의해주세요.");
                 return "auth/realtor-login";
             }
             
         } else {
-            // 3. 로그인 정보 불일치
- 
         	model.addAttribute("loginError", "아이디, 비밀번호 또는 사업자등록번호가 올바르지 않습니다.");
             return "auth/realtor-login";
         }
     }
-    // =========================================================================
-    // ⭐ 수정된 로그인 처리 메소드 끝
-    // =========================================================================
-
 
     /** ✅ 대시보드 페이지 */
     @GetMapping("/realtor-dashboard")
@@ -155,11 +144,185 @@ public class RealtorController {
         return "realtor/realtor-dashboard";
     }
 
+// -------------------------------------------------------------------------
+// 매물 상세 조회 메서드 (수정 완료)
+// -------------------------------------------------------------------------
+
+    /** * 매물 상세 페이지 (property-detail)
+     * 중개사 본인이 등록한 매물만 조회할 수 있도록 권한을 확인합니다.
+     */
+    @GetMapping("/property-detail")
+    public String showPropertyDetail(@RequestParam("id") Long propertyNo, 
+                                     HttpSession session, 
+                                     Model model, 
+                                     RedirectAttributes ra) {
+        
+        Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+        
+        if (loginRealtor == null) {
+            ra.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+            return "redirect:/realtor/realtor-login"; 
+        }
+        
+        try {
+            // 1. 매물 기본 정보 조회
+            Property property = propertyService.selectOneByNo(propertyNo);
+            
+            // 2. 권한 확인: 매물이 존재하고, 현재 로그인한 중개사가 등록한 매물인지 확인
+            if (property == null || !property.getRealtorId().equals(loginRealtor.getRealtorId())) {
+                ra.addFlashAttribute("errorMessage", "접근 권한이 없거나 존재하지 않는 매물입니다.");
+                return "redirect:/realtor/property-management";
+            }
+            
+            // 3. 매물 옵션 정보 조회
+            PropertyOption options = propertyService.selectOnesOption(propertyNo);
+            
+            // 4. 매물 이미지 목록 조회
+            List<PropertyImg> images = propertyService.selectOnesImgs(propertyNo);
+
+            // 5. 조회된 데이터를 모델에 담기
+            model.addAttribute("property", property);
+            model.addAttribute("options", options);
+            // ⭐ 이미지 연동을 위해 모델 키를 JSP 코드와 일치하는 "imgs"로 수정
+            model.addAttribute("imgs", images); 
+
+            return "realtor/property-detail"; // property-detail.jsp 로 이동
+            
+        } catch (Exception e) {
+            log.error("매물 상세 조회 실패 (ID: {}): {}", propertyNo, e.getMessage());
+            ra.addFlashAttribute("errorMessage", "매물 정보를 불러오는 중 오류가 발생했습니다.");
+            return "redirect:/realtor/property-management";
+        }
+    }
+
+// -------------------------------------------------------------------------
+// 나머지 매물 관리 및 회원 관리 기능 (유지)
+// -------------------------------------------------------------------------
+
     /** ✅ 매물 관리 페이지 */
     @GetMapping("/property-management")
-    public String propertyManagementPage() {
+    public String propertyManagementPage(
+            HttpSession session, 
+            Model model,
+            @RequestParam(value = "page", defaultValue = "1") int currentPage,
+            @RequestParam Map<String, String> filterParams
+            ) {
+        
+        Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+        
+        if (loginRealtor == null) {
+            return "redirect:/realtor/realtor-login";
+        }
+        
+        String realtorId = loginRealtor.getRealtorId();
+        
+        // 1. 매물 통계 조회
+        Map<String, Integer> stats = propertyService.getPropertyStatsByRealtor(realtorId);
+        model.addAttribute("allCount", stats.getOrDefault("ALL_COUNT", 0));
+        model.addAttribute("activeCount", stats.getOrDefault("ACTIVE_COUNT", 0));
+        model.addAttribute("reservedCount", stats.getOrDefault("RESERVED_COUNT", 0));
+        model.addAttribute("completedCount", stats.getOrDefault("COMPLETED_COUNT", 0));
+        
+        // 2. 검색 및 필터 파라미터 설정
+        filterParams.put("realtorId", realtorId);
+        
+        // 3. 페이징 처리
+        int listCount = propertyService.getPropertyCount(filterParams);
+        int pageLimit = 10;
+        int boardLimit = 9;
+        
+        Pagination pager = new Pagination(currentPage, listCount, pageLimit, boardLimit);
+        
+        // 4. 매물 목록 조회
+        List<Property> propertyList = propertyService.selectPropertyList(filterParams, pager);
+        
+        // 5. 필터 파라미터를 JSP의 pagination에 전달하기 위해 쿼리 스트링으로 변환
+        String filterQueryString = filterParams.entrySet().stream()
+                .filter(entry -> !entry.getKey().equals("page") && !entry.getKey().equals("realtorId"))
+                .map(entry -> entry.getKey() + "=" + entry.getValue())
+                .collect(Collectors.joining("&"));
+        
+        model.addAttribute("propertyList", propertyList);
+        model.addAttribute("pager", pager);
+        model.addAttribute("filterParams", filterQueryString);
+        
+        log.info("중개사 매물 관리 페이지 로드: 매물 {}건, 현재 페이지 {}", propertyList.size(), currentPage);
+
         return "realtor/property-management";
     }
+    
+    /** ⭐ 매물 상태 변경 (AJAX) */
+    @PostMapping("/property/change-status")
+    @ResponseBody
+    public Map<String, Object> changePropertyStatus(
+            @RequestParam("propertyId") int propertyNo,
+            @RequestParam("newStatus") String newStatus,
+            HttpSession session) {
+        
+        Map<String, Object> res = new HashMap<>();
+        Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+        
+        if (loginRealtor == null) {
+            res.put("success", false);
+            res.put("message", "로그인이 필요합니다.");
+            return res;
+        }
+
+        try {
+            int result = propertyService.updatePropertyStatus(propertyNo, newStatus);
+            
+            if (result > 0) {
+                res.put("success", true);
+                res.put("message", "매물 상태가 성공적으로 변경되었습니다.");
+            } else {
+                res.put("success", false);
+                res.put("message", "매물 상태 변경에 실패했거나 매물 번호가 유효하지 않습니다.");
+            }
+        } catch (Exception e) {
+            log.error("매물 상태 변경 중 오류 발생: {}", e.getMessage());
+            res.put("success", false);
+            res.put("message", "오류가 발생했습니다.");
+        }
+        
+        return res;
+    }
+    
+    /** ⭐ 매물 삭제 (AJAX) */
+    @PostMapping("/property/delete")
+    @ResponseBody
+    public Map<String, Object> deleteProperty(
+            @RequestParam("propertyId") int propertyNo,
+            HttpSession session) {
+        
+        Map<String, Object> res = new HashMap<>();
+        Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+        
+        if (loginRealtor == null) {
+            res.put("success", false);
+            res.put("message", "로그인이 필요합니다.");
+            return res;
+        }
+
+        try {
+            // 중개사 소유 매물인지 확인하는 로직이 Service에 있다고 가정
+            int result = propertyService.deleteProperty(propertyNo, loginRealtor.getRealtorId()); 
+            
+            if (result > 0) {
+                res.put("success", true);
+                res.put("message", "매물이 성공적으로 삭제되었습니다.");
+            } else {
+                res.put("success", false);
+                res.put("message", "매물 삭제에 실패했습니다. 소유권이 없거나 매물이 존재하지 않습니다.");
+            }
+        } catch (Exception e) {
+            log.error("매물 삭제 중 오류 발생: {}", e.getMessage());
+            res.put("success", false);
+            res.put("message", "오류가 발생했습니다.");
+        }
+        
+        return res;
+    }
+
 
     /** ✅ 매물 등록 페이지 */
     @GetMapping("/property-register")
@@ -167,13 +330,7 @@ public class RealtorController {
         return "realtor/property-register";
     }
 
-    // ========================================
-    // 문의 관리 기능 (새로 추가)
-    // ========================================
-
-    /**
-     * 문의 관리 페이지
-     */
+    /** ✅ 문의 관리 페이지 */
     @GetMapping("/inquiry-management")
     public String inquiryManagementPage(HttpSession session, 
                                        Model model,
@@ -208,9 +365,7 @@ public class RealtorController {
         return "realtor/inquiry-management";
     }
     
-    /**
-     * 문의 답변 작성
-     */
+    /** ✅ 문의 답변 작성 */
     @PostMapping("/inquiry/answer")
     @ResponseBody
     public Map<String, Object> answerInquiry(@RequestParam("inquiryId") Integer inquiryId,
@@ -228,7 +383,6 @@ public class RealtorController {
         }
         
         try {
-            // 답변 작성
             int result = inquiryService.answerRealtorInquiry(inquiryId, answer);
             
             if (result > 0) {
@@ -248,9 +402,7 @@ public class RealtorController {
         return response;
     }
     
-    /**
-     * 문의 읽음 처리
-     */
+    /** ✅ 문의 읽음 처리 */
     @PostMapping("/inquiry/read")
     @ResponseBody
     public Map<String, Object> markInquiryAsRead(@RequestParam("inquiryId") Integer inquiryId,
@@ -298,13 +450,7 @@ public class RealtorController {
         return "redirect:/?logout=true";
     }
     
-    // =========================================================================
-    // 중개사 마이페이지 기능 통합
-    // =========================================================================
-
-    /** * ✅ 중개사 마이페이지 조회 (realtor/realtor-mypage)
-     * 세션에 저장된 중개사 정보를 가져와 마이페이지에 필요한 데이터를 모델에 담습니다.
-     */
+    /** * ✅ 중개사 마이페이지 조회 (realtor/realtor-mypage) */
     @GetMapping("/realtor-mypage")
     public String showRealtorMypage(HttpSession session, Model model) {
         Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
@@ -341,14 +487,12 @@ public class RealtorController {
 
         String realtorId = loginRealtor.getRealtorId();
         String businessNum = loginRealtor.getBusinessNum();
-        // ⭐ realtorRegNum 필드 추가
         String realtorRegNum = loginRealtor.getRealtorRegNum(); 
 
 
         Realtor updatedRealtor = new Realtor();
         updatedRealtor.setRealtorId(realtorId); 
         updatedRealtor.setBusinessNum(businessNum); 
-        // ⭐ realtorRegNum 설정
         updatedRealtor.setRealtorRegNum(realtorRegNum); 
         updatedRealtor.setOfficeName(officeName);
         updatedRealtor.setRealtorName(realtorName);
@@ -421,7 +565,7 @@ public class RealtorController {
             boolean success = realtorService.updateRealtorImage(realtorId, savedFileName);
 
             if (success) {
-                // 3. ⭐ 세션 갱신: 최신 정보를 DB에서 다시 가져와 세션을 업데이트
+                // 3. 세션 갱신: 최신 정보를 DB에서 다시 가져와 세션을 업데이트
                 Realtor currentRealtor = realtorService.getRealtorById(realtorId);
                 session.setAttribute("loginRealtor", currentRealtor);
                 

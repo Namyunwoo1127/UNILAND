@@ -24,8 +24,7 @@
 	  ORDER BY IMG_ORDER ASC, IMG_NO ASC
 	</select>
 	<select id="selectRealtorById" resultType="com.elon.boot.domain.realtor.model.vo.Realtor">
-		SELECT * 
-		FROM REALTOR_TBL
+		SELECT * FROM REALTOR_TBL
 		WHERE REALTOR_ID = #{rId}
 	</select>
 
@@ -47,7 +46,6 @@
     WHERE ROWNUM = 1
   </select>
 
-  <!-- 전체 매물 목록 조회 (지도용) -->
   <select id="selectAllProperties" resultType="com.elon.boot.domain.property.model.vo.Property">
     SELECT *
     FROM PROPERTY_TBL
@@ -55,14 +53,12 @@
     ORDER BY CREATED_AT DESC
   </select>
 
-  <!-- 필터링된 매물 목록 조회 -->
   <select id="selectPropertiesWithFilter" resultType="com.elon.boot.domain.property.model.vo.Property">
     SELECT p.*
     FROM PROPERTY_TBL p
     <where>
       p.STATUS = 'ACTIVE'
 
-      <!-- 지역 필터 -->
       <if test="filter.regions != null and filter.regions.size() > 0">
         AND p.DISTRICT IN
         <foreach collection="filter.regions" item="region" open="(" separator="," close=")">
@@ -70,7 +66,6 @@
         </foreach>
       </if>
 
-      <!-- 보증금 필터 -->
       <if test="filter.depositMin != null">
         AND p.DEPOSIT >= #{filter.depositMin}
       </if>
@@ -78,7 +73,6 @@
         AND p.DEPOSIT <![CDATA[<=]]> #{filter.depositMax}
       </if>
 
-      <!-- 월세 필터 -->
       <if test="filter.rentMin != null">
         AND p.MONTHLY_RENT >= #{filter.rentMin}
       </if>
@@ -86,7 +80,6 @@
         AND p.MONTHLY_RENT <![CDATA[<=]]> #{filter.rentMax}
       </if>
 
-      <!-- 매물 유형 필터 -->
       <if test="filter.propertyTypes != null and filter.propertyTypes.size() > 0">
         AND p.PROPERTY_TYPE IN
         <foreach collection="filter.propertyTypes" item="type" open="(" separator="," close=")">
@@ -94,17 +87,14 @@
         </foreach>
       </if>
 
-      <!-- 학생 우대 필터 -->
       <if test="filter.studentPref != null and filter.studentPref == true">
         AND p.STUDENT_PREF = 'Y'
       </if>
 
-      <!-- 단기 계약 필터 -->
       <if test="filter.shortCont != null and filter.shortCont == true">
         AND p.SHORT_CONT = 'Y'
       </if>
 
-      <!-- 옵션 필터들 - EXISTS 서브쿼리 사용 -->
       <if test="filter.airConditioner != null and filter.airConditioner == true">
         AND EXISTS (SELECT 1 FROM OPTION_TBL o WHERE o.PROPERTY_NO = p.PROPERTY_NO AND o.AIR_CONDITIONER = 'Y')
       </if>
@@ -159,43 +149,7 @@
     </where>
     ORDER BY p.CREATED_AT DESC
   </select>
-<!-- <insert id="insertProperty" parameterType="com.elon.boot.domain.property.model.vo.Property">
-  <selectKey keyProperty="propertyNo" order="BEFORE" resultType="long">
-    SELECT SEQ_PROPERTY_NO.NEXTVAL FROM DUAL
-  </selectKey>
-  INSERT INTO PROPERTY_TBL (
-    PROPERTY_NO, REALTOR_ID,
-    PROPERTY_NAME, PROPERTY_TYPE,
-    ROOM, BATHROOM, FLOOR, TOTAL_FLOOR,
-    CONSTRUCTION_YEAR, AVAILABLE_DATE, STUDENT_PREF, SHORT_CONT,
-    PRICE_TYPE, DEPOSIT, MONTHLY_RENT, MAINTENANCE_FEE, MAINTENANCE_INCL,
-    ROAD_ADDRESS, ADDRESS_DETAIL, PROVINCE, DISTRICT, LATITUDE, LONGITUDE,
-    CONTRACT_AREA, DESCRIPTION, STATUS, CREATED_AT
-  ) VALUES (
-    #{propertyNo}, #{realtorId},
-    #{propertyName}, #{propertyType},
-    #{room}, #{bathroom}, #{floor}, #{totalFloor},
-    #{constructionYear}, #{availableDate}, #{studentPref}, #{shortCont},
-    #{priceType}, #{deposit}, #{monthlyRent}, #{maintenanceFee}, #{maintenanceIncl},
-    #{roadAddress}, #{addressDetail}, #{province}, #{district}, #{latitude}, #{longitude},
-    #{contractArea}, #{description}, 'ACTIVE', SYSTIMESTAMP
-  )
-</insert> -->
-<!-- 이미지 삽입 -->
-<!-- <insert id="insertPropertyImages">
-  INSERT INTO PROPERTIES_IMG_TBL 
-  SELECT SEQ_PROPERTIES_IMG_NO.NEXTVAL , BI.*
-  FROM (
-  	<foreach collection="list" item="img" separator=" UNION ALL ">
-  	SELECT 	#{img.propertyNo} 		PROPERTY_NO,
-  			#{img.imgPath}			IMG_PATH,
-  			#{img.imgRename}		IMG_RENAME,
-  			#{img.imgOriginalName}	IMG_ORIGINAL_NAME,
-  			#{img.imgOrder}			IMG_ORDER
-		FROM DUAL
-  </foreach>
-  )BI
-</insert> -->
+
   <insert id="insertProperty" parameterType="com.elon.boot.domain.property.model.vo.Property">
     <selectKey keyProperty="propertyNo" order="BEFORE" resultType="long">
       SELECT SEQ_PROPERTY_NO.NEXTVAL FROM DUAL
@@ -229,19 +183,13 @@
       #{constructionYear, jdbcType=VARCHAR},
       #{availableDate,    jdbcType=VARCHAR},
 
-      #{studentPref,      jdbcType=VARCHAR},   <!-- VARCHAR2(1) -->
-      #{shortCont,        jdbcType=VARCHAR},   <!-- VARCHAR2(1) -->
-
-      #{priceType,        jdbcType=VARCHAR},
+      #{studentPref,      jdbcType=VARCHAR},   #{shortCont,        jdbcType=VARCHAR},   #{priceType,        jdbcType=VARCHAR},
       #{deposit,          jdbcType=NUMERIC},
       #{monthlyRent,      jdbcType=NUMERIC},
 
       #{maintenanceFee,   jdbcType=NUMERIC},
-      #{maintenanceIncl,  jdbcType=VARCHAR},   <!-- VARCHAR2(1) -->
-
-      #{roadAddress,      jdbcType=VARCHAR},
-      #{parcelAddress,    jdbcType=VARCHAR},   <!-- 추가 -->
-      #{addressDetail,    jdbcType=VARCHAR},
+      #{maintenanceIncl,  jdbcType=VARCHAR},   #{roadAddress,      jdbcType=VARCHAR},
+      #{parcelAddress,    jdbcType=VARCHAR},   #{addressDetail,    jdbcType=VARCHAR},
 
       #{province,         jdbcType=VARCHAR},
       #{district,         jdbcType=VARCHAR},
@@ -250,14 +198,11 @@
       #{longitude,        jdbcType=NUMERIC},
 
       #{contractArea,     jdbcType=NUMERIC},
-      #{description,      jdbcType=CLOB},      <!-- CLOB -->
-
-      'ACTIVE',
+      #{description,      jdbcType=CLOB},      'ACTIVE',
       SYSTIMESTAMP
     )
   </insert>
 
-  <!-- 이미지 일괄 INSERT -->
   <insert id="insertPropertyImages">
     INSERT INTO PROPERTIES_IMG_TBL
     SELECT SEQ_PROPERTIES_IMG_NO.NEXTVAL, BI.*
@@ -273,5 +218,85 @@
       </foreach>
     ) BI
   </insert>
+
+  <select id="selectPropertyStatsByRealtorId" resultType="map">
+    SELECT
+        COUNT(CASE WHEN STATUS IN ('ACTIVE', 'RESERVED', 'COMPLETED') THEN 1 END) AS ALL_COUNT,
+        COUNT(CASE WHEN STATUS = 'ACTIVE' THEN 1 END) AS ACTIVE_COUNT,
+        COUNT(CASE WHEN STATUS = 'RESERVED' THEN 1 END) AS RESERVED_COUNT,
+        COUNT(CASE WHEN STATUS = 'COMPLETED' THEN 1 END) AS COMPLETED_COUNT
+    FROM PROPERTY_TBL
+    WHERE REALTOR_ID = #{realtorId}
+    AND STATUS != 'DELETED'
+  </select>
+
+  <select id="selectPropertyCount" resultType="_int">
+    SELECT COUNT(*)
+    FROM PROPERTY_TBL
+    <include refid="propertySearchWhere"/>
+  </select>
+
+  <select id="selectPropertyList" resultType="com.elon.boot.domain.property.model.vo.Property">
+    SELECT *
+    FROM (
+        SELECT 
+            ROWNUM RNUM, T.*,
+            -- 썸네일 경로만 조회
+            (SELECT IMG_PATH FROM PROPERTIES_IMG_TBL PI WHERE PI.PROPERTY_NO = T.PROPERTY_NO AND PI.IMG_ORDER = 0 AND ROWNUM = 1) AS THUMBNAILPATH
+        FROM (
+            SELECT 
+                PROPERTY_NO, REALTOR_ID, PROPERTY_NAME, PROPERTY_TYPE,
+                DEPOSIT, MONTHLY_RENT, ROAD_ADDRESS, CONTRACT_AREA,
+                STATUS, CREATED_AT
+            FROM PROPERTY_TBL
+            <include refid="propertySearchWhere"/>
+            ORDER BY
+                <choose>
+                    <when test="sort == 'PRICE_ASC'">DEPOSIT ASC, MONTHLY_RENT ASC</when>
+                    <when test="sort == 'PRICE_DESC'">DEPOSIT DESC, MONTHLY_RENT DESC</when>
+                    <otherwise>CREATED_AT DESC</otherwise> </choose>
+        ) T
+    )
+    WHERE RNUM BETWEEN #{startRow} + 1 AND #{startRow} + #{limit}
+  </select>
+
+  <update id="updatePropertyStatus">
+    UPDATE PROPERTY_TBL
+    SET STATUS = #{newStatus, jdbcType=VARCHAR},
+        UPDATED_AT = SYSTIMESTAMP
+    WHERE PROPERTY_NO = #{propertyNo, jdbcType=NUMERIC}
+  </update>
+
+  <update id="softDeleteProperty">
+    UPDATE PROPERTY_TBL
+    SET STATUS = 'DELETED',
+        DELETED_AT = SYSTIMESTAMP
+    WHERE PROPERTY_NO = #{propertyNo, jdbcType=NUMERIC}
+    AND REALTOR_ID = #{realtorId, jdbcType=VARCHAR}
+    AND STATUS != 'DELETED'
+  </update>
+  
+  <sql id="propertySearchWhere">
+    <where>
+        REALTOR_ID = #{realtorId}
+        AND STATUS != 'DELETED'
+
+        <if test="STATUS != null and STATUS != 'ALL'">
+            AND STATUS = #{STATUS}
+        </if>
+
+        <if test="PROPERTY_TYPE != null and PROPERTY_TYPE != 'ALL'">
+            AND UPPER(PROPERTY_TYPE) = #{PROPERTY_TYPE}
+        </if>
+
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND (
+                PROPERTY_NAME LIKE '%' || #{searchKeyword} || '%'
+                OR ROAD_ADDRESS LIKE '%' || #{searchKeyword} || '%'
+            )
+        </if>
+        
+        </where>
+  </sql>
 
 </mapper>
