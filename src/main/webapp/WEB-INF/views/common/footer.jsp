@@ -6,7 +6,7 @@
         <div class="footer-content">
             <div class="footer-section">
                 <div class="footer-logo">
-                    <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
+                    <img src="${pageContext.request.contextPath}/assets/images/footerlogo.png" alt="UNILAND">
                 </div>
                 <p>대학생을 위한 맞춤형 부동산 중개 플랫폼</p>
                 <p style="margin-top: 20px;">
@@ -99,7 +99,7 @@
     }
 
     .footer-logo img {
-        height: 80px;
+        height: 70px;
         object-fit: contain;
         object-position: left;
     }

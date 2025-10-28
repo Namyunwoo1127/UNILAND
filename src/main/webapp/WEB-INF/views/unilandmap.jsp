@@ -1303,28 +1303,28 @@
                 <img id="detailImage" src="" alt="매물 사진">
             </div>
             <div class="detail-info">
-                <div class="detail-price" id="detailPrice">500/55</div>
-                <div class="detail-title" id="detailTitle">신촌역 5분거리 풀옵션 원룸</div>
-                <div class="detail-location" id="detailLocation">📍 서울 서대문구 창천동</div>
+                <div class="detail-price" id="detailPrice"></div>
+                <div class="detail-title" id="detailTitle"></div>
+                <div class="detail-location" id="detailLocation"></div>
 
                 <div class="detail-section">
                     <h3>기본 정보</h3>
                     <div class="detail-grid">
                         <div class="detail-item">
                             <span class="detail-item-label">방 종류</span>
-                            <span class="detail-item-value" id="detailRoomType">원룸</span>
+                            <span class="detail-item-value" id="detailRoomType"></span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-item-label">전용면적</span>
-                            <span class="detail-item-value">20㎡</span>
+                            <span class="detail-item-value" id="detailArea"></span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-item-label">층수</span>
-                            <span class="detail-item-value">3층</span>
+                            <span class="detail-item-value" id="detailFloor"></span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-item-label">관리비</span>
-                            <span class="detail-item-value">5만원</span>
+                            <span class="detail-item-value" id="detailMaintenanceFee"></span>
                         </div>
                     </div>
                 </div>
@@ -1332,20 +1332,12 @@
                 <div class="detail-section">
                     <h3>옵션</h3>
                     <div class="detail-options" id="detailOptions">
-                        <span class="detail-option">에어컨</span>
-                        <span class="detail-option">냉장고</span>
-                        <span class="detail-option">세탁기</span>
-                        <span class="detail-option">침대</span>
-                        <span class="detail-option">책상</span>
                     </div>
                 </div>
 
                 <div class="detail-section">
                     <h3>상세 설명</h3>
                     <div class="detail-description" id="detailDescription">
-                        신촌역에서 도보 5분 거리에 위치한 풀옵션 원룸입니다.
-                        연세대, 이화여대 도보 통학 가능하며 주변 편의시설이 우수합니다.
-                        최근 리모델링하여 깔끔한 상태이며, 보일러 개별 난방으로 관리비 부담이 적습니다.
                     </div>
                 </div>
             </div>

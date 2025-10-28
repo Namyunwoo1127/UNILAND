@@ -658,7 +658,10 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <span class="info-label">전용면적</span>
-                            <span class="info-value">${property.contractArea != null ? property.contractArea : 20}㎡ (약 ${property.contractArea != null ? property.contractArea/3.3 : 6}평)</span>
+                            <span class="info-value">
+                                ${property.contractArea != null ? property.contractArea : 20}㎡
+                                (약 <fmt:formatNumber value="${property.contractArea != null ? property.contractArea/3.3 : 6}" pattern="0"/>평)
+                            </span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">방/욕실</span>
@@ -800,34 +803,7 @@
                         <i class="fa-solid fa-align-left"></i> 상세 설명
                     </h2>
                     <div class="property-description">
-                        <c:choose>
-                            <c:when test="${not empty property.description}">
-                                ${property.description}
-                            </c:when>
-                            <c:otherwise>신촌역에서 도보 5분 거리에 위치한 풀옵션 원룸입니다.
-
-연세대, 이화여대 도보 통학 가능하며 주변 편의시설이 우수합니다.
-최근 리모델링하여 깔끔한 상태이며, 보일러 개별 난방으로 관리비 부담이 적습니다.
-
-📍 위치 장점
-- 신촌역 도보 5분
-- 연세대 도보 10분
-- 이화여대 도보 15분
-- 주변 편의점, 카페, 식당 다수
-
-✨ 특징
-- 2020년 신축 건물
-- 풀옵션 (에어컨, 냉장고, 세탁기, 침대, 책상 등)
-- 개별 난방으로 관리비 저렴
-- 보안 우수 (CCTV, 도어락)
-- 깔끔한 실내 인테리어
-
-💰 비용
-- 관리비 5만원 (수도, 인터넷 포함)
-- 가스, 전기 개별 정산
-
-학생 우대 가능하니 문의 주세요!</c:otherwise>
-                        </c:choose>
+                        ${property.description}
                     </div>
                 </div>
 
@@ -890,8 +866,16 @@
             <!-- 우측 고정 가격 박스 -->
             <aside class="price-sticky">
                 <div class="price-section">
-                    <div class="price-label">보증금 / 월세</div>
-                    <div class="price-main">${property.deposit != null ? property.deposit : 500} / ${property.monthlyRent != null ? property.monthlyRent : 55}</div>
+                    <c:choose>
+                        <c:when test="${property.monthlyRent == 0 or property.monthlyRent == null}">
+                            <div class="price-label">전세</div>
+                            <div class="price-main">${property.deposit != null ? property.deposit : 500}</div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="price-label">보증금 / 월세</div>
+                            <div class="price-main">${property.deposit != null ? property.deposit : 500} / ${property.monthlyRent}</div>
+                        </c:otherwise>
+                    </c:choose>
                     <div class="price-detail" style="margin-top: 20px;">
                         <div>
                             <div class="price-detail-item">관리비</div>
