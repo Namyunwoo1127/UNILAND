@@ -43,4 +43,5 @@ public class Inquiry {
     // ========================================
     private String propertyName;        // 매물명 (PROPERTY_TBL 조인)
     private String realtorName;         // 중개사명 (REALTOR_TBL 조인)
+    private String userType;  			// 추가: USER 또는 REALTOR
 }
