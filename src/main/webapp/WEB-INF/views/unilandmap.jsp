@@ -1340,6 +1340,13 @@
                     <div class="detail-description" id="detailDescription">
                     </div>
                 </div>
+                
+                <div class="detail-report-section">
+            		<button class="btn-report" onclick="checkLoginAndGoToReport()">
+                		<i class="fa-solid fa-flag"></i> 허위매물 신고하기
+            		</button>
+        		</div>
+                
             </div>
         </div>
 		<div class="detail-actions">
@@ -2564,6 +2571,48 @@
             // 로그인이 되어 있으면 기존 함수 호출
             goToContactPage(); 
         }
+     	
+     // 신고하기 버튼 클릭 시 로그인 체크 함수
+        function checkLoginAndGoToReport() {
+            const isLoggedIn = ${not empty sessionScope.loginUser}; 
+
+            if (!isLoggedIn) {
+                if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
+                    window.location.href = '${pageContext.request.contextPath}/auth/login?redirectUrl=/map';
+                }
+                return; 
+            }
+
+            // 로그인이 되어 있으면 신고 페이지로 이동
+            goToReportPage(); 
+        }
+
+        // 신고 페이지로 이동 (관리자 문의 페이지로)
+        function goToReportPage() {
+            if (!currentPropertyId) {
+                alert("오류: 현재 매물 ID를 찾을 수 없습니다.");
+                return;
+            }
+            
+            // 현재 매물 정보 가져오기
+            const property = propertyDetails[currentPropertyId];
+            if (!property) {
+                alert("매물 정보를 찾을 수 없습니다.");
+                return;
+            }
+            
+            // 매물 정보를 URL 파라미터로 전달
+            const params = new URLSearchParams({
+                category: '허위매물신고',
+                propertyId: currentPropertyId,
+                propertyName: property.title,
+                propertyPrice: property.price,
+                propertyLocation: property.location.replace('📍 ', '')
+            });
+            
+            window.location.href = '${pageContext.request.contextPath}/inquiries/contact-admin?' + params.toString();
+        }
+     	
     </script>
 </body>
 </html>

@@ -247,62 +247,44 @@
             margin-top: 4px;
         }
 
-        /* 허위매물신고 검색 영역 */
-        .property-search-area {
+        /* 허위매물신고 매물 정보 영역 */
+        .property-info-box {
             display: none;
             margin-top: var(--spacing-md);
             padding: var(--spacing-md);
-            background: #f7fafc;
+            background: #fff5f5;
             border-radius: var(--radius-md);
-            border: 1px solid #e2e8f0;
+            border: 2px solid #feb2b2;
         }
 
-        .property-search-area.active {
+        .property-info-box.active {
             display: block;
         }
 
-        .search-input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .btn-search {
-            padding: var(--spacing-sm) var(--spacing-lg);
-            background: var(--primary-purple);
-            color: white;
-            border: none;
-            border-radius: var(--radius-md);
+        .property-info-title {
             font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
+            color: #c53030;
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .btn-search:hover {
-            background: var(--primary-dark);
+        .property-info-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.8;
         }
 
-        .property-result {
-            display: none;
-            padding: var(--spacing-md);
-            background: white;
-            border-radius: var(--radius-md);
-            border: 2px solid var(--primary-purple);
+        .property-info-item {
+            margin-bottom: 4px;
         }
 
-        .property-result.active {
-            display: block;
-        }
-
-        .property-result-title {
+        .property-info-label {
+            display: inline-block;
+            min-width: 80px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .property-result-info {
-            font-size: 13px;
-            color: var(--text-tertiary);
         }
     </style>
 </head>
@@ -347,7 +329,7 @@
                 <ul>
                     <li>문의 내용은 관리자만 확인할 수 있습니다.</li>
                     <li>답변은 영업일 기준 1~2일 내에 등록하신 이메일 또는 마이페이지에서 확인하실 수 있습니다.</li>
-                    <li>허위 매물 신고는 해당 매물 정보를 선택하여 신고해주세요.</li>
+                    <li>허위 매물 신고는 해당 매물 페이지에서 직접 신고하시면 더 빠른 처리가 가능합니다.</li>
                     <li>긴급한 사항은 고객센터(1588-0000)로 연락 주시기 바랍니다.</li>
                 </ul>
             </div>
@@ -355,7 +337,7 @@
         
         <!-- 문의 작성 폼 -->
         <form action="${pageContext.request.contextPath}/inquiries/contact-admin" method="post" id="inquiryForm">
-            <!-- 허위매물신고 시 매물 ID (선택사항) -->
+            <!-- 허위매물신고 시 매물 ID -->
             <input type="hidden" name="propertyId" id="selectedPropertyId" value="">
             
             <div class="form-group">
@@ -371,23 +353,24 @@
                 </select>
             </div>
 
-            <!-- 허위매물신고 선택 시 매물 검색 영역 -->
-            <div id="propertySearchArea" class="property-search-area">
-                <label class="form-label">
-                    <i class="fa-solid fa-search"></i> 신고할 매물 검색
-                </label>
-                <div class="search-input-group">
-                    <input type="text" 
-                           id="propertySearchInput" 
-                           class="form-control" 
-                           placeholder="매물 번호 또는 매물명을 입력하세요">
-                    <button type="button" class="btn-search" onclick="searchProperty()">
-                        <i class="fa-solid fa-search"></i> 검색
-                    </button>
+            <!-- 허위매물신고 시 매물 정보 표시 영역 -->
+            <div id="propertyInfoBox" class="property-info-box">
+                <div class="property-info-title">
+                    <i class="fa-solid fa-flag"></i> 신고 대상 매물
                 </div>
-                <div id="propertyResult" class="property-result">
-                    <div class="property-result-title" id="propertyName"></div>
-                    <div class="property-result-info" id="propertyInfo"></div>
+                <div class="property-info-content">
+                    <div class="property-info-item">
+                        <span class="property-info-label">매물명:</span>
+                        <span id="displayPropertyName"></span>
+                    </div>
+                    <div class="property-info-item">
+                        <span class="property-info-label">주소:</span>
+                        <span id="displayPropertyLocation"></span>
+                    </div>
+                    <div class="property-info-item">
+                        <span class="property-info-label">가격:</span>
+                        <span id="displayPropertyPrice"></span>
+                    </div>
                 </div>
             </div>
             
@@ -436,6 +419,39 @@
     <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
 
     <script>
+        // URL 파라미터 읽기
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category');
+        const propertyId = urlParams.get('propertyId');
+        const propertyName = urlParams.get('propertyName');
+        const propertyPrice = urlParams.get('propertyPrice');
+        const propertyLocation = urlParams.get('propertyLocation');
+
+        // 페이지 로드 시 URL 파라미터가 있으면 자동 설정
+        window.addEventListener('DOMContentLoaded', function() {
+            if (category) {
+                document.getElementById('category').value = category;
+                
+                // 허위매물신고인 경우 매물 정보 표시
+                if (category === '허위매물신고' && propertyId) {
+                    document.getElementById('selectedPropertyId').value = propertyId;
+                    document.getElementById('displayPropertyName').textContent = propertyName || '정보 없음';
+                    document.getElementById('displayPropertyLocation').textContent = propertyLocation || '정보 없음';
+                    document.getElementById('displayPropertyPrice').textContent = propertyPrice || '정보 없음';
+                    document.getElementById('propertyInfoBox').classList.add('active');
+                    
+                    // 제목 자동 설정
+                    document.getElementById('title').value = '[허위매물 신고] ' + (propertyName || '');
+                    titleCount.textContent = document.getElementById('title').value.length;
+                    
+                    // 문의 유형 변경 불가능하도록 설정
+                    document.getElementById('category').disabled = true;
+                    document.getElementById('category').style.backgroundColor = '#f7fafc';
+                    document.getElementById('category').style.cursor = 'not-allowed';
+                }
+            }
+        });
+
         // 글자 수 카운터
         const titleInput = document.getElementById('title');
         const titleCount = document.getElementById('titleCount');
@@ -450,49 +466,35 @@
             contentCount.textContent = this.value.length;
         });
         
-        // 카테고리 변경 시 허위매물신고 검색 영역 표시/숨김
+        // 카테고리 변경 시 처리
         const categorySelect = document.getElementById('category');
-        const propertySearchArea = document.getElementById('propertySearchArea');
+        const propertyInfoBox = document.getElementById('propertyInfoBox');
         
         categorySelect.addEventListener('change', function() {
             if (this.value === '허위매물신고') {
-                propertySearchArea.classList.add('active');
+                // 이미 URL 파라미터로 매물 정보가 있는 경우 유지
+                if (!propertyId) {
+                    alert('허위매물 신고는 해당 매물 페이지에서 신고하기 버튼을 이용해주세요.');
+                    this.value = '';
+                }
             } else {
-                propertySearchArea.classList.remove('active');
-                document.getElementById('propertyResult').classList.remove('active');
+                propertyInfoBox.classList.remove('active');
                 document.getElementById('selectedPropertyId').value = '';
             }
         });
         
-        // 매물 검색 (실제 구현 시 AJAX로 서버에서 조회)
-        function searchProperty() {
-            const searchInput = document.getElementById('propertySearchInput').value.trim();
-            
-            if (!searchInput) {
-                alert('매물 번호 또는 매물명을 입력하세요.');
-                return;
-            }
-            
-            // TODO: 실제 구현 시 AJAX로 서버에서 매물 정보 조회
-            // 임시 데모용 코드
-            const propertyResult = document.getElementById('propertyResult');
-            const propertyName = document.getElementById('propertyName');
-            const propertyInfo = document.getElementById('propertyInfo');
-            
-            // 샘플 데이터 (실제로는 서버에서 조회)
-            propertyName.textContent = '강남구 역삼동 원룸';
-            propertyInfo.textContent = '매물번호: 12345 | 보증금: 1000만원 / 월세: 50만원';
-            document.getElementById('selectedPropertyId').value = '12345';
-            
-            propertyResult.classList.add('active');
-        }
-        
         // 폼 제출 전 유효성 검사
         document.getElementById('inquiryForm').addEventListener('submit', function(e) {
-            const category = document.getElementById('category').value;
+            const categoryElement = document.getElementById('category');
+            const category = categoryElement.value;
             const title = document.getElementById('title').value.trim();
             const content = document.getElementById('content').value.trim();
             const propertyId = document.getElementById('selectedPropertyId').value;
+            
+            // disabled 상태면 form 제출 시 값이 안 넘어가므로 임시로 활성화
+            if (categoryElement.disabled) {
+                categoryElement.disabled = false;
+            }
             
             if (!category) {
                 e.preventDefault();
@@ -527,7 +529,7 @@
             // 허위매물신고인 경우 매물 선택 확인
             if (category === '허위매물신고' && !propertyId) {
                 e.preventDefault();
-                alert('신고할 매물을 검색하여 선택해주세요.');
+                alert('허위매물 신고는 해당 매물 페이지에서 신고하기 버튼을 이용해주세요.');
                 return false;
             }
             

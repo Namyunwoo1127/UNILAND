@@ -4,7 +4,7 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.elon.boot.domain.inquiry.model.store.InquiryMapper">
 
-  <!-- resultMap: 카멜케이스 자동매핑을 안쓴다는 가정으로 안전하게 명시 매핑 -->
+  <!-- resultMap: userType 추가 -->
   <resultMap id="InquiryMap" type="com.elon.boot.domain.inquiry.model.vo.Inquiry">
     <id     property="inquiryId"  	column="INQUIRY_ID"/>
     <result property="userId"     	column="USER_ID"/>
@@ -20,94 +20,113 @@
     <result property="answeredAt"  	column="ANSWERED_AT"/>
     <result property="userName"    	column="USER_NAME"/>
     <result property="deleteYn"    	column="DELETE_YN"/>
-    <result property="userPhone"   	column="USER_PHONE"/>  <!-- ⭐ 수정: usersPhone → userPhone -->
+    <result property="userPhone"   	column="USER_PHONE"/>
     <result property="readYn" 	   	column="READ_YN"/>
     <result property="readAt" 		column="READ_AT"/>
     <result property="propertyName" column="PROPERTY_NAME"/>
+    <result property="userType"    	column="USER_TYPE"/>
   </resultMap>
 
-  <!-- 전체(관리자용) -->
+  <!-- 전체(관리자용) - INQUIRY_TYPE을 USER_TYPE으로 매핑 + 매물명 조인 -->
   <select id="selectAllInquiriesForAdmin" resultMap="InquiryMap">
-    SELECT *
-      FROM INQUIRY_TBL
-     WHERE DELETE_YN = 'N'
-     ORDER BY CREATED_AT DESC
+    SELECT 
+        I.*,
+        I.INQUIRY_TYPE AS USER_TYPE,
+        P.PROPERTY_NAME
+    FROM INQUIRY_TBL I
+    LEFT JOIN PROPERTY_TBL P ON I.PROPERTY_ID = P.PROPERTY_NO
+    WHERE I.DELETE_YN = 'N'
+    ORDER BY I.CREATED_AT DESC
   </select>
 
   <!-- 단건 -->
   <select id="selectInquiryById" parameterType="int" resultMap="InquiryMap">
-    SELECT *
-      FROM INQUIRY_TBL
-     WHERE INQUIRY_ID = #{value}
+    SELECT 
+        I.*,
+        I.INQUIRY_TYPE AS USER_TYPE,
+        P.PROPERTY_NAME
+    FROM INQUIRY_TBL I
+    LEFT JOIN PROPERTY_TBL P ON I.PROPERTY_ID = P.PROPERTY_NO
+    WHERE I.INQUIRY_ID = #{value}
   </select>
 
   <!-- 사용자별 -->
   <select id="selectInquiriesByUserId" parameterType="string" resultMap="InquiryMap">
-    SELECT *
-      FROM INQUIRY_TBL
-     WHERE USER_ID = #{userId}
-          AND DELETE_YN = 'N'
-        ORDER BY 
-            CASE WHEN READ_YN = 'N' THEN 0 ELSE 1 END,
-            CREATED_AT DESC
+    SELECT 
+        I.*,
+        I.INQUIRY_TYPE AS USER_TYPE,
+        P.PROPERTY_NAME
+    FROM INQUIRY_TBL I
+    LEFT JOIN PROPERTY_TBL P ON I.PROPERTY_ID = P.PROPERTY_NO
+    WHERE I.USER_ID = #{userId}
+      AND I.DELETE_YN = 'N'
+    ORDER BY 
+        CASE WHEN I.READ_YN = 'N' THEN 0 ELSE 1 END,
+        I.CREATED_AT DESC
   </select>
   
   <!-- 사용자별 관리자 문의 목록 조회 -->
   <select id="selectAdminInquiriesByUserId" parameterType="string" resultMap="InquiryMap">
       SELECT 
-          INQUIRY_ID,
-          USER_ID,
-          INQUIRY_TYPE,
-          CATEGORY,
-          PROPERTY_ID,
-          REALTOR_ID,
-          TITLE,
-          CONTENT,
-          STATUS,
-          ANSWER,
-          CREATED_AT,
-          ANSWERED_AT,
-          USER_NAME,
-          DELETE_YN,
-          USER_PHONE,
-          READ_YN,
-          READ_AT
-      FROM INQUIRY_TBL
-      WHERE USER_ID = #{userId}
-        AND INQUIRY_TYPE = 'ADMIN'
-        AND DELETE_YN = 'N'
+          I.INQUIRY_ID,
+          I.USER_ID,
+          I.INQUIRY_TYPE,
+          I.CATEGORY,
+          I.PROPERTY_ID,
+          I.REALTOR_ID,
+          I.TITLE,
+          I.CONTENT,
+          I.STATUS,
+          I.ANSWER,
+          I.CREATED_AT,
+          I.ANSWERED_AT,
+          I.USER_NAME,
+          I.DELETE_YN,
+          I.USER_PHONE,
+          I.READ_YN,
+          I.READ_AT,
+          I.INQUIRY_TYPE AS USER_TYPE,
+          P.PROPERTY_NAME
+      FROM INQUIRY_TBL I
+      LEFT JOIN PROPERTY_TBL P ON I.PROPERTY_ID = P.PROPERTY_NO
+      WHERE I.USER_ID = #{userId}
+        AND I.INQUIRY_TYPE = 'ADMIN'
+        AND I.DELETE_YN = 'N'
       ORDER BY 
-          CASE WHEN READ_YN = 'N' THEN 0 ELSE 1 END,
-          CREATED_AT DESC
+          CASE WHEN I.READ_YN = 'N' THEN 0 ELSE 1 END,
+          I.CREATED_AT DESC
   </select>
   
   <!-- 사용자별 중개사 문의 목록 조회 -->
   <select id="selectRealtorInquiriesByUserId" parameterType="string" resultMap="InquiryMap">
       SELECT 
-          INQUIRY_ID,
-          USER_ID,
-          INQUIRY_TYPE,
-          CATEGORY,
-          PROPERTY_ID,
-          REALTOR_ID,
-          TITLE,
-          CONTENT,
-          STATUS,
-          ANSWER,
-          CREATED_AT,
-          ANSWERED_AT,
-          USER_NAME,
-          DELETE_YN,
-          USER_PHONE,
-          READ_YN,
-          READ_AT
-      FROM INQUIRY_TBL
-      WHERE USER_ID = #{userId}
-        AND INQUIRY_TYPE = 'REALTOR'
-        AND DELETE_YN = 'N'
+          I.INQUIRY_ID,
+          I.USER_ID,
+          I.INQUIRY_TYPE,
+          I.CATEGORY,
+          I.PROPERTY_ID,
+          I.REALTOR_ID,
+          I.TITLE,
+          I.CONTENT,
+          I.STATUS,
+          I.ANSWER,
+          I.CREATED_AT,
+          I.ANSWERED_AT,
+          I.USER_NAME,
+          I.DELETE_YN,
+          I.USER_PHONE,
+          I.READ_YN,
+          I.READ_AT,
+          I.INQUIRY_TYPE AS USER_TYPE,
+          P.PROPERTY_NAME
+      FROM INQUIRY_TBL I
+      LEFT JOIN PROPERTY_TBL P ON I.PROPERTY_ID = P.PROPERTY_NO
+      WHERE I.USER_ID = #{userId}
+        AND I.INQUIRY_TYPE = 'REALTOR'
+        AND I.DELETE_YN = 'N'
       ORDER BY 
-          CASE WHEN READ_YN = 'N' THEN 0 ELSE 1 END,
-          CREATED_AT DESC
+          CASE WHEN I.READ_YN = 'N' THEN 0 ELSE 1 END,
+          I.CREATED_AT DESC
   </select>
 
   <!-- 등록 -->
@@ -140,10 +159,12 @@
      WHERE INQUIRY_ID = #{inquiryId}
   </update>
   
+  <!-- 중개사별 문의 조회 -->
   <select id="selectInquiriesByRealtorId" parameterType="string" resultMap="InquiryMap">
         SELECT 
             I.*,
-            P.PROPERTY_NAME
+            P.PROPERTY_NAME,
+            I.INQUIRY_TYPE AS USER_TYPE
         FROM INQUIRY_TBL I
         LEFT JOIN PROPERTY_TBL P ON I.PROPERTY_ID = P.PROPERTY_NO
         WHERE I.REALTOR_ID = #{value}

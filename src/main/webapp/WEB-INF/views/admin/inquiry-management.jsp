@@ -192,6 +192,17 @@
       border-color: #667eea;
       background: #f7fafc;
     }
+    .inquiry-item.hidden {
+      display: none;
+    }
+    /* 중개사 문의 강조 */
+    .inquiry-item.realtor {
+      border-color: #f687b3;
+      background: #fff5f7;
+    }
+    .inquiry-item.realtor .inquiry-header {
+      background: #fff5f7;
+    }
 
     /* 문의 헤더 */
     .inquiry-header {
@@ -251,6 +262,7 @@
       font-weight: 600;
       margin-right: 10px;
     }
+    /* 문의 타입별 색상 */
     .type-general {
       background: #e0e7ff;
       color: #667eea;
@@ -262,6 +274,31 @@
     .type-contract {
       background: #feebc8;
       color: #7c2d12;
+    }
+    .type-admin {
+      background: #e0e7ff;
+      color: #667eea;
+    }
+    /* 카테고리별 색상 */
+    .category-general {
+      background: #bee3f8;
+      color: #2c5282;
+    }
+    .category-suggestion {
+      background: #d9f99d;
+      color: #365314;
+    }
+    .category-report {
+      background: #fecaca;
+      color: #991b1b;
+    }
+    .category-etc {
+      background: #e9d5ff;
+      color: #6b21a8;
+    }
+    .type-realtor {
+      background: #c6f6d5;
+      color: #22543d;
     }
 
     .inquiry-title {
@@ -413,6 +450,7 @@
       color: #2d3748;
       font-size: 14px;
       line-height: 1.6;
+      white-space: pre-wrap;
     }
 
     /* 푸터 */
@@ -536,40 +574,58 @@
       </div>
 
       <!-- 필터 섹션 -->
-      <div class="filter-section">
+		<div class="filter-section">
         <div class="filter-group">
           <span class="filter-label">상태</span>
-          <select class="filter-select">
-            <option>전체</option>
-            <option>미답변</option>
-            <option>답변완료</option>
+          <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+            <option value="">전체</option>
+            <option value="PENDING">미답변</option>
+            <option value="ANSWERED">답변완료</option>
           </select>
         </div>
+        
         <div class="filter-group">
-          <span class="filter-label">문의유형</span>
-          <select class="filter-select">
-            <option>전체</option>
-            <option>일반문의</option>
-            <option>건의사항</option>
-            <option>허위매물신고</option>
-            <option>계약문의</option>
-            <option>기타</option>
+          <span class="filter-label">대상</span>
+          <%-- ▼▼▼ [수정됨] onchange 이벤트 변경 ▼▼▼ --%>
+          <select class="filter-select" id="typeFilter" onchange="onTypeFilterChange()">
+            <option value="">전체</option>
+            <option value="ADMIN">관리자 문의</option>
+            <option value="REALTOR">중개사 문의</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <span class="filter-label">카테고리</span>
+          <select class="filter-select" id="categoryFilter" onchange="applyFilters()">
+            <option value="">전체</option>
+            <%-- ▼▼▼ [수정됨] data-type 속성 추가 ▼▼▼ --%>
+            <option value="일반문의" data-type="ADMIN">일반문의</option>
+            <option value="건의사항" data-type="ADMIN">건의사항</option>
+            <option value="허위매물신고" data-type="ADMIN">허위매물신고</option>
+            <option value="VISIT" data-type="REALTOR">방문 문의</option>
+            <option value="PRICE" data-type="REALTOR">가격 문의</option>
+            <option value="CONTRACT" data-type="REALTOR">계약 문의</option>
+            <option value="기타" data-type="ADMIN">기타</option>
           </select>
         </div>
         <div class="filter-group">
           <span class="filter-label">정렬</span>
-          <select class="filter-select">
-            <option>최신순</option>
-            <option>오래된순</option>
-            <option>미답변 우선</option>
+          <select class="filter-select" id="sortFilter" onchange="applyFilters()">
+            <option value="latest">최신순</option>
+            <option value="oldest">오래된순</option>
+            <option value="pending">미답변 우선</option>
           </select>
         </div>
       </div>
 
       <!-- 문의 목록 -->
-      <ul class="inquiry-list">
+      <ul class="inquiry-list" id="inquiryList">
         <c:forEach var="inquiry" items="${inquiryList}" varStatus="status">
-          <li class="inquiry-item ${inquiry.status == 'PENDING' ? 'new' : ''}">
+          <li class="inquiry-item ${inquiry.status == 'PENDING' ? 'new' : ''}" 
+		    data-status="${inquiry.status}"
+		    data-category="${inquiry.category}"
+		    data-type="${inquiry.inquiryType}"
+		    data-created="${inquiry.createdAt.time}">
             <div class="inquiry-header" onclick="toggleInquiry(this)">
               <div class="inquiry-left">
                 <div class="inquiry-user-info">
@@ -577,7 +633,9 @@
                     ${inquiry.userName != null ? inquiry.userName.substring(0,1) : 'U'}
                   </div>
                   <div class="inquiry-user-detail">
-                    <h3>${inquiry.userName != null ? inquiry.userName : '알 수 없음'} 님</h3>
+                    <h3>
+                      ${inquiry.userName != null ? inquiry.userName : '알 수 없음'} 님
+                    </h3>
                     <div class="inquiry-meta">
                       <span><i class="fa-solid fa-user"></i> ${inquiry.userId}</span>
                       <span><i class="fa-solid fa-clock"></i> 
@@ -587,12 +645,55 @@
                   </div>
                 </div>
                 <div>
-                  <span class="inquiry-type type-${inquiry.inquiryType == 'GENERAL' ? 'general' : inquiry.inquiryType == 'PROPERTY' ? 'property' : 'contract'}">
-                    ${inquiry.inquiryType == 'GENERAL' ? '일반문의' : inquiry.inquiryType == 'PROPERTY' ? '매물문의' : '계약문의'}
-                  </span>
+				<c:choose>
+				  <c:when test="${inquiry.inquiryType == 'GENERAL'}">
+				    <span class="inquiry-type type-general">일반문의</span>
+				  </c:when>
+				  <c:when test="${inquiry.inquiryType == 'PROPERTY'}">
+				    <span class="inquiry-type type-property">매물문의</span>
+				  </c:when>
+				  <c:when test="${inquiry.inquiryType == 'CONTRACT'}">
+				    <span class="inquiry-type type-contract">계약문의</span>
+				  </c:when>
+				  <c:when test="${inquiry.inquiryType == 'REALTOR'}">
+				    <span class="inquiry-type type-realtor"><i class="fa-solid fa-user-tie"></i> 중개사문의</span>
+				  </c:when>
+				  <c:when test="${inquiry.inquiryType == 'ADMIN'}">
+				    <span class="inquiry-type type-admin"><i class="fa-solid fa-user-shield"></i> 관리자문의</span>
+				  </c:when>
+				</c:choose>
+                  
                   <c:if test="${not empty inquiry.category}">
-                    <span class="inquiry-type type-general">${inquiry.category}</span>
-                  </c:if>
+				  <c:choose>
+				    <%-- 관리자 문의 카테고리 --%>
+				    <c:when test="${inquiry.category == '일반문의'}">
+				      <span class="inquiry-type category-general">${inquiry.category}</span>
+				    </c:when>
+				    <c:when test="${inquiry.category == '건의사항'}">
+				      <span class="inquiry-type category-suggestion">${inquiry.category}</span>
+				    </c:when>
+				    <c:when test="${inquiry.category == '허위매물신고'}">
+				      <span class="inquiry-type category-report">${inquiry.category}</span>
+				    </c:when>
+				    
+				    <%-- ▼▼▼ [수정됨] 중개사 문의 카테고리 한글화 ▼▼▼ --%>
+				    <c:when test="${inquiry.category == 'VISIT'}">
+				      <span class="inquiry-type category-general">방문 문의</span>
+				    </c:when>
+				    <c:when test="${inquiry.category == 'PRICE'}">
+				      <span class="inquiry-type category-general">가격 문의</span>
+				    </c:when>
+				    <c:when test="${inquiry.category == 'CONTRACT'}">
+				      <span class="inquiry-type category-general">계약 문의</span>
+				    </c:when>
+				    <%-- ▲▲▲ [수정됨] 중개사 문의 카TEGORY 한글화 ▲▲▲ --%>
+				    
+				    <%-- 기타 카테고리 --%>
+				    <c:otherwise>
+				      <span class="inquiry-type category-etc">${inquiry.category}</span>
+				    </c:otherwise>
+				  </c:choose>
+				</c:if>
                 </div>
                 <div class="inquiry-title">${inquiry.title}</div>
                 <div class="inquiry-content">
@@ -610,36 +711,60 @@
                 </c:if>
               </div>
             </div>
-            <div class="inquiry-body">
+			  <div class="inquiry-body">
               <div class="inquiry-divider"></div>
               
               <c:choose>
+                <%-- 1. 미답변(PENDING) 상태일 때 --%>
                 <c:when test="${inquiry.status == 'PENDING'}">
-                  <!-- 답변 작성 폼 -->
-                  <div class="reply-section">
-                    <div class="reply-title">
-                      <i class="fa-solid fa-pen"></i> 답변 작성
-                    </div>
-                    <form action="${pageContext.request.contextPath}/admin/inquiry-answer/${inquiry.inquiryId}" 
-                          method="post" 
-                          onsubmit="return validateAnswer(this)">
-                      <textarea name="answer" 
-                                class="reply-textarea" 
-                                placeholder="고객님께 답변을 작성하세요..."
-                                required></textarea>
-                      <div class="reply-actions">
-                        <button type="button" class="btn-cancel" onclick="event.stopPropagation(); hideReplyForm(this)">
-                          취소
-                        </button>
-                        <button type="submit" class="btn-submit">
-                          <i class="fa-solid fa-paper-plane"></i> 답변 전송
-                        </button>
+                  
+                  <%-- 1-1. 미답변이면서 '관리자 문의(ADMIN)'일 때만 답변 폼 표시 --%>
+                  <c:choose>
+                    <c:when test="${inquiry.inquiryType == 'ADMIN'}">
+                      <div class="reply-section">
+                        <div class="reply-title">
+                          <i class="fa-solid fa-pen"></i> 답변 작성
+                        </div>
+                        <form action="${pageContext.request.contextPath}/admin/inquiry-answer/${inquiry.inquiryId}" 
+                              method="post" 
+                              onsubmit="return validateAnswer(this)">
+                          <textarea name="answer" 
+                                    class="reply-textarea" 
+                                    placeholder="고객님께 답변을 작성하세요..."
+                                    required></textarea>
+                          <div class="reply-actions">
+                            <button type="button" class="btn-cancel" onclick="event.stopPropagation(); hideReplyForm(this)">
+                              취소
+                            </button>
+                            <button type="submit" class="btn-submit">
+                              <i class="fa-solid fa-paper-plane"></i> 답변 전송
+                            </button>
+                          </div>
+                        </form>
                       </div>
-                    </form>
-                  </div>
+                    </c:when>
+                    
+                    <%-- 1-2. 미답변이면서 '중개사 문의(REALTOR)' 등일 때 (여기가 추가된 부분) --%>
+                    <c:otherwise>
+                      <div style="background: #fff3cd; padding: 15px; border-radius: 6px; text-align: center; color: #856404; border: 1px solid #ffeaa7;">
+                          <i class="fa-solid fa-hourglass-half"></i> 
+                          
+                          <c:choose>
+                            <c:when test="${inquiry.inquiryType == 'REALTOR'}">
+                              중개사 답변을 기다리고 있습니다. (관리자가 답변할 수 없습니다)
+                            </c:when>
+                            <c:otherwise>
+                              답변을 기다리고 있습니다.
+                            </c:otherwise>
+                          </c:choose>
+                      </div>
+                    </c:otherwise>
+                  </c:choose>
+
                 </c:when>
+                
+                <%-- 2. 답변완료(ANSWERED) 상태일 때 --%>
                 <c:otherwise>
-                  <!-- 답변 완료 -->
                   <div class="answered-content">
                     <div class="answered-header">
                       <span class="answered-title">
@@ -656,6 +781,7 @@
                 </c:otherwise>
               </c:choose>
             </div>
+            
           </li>
         </c:forEach>
         
@@ -677,7 +803,8 @@
 
   <script>
     function toggleInquiry(element) {
-      element.classList.toggle('expanded');
+      const inquiryItem = element.closest('.inquiry-item');
+      inquiryItem.classList.toggle('expanded');
     }
 
     function showReplyForm(button) {
@@ -745,6 +872,96 @@
         setTimeout(() => alert.remove(), 500);
       });
     }, 3000);
+    
+    // 관리자, 중개사에 따라 카테고리 값을 바뀌게 하는 함수
+    function onTypeFilterChange() {
+        const typeFilter = document.getElementById('typeFilter');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const selectedType = typeFilter.value; // "ADMIN", "REALTOR", ""
+        
+        const categoryOptions = categoryFilter.querySelectorAll('option');
+        
+        // 현재 선택된 카테고리 값이 숨겨지는지 확인하기 위한 변수
+        let currentCategoryValue = categoryFilter.value;
+        let isCurrentCategoryVisible = false;
+
+        // 1번 인덱스부터 시작 (0번 "전체" 옵션은 건너뜀)
+        for (let i = 1; i < categoryOptions.length; i++) {
+          const option = categoryOptions[i];
+          const optionType = option.dataset.type; // "ADMIN" 또는 "REALTOR"
+          
+          // '대상'이 "전체"이거나, 옵션 타입이 '대상'의 값과 일치하면 보여줌
+          if (selectedType === "" || optionType === selectedType) {
+            option.style.display = ""; // 보이기
+            if (option.value === currentCategoryValue) {
+              isCurrentCategoryVisible = true;
+            }
+          } else {
+            option.style.display = "none"; // 숨기기
+          }
+        }
+        
+        // 만약 이전에 선택했던 카테고리가 숨겨졌다면, 카테고리 선택을 "전체"로 리셋
+        if (!isCurrentCategoryVisible && currentCategoryValue !== "") {
+          categoryFilter.value = "";
+        }
+        
+        // 마지막으로, 리스트 필터링 적용
+        applyFilters();
+      }
+    
+    // 필터 적용 함수
+	function applyFilters() {
+	  const statusFilter = document.getElementById('statusFilter').value;
+	  const typeFilter = document.getElementById('typeFilter').value; // [추가]
+	  const categoryFilter = document.getElementById('categoryFilter').value;
+	  const sortFilter = document.getElementById('sortFilter').value;
+	  
+	  const inquiryItems = Array.from(document.querySelectorAll('.inquiry-item'));
+	  
+	  // 필터링
+	  inquiryItems.forEach(item => {
+	    let showItem = true;
+	    
+	    if (statusFilter && item.dataset.status !== statusFilter) {
+	      showItem = false;
+	    }
+	    
+	    if (typeFilter && item.dataset.type !== typeFilter) { // [추가]
+	      showItem = false;
+	    }
+	    
+	    if (categoryFilter && item.dataset.category !== categoryFilter) {
+	      showItem = false;
+	    }
+	    
+	    if (showItem) {
+	      item.classList.remove('hidden');
+	    } else {
+	      item.classList.add('hidden');
+	    }
+	  });
+	  
+	  // 정렬 (기존과 동일)
+	  const visibleItems = inquiryItems.filter(item => !item.classList.contains('hidden'));
+	  
+	  if (sortFilter === 'latest') {
+	    visibleItems.sort((a, b) => parseInt(b.dataset.created) - parseInt(a.dataset.created));
+	  } else if (sortFilter === 'oldest') {
+	    visibleItems.sort((a, b) => parseInt(a.dataset.created) - parseInt(b.dataset.created));
+	  } else if (sortFilter === 'pending') {
+	    visibleItems.sort((a, b) => {
+	      if (a.dataset.status === 'PENDING' && b.dataset.status !== 'PENDING') return -1;
+	      if (a.dataset.status !== 'PENDING' && b.dataset.status === 'PENDING') return 1;
+	      return parseInt(b.dataset.created) - parseInt(a.dataset.created);
+	    });
+	  }
+	  
+	  const inquiryList = document.getElementById('inquiryList');
+	  visibleItems.forEach(item => {
+	    inquiryList.appendChild(item);
+	  });
+	}
   </script>
 </body>
 </html>

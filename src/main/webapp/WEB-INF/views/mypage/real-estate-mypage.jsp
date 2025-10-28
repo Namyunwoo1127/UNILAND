@@ -442,7 +442,6 @@
     </style>
 </head>
 <body>
-    <!-- 헤더 포함 -->
     <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 
     <div class="container">
@@ -450,12 +449,10 @@
             <div class="tab-item active" data-tab="mypage">마이페이지</div>
             <div class="tab-item" data-tab="contract">계약 현황</div>
             <div class="tab-item" data-tab="wishlist">찜매물</div>
-            <div class="tab-item" data-tab="recent">최근 본 매물</div>
             <div class="tab-item" data-tab="inquiries">내 문의내역</div>
         </div>
         
         <div class="content-area">
-            <!-- 마이페이지 -->
             <div class="content-section active" id="mypage">
                 <div class="section-title">마이페이지</div>
                 <div class="profile-section">
@@ -502,7 +499,6 @@
                 </div>
             </div>
             
-            <!-- 계약 현황 -->
             <div class="content-section" id="contract">
                 <div class="section-title">계약 현황</div>
 
@@ -538,7 +534,6 @@
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
-                        <!-- 샘플 데이터 -->
                         <div class="contract-card">
                     <div class="contract-status">진행중</div>
                     <div class="contract-title">강남구 역삼동 아파트</div>
@@ -596,7 +591,6 @@
                 </c:choose>
             </div>
             
-            <!-- 찜매물 -->
             <div class="content-section" id="wishlist">
                 <div class="section-title">찜매물</div>
                 <div class="card-grid">
@@ -620,7 +614,6 @@
                             </c:forEach>
                         </c:when>
                         <c:otherwise>
-                            <!-- 샘플 데이터 -->
                             <div class="card">
                                 <div class="card-image">매물 이미지</div>
                                 <div class="card-title">강남구 역삼동 아파트</div>
@@ -655,53 +648,7 @@
                     </c:choose>
                 </div>
             </div>
-            
-            <!-- 최근 본 매물 -->
-            <div class="content-section" id="recent">
-                <div class="section-title">최근 본 매물</div>
-                <div class="card-grid">
-                    <c:choose>
-                        <c:when test="${not empty recentProperties}">
-                            <c:forEach var="property" items="${recentProperties}">
-                                <div class="card" onclick="location.href='${pageContext.request.contextPath}/property/${property.propertyId}'">
-                                    <div class="card-image">
-                                        <c:choose>
-                                            <c:when test="${not empty property.imageUrl}">
-                                                <img src="${pageContext.request.contextPath}${property.imageUrl}" alt="${property.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
-                                            </c:when>
-                                            <c:otherwise>
-                                                매물 이미지
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                    <div class="card-title">${property.title}</div>
-                                    <div class="card-desc">${property.area}㎡ | ${property.priceInfo}</div>
-                                </div>
-                            </c:forEach>
-                        </c:when>
-                        <c:otherwise>
-                            <!-- 샘플 데이터 -->
-                            <div class="card">
-                                <div class="card-image">매물 이미지</div>
-                                <div class="card-title">강동구 천호동 아파트</div>
-                                <div class="card-desc">전용 99㎡ | 매매 8억</div>
-                            </div>
-                            <div class="card">
-                                <div class="card-image">매물 이미지</div>
-                                <div class="card-title">노원구 상계동 아파트</div>
-                                <div class="card-desc">전용 74㎡ | 매매 7.5억</div>
-                            </div>
-                            <div class="card">
-                                <div class="card-image">매물 이미지</div>
-                                <div class="card-title">은평구 진관동 빌라</div>
-                                <div class="card-desc">전용 54㎡ | 월세 600/40</div>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-            </div>
-            
-            <!-- 내 문의내역 -->
+                        
             <div class="content-section" id="inquiries">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                     <div class="section-title" style="margin-bottom: 0;">내 문의내역</div>
@@ -710,7 +657,6 @@
                     </button>
                 </div>
                 
-                <!-- 탭 메뉴 -->
                 <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
                     <button class="inquiry-tab active" data-inquiry-type="all" onclick="switchInquiryTab('all')">
                         전체 문의
@@ -728,20 +674,19 @@
                         <c:forEach var="inquiry" items="${inquiries}">
                             <div class="list-item inquiry-item-wrapper" 
                                  data-inquiry-type="${inquiry.inquiryType}"
+                                 data-created="${inquiry.createdAt.time}"
                                  style="cursor: pointer; align-items: flex-start;" 
                                  onclick="toggleInquiryDetail(this)">
                                 <div style="flex: 1;">
                                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                                         <div class="list-title">${inquiry.title}</div>
                                         
-                                        <!-- 카테고리 배지 (관리자 문의인 경우) -->
                                         <c:if test="${inquiry.inquiryType == 'ADMIN' && not empty inquiry.category}">
                                             <span style="padding: 4px 8px; background: #f0f0f0; color: #666; border-radius: 4px; font-size: 12px;">
                                                 ${inquiry.category}
                                             </span>
                                         </c:if>
                                         
-                                        <!-- 문의 타입 배지 -->
                                         <c:choose>
                                             <c:when test="${inquiry.inquiryType == 'ADMIN'}">
                                                 <span style="padding: 4px 8px; background: #e0e7ff; color: #667eea; border-radius: 4px; font-size: 12px; font-weight: 600;">
@@ -755,9 +700,9 @@
                                             </c:otherwise>
                                         </c:choose>
                                         
-                                        <!-- 읽음 여부 배지 -->
                                         <c:if test="${inquiry.readYn == 'N'}">
-                                            <span style="padding: 4px 8px; background: #ff6b6b; color: white; border-radius: 4px; font-size: 11px; font-weight: 600;">
+                                            <%-- ▼▼▼ [수정됨] 정렬을 위한 class="new-badge" 추가 ▼▼▼ --%>
+                                            <span class="new-badge" style="padding: 4px 8px; background: #ff6b6b; color: white; border-radius: 4px; font-size: 11px; font-weight: 600;">
                                                 NEW
                                             </span>
                                         </c:if>
@@ -768,7 +713,6 @@
                                         <fmt:formatDate value="${inquiry.createdAt}" pattern="yyyy.MM.dd HH:mm"/>
                                     </div>
                                     
-                                    <!-- 중개사 정보 표시 (중개사 문의인 경우) -->
                                     <c:if test="${inquiry.inquiryType == 'REALTOR'}">
                                         <c:if test="${not empty inquiry.realtorId}">
                                             <div style="margin-top: 8px; font-size: 13px; color: #666;">
@@ -777,20 +721,17 @@
                                         </c:if>
                                         <c:if test="${not empty inquiry.propertyId}">
                                             <div style="margin-top: 4px; font-size: 13px; color: #666;">
-                                                <i class="fa-solid fa-home"></i> 매물번호: ${inquiry.propertyId}
+                                                <i class="fa-solid fa-home"></i> 매물이름: ${inquiry.propertyName}
                                             </div>
                                         </c:if>
                                     </c:if>
                                     
-                                    <!-- 문의 상세 내용 (토글) -->
                                     <div class="inquiry-detail" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
                                         <div style="margin-bottom: 20px;">
                                             <div style="font-weight: 600; color: #333; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
                                                 <i class="fa-solid fa-comment-dots"></i> 문의 내용
                                             </div>
-                                            <div style="color: #666; line-height: 1.8; white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 6px;">
-												${inquiry.content}
-                                            </div>
+                                            <div style="color: #666; line-height: 1.8; white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 6px;">${inquiry.content}</div>
                                         </div>
                                         
                                         <c:choose>
@@ -806,9 +747,7 @@
                                                             <fmt:formatDate value="${inquiry.answeredAt}" pattern="yyyy.MM.dd HH:mm"/>
                                                         </div>
                                                     </div>
-                                                    <div style="color: #333; line-height: 1.8; white-space: pre-wrap;">
-														${inquiry.answer}
-                                                    </div>
+                                                    <div style="color: #333; line-height: 1.8; white-space: pre-wrap;">${inquiry.answer}</div>
                                                 </div>
                                             </c:when>
                                             <c:otherwise>
@@ -833,7 +772,6 @@
                             </div>
                         </c:forEach>
                         
-                        <!-- 필터링 결과가 없을 때 메시지 -->
                         <div id="no-admin-inquiry" style="display: none; text-align: center; padding: 60px 20px; background: #fafafa; border-radius: 8px;">
                             <div style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;">
                                 <i class="fa-solid fa-inbox"></i>
@@ -862,7 +800,6 @@
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <!-- 문의 내역이 없을 때 -->
                         <div style="text-align: center; padding: 80px 20px; background: #fafafa; border-radius: 8px;">
                             <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;">
                                 <i class="fa-solid fa-comments"></i>
@@ -883,7 +820,6 @@
         </div>
     </div>
     
-    <!-- 회원정보 수정 모달 -->
     <div class="modal" id="editModal">
         <div class="modal-content">
             <div class="modal-title">회원 정보 수정</div>
@@ -936,7 +872,6 @@
         </div>
     </div>
     
-    <!-- 푸터 포함 -->
     <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
 
     <script>
@@ -997,6 +932,7 @@
             }
         });
         
+        // ▼▼▼ [수정됨] 정렬 로직이 포함된 새 함수 ▼▼▼
         // 문의 타입별 필터링
         function switchInquiryTab(type) {
             // 탭 버튼 활성화
@@ -1005,36 +941,66 @@
             });
             document.querySelector('[data-inquiry-type="' + type + '"]').classList.add('active');
             
-            // 문의 항목 필터링
-            const inquiryItems = document.querySelectorAll('.inquiry-item-wrapper');
-            let hasVisibleItem = false;
+            // 1. 모든 문의 항목을 배열로 변환
+            const inquiryItems = Array.from(document.querySelectorAll('.inquiry-item-wrapper'));
             
-            inquiryItems.forEach(item => {
+            // 2. 필터링 로직 (보여줄 항목만 필터링)
+            const visibleItems = inquiryItems.filter(item => {
                 const itemType = item.getAttribute('data-inquiry-type');
                 
                 if (type === 'all') {
-                    item.style.display = 'flex';
-                    hasVisibleItem = true;
+                    item.style.display = 'flex'; // 우선 보이도록 설정
+                    return true;
                 } else if (type === 'admin' && itemType === 'ADMIN') {
                     item.style.display = 'flex';
-                    hasVisibleItem = true;
+                    return true;
                 } else if (type === 'realtor' && itemType === 'REALTOR') {
                     item.style.display = 'flex';
-                    hasVisibleItem = true;
+                    return true;
                 } else {
-                    item.style.display = 'none';
+                    item.style.display = 'none'; // 숨김
+                    return false;
                 }
             });
+
+            // 3. 정렬 로직 (안읽음 우선, 그 다음 최신순)
+            visibleItems.sort((a, b) => {
+                // 3-1. 안 읽음 여부 (NEW 뱃지) 확인
+                const isANew = a.querySelector('.new-badge') !== null;
+                const isBNew = b.querySelector('.new-badge') !== null;
+                // 3-2. 생성 시간 (timestamp) 확인
+                const timeA = parseInt(a.dataset.created);
+                const timeB = parseInt(b.dataset.created);
+
+                // 3-3. 정렬 규칙 적용
+                if (isANew && !isBNew) return -1; // a(안읽음)가 b(읽음)보다 위로
+                if (!isANew && isBNew) return 1;  // b(안읽음)가 a(읽음)보다 위로
+                
+                // 3-4. 둘 다 안읽었거나 둘 다 읽었으면, 최신순 (숫자가 큰 것)으로
+                return timeB - timeA;
+            });
+
+            // 4. 정렬된 순서대로 DOM에 다시 삽입
+            // inquiryItems 중 첫 번째 요소의 부모를 찾아 그 안에 정렬된 항목을 추가합니다.
+            if (inquiryItems.length > 0) {
+	            const inquiryListContainer = inquiryItems[0].parentNode;
+	            if (inquiryListContainer) {
+	                 visibleItems.forEach(item => {
+	                    inquiryListContainer.appendChild(item);
+	                });
+	            }
+            }
             
             // 빈 상태 메시지 표시/숨김
             const noAdminMsg = document.getElementById('no-admin-inquiry');
             const noRealtorMsg = document.getElementById('no-realtor-inquiry');
             
+            // visibleItems.length를 기준으로 변경
             if (noAdminMsg) {
-                noAdminMsg.style.display = (type === 'admin' && !hasVisibleItem) ? 'block' : 'none';
+                noAdminMsg.style.display = (type === 'admin' && visibleItems.length === 0) ? 'block' : 'none';
             }
             if (noRealtorMsg) {
-                noRealtorMsg.style.display = (type === 'realtor' && !hasVisibleItem) ? 'block' : 'none';
+                noRealtorMsg.style.display = (type === 'realtor' && visibleItems.length === 0) ? 'block' : 'none';
             }
         }
 
@@ -1051,6 +1017,41 @@
                 button.innerHTML = '<i class="fa-solid fa-chevron-down"></i> 상세보기';
             }
         }
+        
+        // 페이지 로드 시 '전체' 탭 정렬 강제 실행
+        // URL 파라미터나 다른 로직으로 특정 탭이 활성화될 수 있으므로,
+        // 현재 활성화된 탭 기준으로 정렬을 한 번 실행해줍니다.
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeTab = document.querySelector('.inquiry-tab.active');
+            if (activeTab) {
+                switchInquiryTab(activeTab.dataset.inquiryType);
+            } else {
+                // 기본값 (첫 번째 탭)
+                switchInquiryTab('all');
+            }
+            
+            // URL 파라미터로 탭 활성화 (예: ?tab=inquiries)
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab');
+            if (tabParam) {
+                const targetTab = document.querySelector(`.tab-item[data-tab="${tabParam}"]`);
+                if (targetTab) {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+
+                    targetTab.classList.add('active');
+                    document.getElementById(tabParam).classList.add('active');
+                    
+                    // 만약 '내 문의내역' 탭이 활성화된 거라면, 내부 탭 정렬도 실행
+                    if (tabParam === 'inquiries') {
+						const activeInquiryTab = document.querySelector('.inquiry-tab.active');
+						if(activeInquiryTab) {
+							switchInquiryTab(activeInquiryTab.dataset.inquiryType);
+						}
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
