@@ -439,8 +439,79 @@ public class RealtorController {
     
     /** ✅ 매물 수정 페이지 */
     @GetMapping("/property-edit")
-    public String showPropertyEdit() {
+    public String showPropertyEdit(@RequestParam("id") int propertyNo, HttpSession session, Model model) {
+        Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+
+        if (loginRealtor == null) {
+            return "redirect:/realtor/realtor-login";
+        }
+
+        // 매물 정보 조회
+        Property property = propertyService.selectPropertyById(propertyNo);
+
+        if (property == null) {
+            return "redirect:/realtor/property-management?error=notfound";
+        }
+
+        // 해당 매물이 로그인한 중개사의 매물인지 확인
+        if (!property.getRealtorId().equals(loginRealtor.getRealtorId())) {
+            return "redirect:/realtor/property-management?error=unauthorized";
+        }
+
+        // 매물 옵션 조회
+        List<PropertyOption> options = propertyService.selectPropertyOptions(propertyNo);
+
+        // 매물 이미지 조회
+        List<PropertyImg> images = propertyService.selectPropertyImages(propertyNo);
+
+        model.addAttribute("property", property);
+        model.addAttribute("options", options);
+        model.addAttribute("images", images);
+
         return "realtor/property-edit";
+    }
+
+    /** ✅ 매물 수정 처리 (POST) */
+    @PostMapping("/property-edit")
+    public String updateProperty(
+            @RequestParam("id") int propertyNo,
+            @RequestParam("status") String status,
+            @RequestParam("propertyName") String propertyName,
+            @RequestParam("deposit") int deposit,
+            @RequestParam("monthlyRent") int monthlyRent,
+            @RequestParam(value = "maintenanceFee", required = false, defaultValue = "0") int maintenanceFee,
+            @RequestParam(value = "availableDate", required = false) String availableDate,
+            @RequestParam("description") String description,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+
+        if (loginRealtor == null) {
+            return "redirect:/realtor/realtor-login";
+        }
+
+        // 매물 정보 업데이트
+        Map<String, Object> params = new HashMap<>();
+        params.put("propertyNo", propertyNo);
+        params.put("status", status);
+        params.put("propertyName", propertyName);
+        params.put("deposit", deposit);
+        params.put("monthlyRent", monthlyRent);
+        params.put("maintenanceFee", maintenanceFee);
+        params.put("availableDate", availableDate);
+        params.put("description", description);
+        params.put("realtorId", loginRealtor.getRealtorId());
+
+        int result = propertyService.updateProperty(params);
+
+        if (result > 0) {
+            redirectAttributes.addFlashAttribute("message", "매물 수정이 완료되었습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "매물 수정에 실패했습니다.");
+        }
+
+        return "redirect:/realtor/property-management";
     }
 
     /** ✅ 로그아웃 */

@@ -299,4 +299,19 @@
         </where>
   </sql>
 
+  <!-- 매물 정보 수정 -->
+  <update id="updateProperty" parameterType="map">
+    UPDATE PROPERTY_TBL
+    SET STATUS = #{status},
+        PROPERTY_NAME = #{propertyName},
+        DEPOSIT = #{deposit},
+        MONTHLY_RENT = #{monthlyRent},
+        MAINTENANCE_FEE = #{maintenanceFee},
+        AVAILABLE_DATE = #{availableDate},
+        DESCRIPTION = #{description},
+        UPDATED_AT = SYSTIMESTAMP
+    WHERE PROPERTY_NO = #{propertyNo}
+      AND REALTOR_ID = #{realtorId}
+  </update>
+
 </mapper>
