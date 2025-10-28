@@ -494,18 +494,19 @@
             <div class="info-box">
                 <div class="info-box-content">
                     <div class="info-box-left">
-                        <h3>📌 신촌역 5분거리 풀옵션 원룸</h3>
+                        <h3>📌 ${property.propertyName}</h3>
                         <div class="info-stats">
-                            <span>📅 등록일: 2024.01.15</span>
-                            <span>👁️ 조회수: 142</span>
-                            <span>❤️ 찜: 23</span>
-                            <span>💬 문의: 5건</span>
+                            <span>📅 등록일: <fmt:formatDate value="${property.createdAt}" pattern="yyyy.MM.dd"/></span>
+                            <span>👁️ 조회수: ${property.views != null ? property.views : 0}</span>
+                            <span>❤️ 찜: ${property.likes != null ? property.likes : 0}</span>
+                            <span>💬 문의: 0건</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <form class="form-container">
+            <form class="form-container" action="${pageContext.request.contextPath}/realtor/property-edit" method="POST">
+                <input type="hidden" name="id" value="${property.propertyNo}">
                 <div class="form-section">
                     <h2 class="section-title">
                         <span class="section-icon">🏷️</span>
@@ -514,10 +515,10 @@
                     <div class="form-row single">
                         <div class="form-group">
                             <label class="form-label">상태 변경<span class="required">*</span></label>
-                            <select class="form-select">
-                                <option selected>판매중</option>
-                                <option>예약중</option>
-                                <option>거래완료</option>
+                            <select class="form-select" name="status">
+                                <option value="ACTIVE" ${property.status == 'ACTIVE' ? 'selected' : ''}>판매중</option>
+                                <option value="RESERVED" ${property.status == 'RESERVED' ? 'selected' : ''}>예약중</option>
+                                <option value="COMPLETED" ${property.status == 'COMPLETED' ? 'selected' : ''}>거래완료</option>
                             </select>
                         </div>
                     </div>
@@ -531,7 +532,7 @@
                     <div class="form-row single">
                         <div class="form-group">
                             <label class="form-label">매물 제목<span class="required">*</span></label>
-                            <input type="text" class="form-input" value="신촌역 5분거리 풀옵션 원룸">
+                            <input type="text" class="form-input" name="propertyName" value="${property.propertyName}">
                         </div>
                     </div>
                 </div>
@@ -545,14 +546,14 @@
                         <div class="form-group">
                             <label class="form-label">보증금<span class="required">*</span></label>
                             <div class="input-suffix">
-                                <input type="number" class="form-input" value="500">
+                                <input type="number" class="form-input" name="deposit" value="${property.deposit}">
                                 <span class="suffix-text">만원</span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">월세<span class="required">*</span></label>
                             <div class="input-suffix">
-                                <input type="number" class="form-input" value="55">
+                                <input type="number" class="form-input" name="monthlyRent" value="${property.monthlyRent}">
                                 <span class="suffix-text">만원</span>
                             </div>
                         </div>
@@ -561,13 +562,13 @@
                         <div class="form-group">
                             <label class="form-label">관리비</label>
                             <div class="input-suffix">
-                                <input type="number" class="form-input" value="5">
+                                <input type="number" class="form-input" name="maintenanceFee" value="${property.maintenanceFee != null ? property.maintenanceFee : 0}">
                                 <span class="suffix-text">만원</span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">입주가능일</label>
-                            <input type="date" class="form-input" value="2024-03-01">
+                            <input type="text" class="form-input" name="availableDate" value="${property.availableDate}">
                         </div>
                     </div>
                 </div>
@@ -577,72 +578,75 @@
                         <span class="section-icon">✨</span>
                         옵션 정보
                     </h2>
+
+                    <c:set var="option" value="${not empty options ? options[0] : null}" />
+
                     <div class="form-group">
                         <label class="form-label">냉난방</label>
                         <div class="option-grid">
-                            <input type="checkbox" id="opt1" class="option-checkbox" checked>
+                            <input type="checkbox" id="opt1" name="airConditioner" value="Y" class="option-checkbox" ${option != null && option.airConditioner == 'Y' ? 'checked' : ''}>
                             <label for="opt1" class="option-label">에어컨</label>
-                            <input type="checkbox" id="opt2" class="option-checkbox">
+                            <input type="checkbox" id="opt2" name="heater" value="Y" class="option-checkbox" ${option != null && option.heater == 'Y' ? 'checked' : ''}>
                             <label for="opt2" class="option-label">히터</label>
                         </div>
                     </div>
                     <div class="form-group" style="margin-top: 20px;">
                         <label class="form-label">주방</label>
                         <div class="option-grid">
-                            <input type="checkbox" id="opt3" class="option-checkbox" checked>
+                            <input type="checkbox" id="opt3" name="refrigerator" value="Y" class="option-checkbox" ${option != null && option.refrigerator == 'Y' ? 'checked' : ''}>
                             <label for="opt3" class="option-label">냉장고</label>
-                            <input type="checkbox" id="opt4" class="option-checkbox">
+                            <input type="checkbox" id="opt4" name="microwave" value="Y" class="option-checkbox" ${option != null && option.microwave == 'Y' ? 'checked' : ''}>
                             <label for="opt4" class="option-label">전자레인지</label>
-                            <input type="checkbox" id="opt5" class="option-checkbox">
+                            <input type="checkbox" id="opt5" name="induction" value="Y" class="option-checkbox" ${option != null && option.induction == 'Y' ? 'checked' : ''}>
                             <label for="opt5" class="option-label">인덕션</label>
-                            <input type="checkbox" id="opt6" class="option-checkbox">
+                            <input type="checkbox" id="opt6" name="gasStove" value="Y" class="option-checkbox" ${option != null && option.gasStove == 'Y' ? 'checked' : ''}>
                             <label for="opt6" class="option-label">가스레인지</label>
                         </div>
                     </div>
                     <div class="form-group" style="margin-top: 20px;">
                         <label class="form-label">세탁</label>
                         <div class="option-grid">
-                            <input type="checkbox" id="opt7" class="option-checkbox" checked>
+                            <input type="checkbox" id="opt7" name="washer" value="Y" class="option-checkbox" ${option != null && option.washer == 'Y' ? 'checked' : ''}>
                             <label for="opt7" class="option-label">세탁기</label>
-                            <input type="checkbox" id="opt8" class="option-checkbox">
+                            <input type="checkbox" id="opt8" name="dryer" value="Y" class="option-checkbox" ${option != null && option.dryer == 'Y' ? 'checked' : ''}>
                             <label for="opt8" class="option-label">건조기</label>
                         </div>
                     </div>
                     <div class="form-group" style="margin-top: 20px;">
                         <label class="form-label">가구</label>
                         <div class="option-grid">
-                            <input type="checkbox" id="opt9" class="option-checkbox" checked>
+                            <input type="checkbox" id="opt9" name="bed" value="Y" class="option-checkbox" ${option != null && option.bed == 'Y' ? 'checked' : ''}>
                             <label for="opt9" class="option-label">침대</label>
-                            <input type="checkbox" id="opt10" class="option-checkbox" checked>
+                            <input type="checkbox" id="opt10" name="desk" value="Y" class="option-checkbox" ${option != null && option.desk == 'Y' ? 'checked' : ''}>
                             <label for="opt10" class="option-label">책상</label>
-                            <input type="checkbox" id="opt11" class="option-checkbox">
+                            <input type="checkbox" id="opt11" name="wardrobe" value="Y" class="option-checkbox" ${option != null && option.wardrobe == 'Y' ? 'checked' : ''}>
                             <label for="opt11" class="option-label">옷장</label>
-                            <input type="checkbox" id="opt12" class="option-checkbox">
+                            <input type="checkbox" id="opt12" name="shoeRack" value="Y" class="option-checkbox" ${option != null && option.shoeRack == 'Y' ? 'checked' : ''}>
                             <label for="opt12" class="option-label">신발장</label>
                         </div>
                     </div>
                     <div class="form-group" style="margin-top: 20px;">
                         <label class="form-label">가전</label>
                         <div class="option-grid">
-                            <input type="checkbox" id="opt13" class="option-checkbox">
+                            <input type="checkbox" id="opt13" name="tv" value="Y" class="option-checkbox" ${option != null && option.tv == 'Y' ? 'checked' : ''}>
                             <label for="opt13" class="option-label">TV</label>
                         </div>
                     </div>
                     <div class="form-group" style="margin-top: 20px;">
                         <label class="form-label">시설</label>
                         <div class="option-grid">
-                            <input type="checkbox" id="opt14" class="option-checkbox">
+                            <input type="checkbox" id="opt14" name="parking" value="Y" class="option-checkbox" ${option != null && option.parking == 'Y' ? 'checked' : ''}>
                             <label for="opt14" class="option-label">주차 가능</label>
-                            <input type="checkbox" id="opt15" class="option-checkbox">
+                            <input type="checkbox" id="opt15" name="elevator" value="Y" class="option-checkbox" ${option != null && option.elevator == 'Y' ? 'checked' : ''}>
                             <label for="opt15" class="option-label">엘리베이터</label>
-                            <input type="checkbox" id="opt16" class="option-checkbox">
+                            <input type="checkbox" id="opt16" name="security" value="Y" class="option-checkbox" ${option != null && option.security == 'Y' ? 'checked' : ''}>
                             <label for="opt16" class="option-label">보안시스템</label>
                         </div>
                     </div>
                     <div class="form-group" style="margin-top: 20px;">
                         <label class="form-label">기타</label>
                         <div class="option-grid">
-                            <input type="checkbox" id="opt17" class="option-checkbox">
+                            <input type="checkbox" id="opt17" name="petAllowed" value="Y" class="option-checkbox" ${option != null && option.petAllowed == 'Y' ? 'checked' : ''}>
                             <label for="opt17" class="option-label">반려동물 가능</label>
                         </div>
                     </div>
@@ -655,8 +659,8 @@
                     </h2>
                     <div class="form-group">
                         <label class="form-label">상세 설명<span class="required">*</span></label>
-                        <textarea class="form-textarea" maxlength="1000">신촌역에서 도보 5분 거리에 위치한 풀옵션 원룸입니다. 연세대, 이화여대 도보 통학 가능하며 주변 편의시설이 우수합니다. 최근 리모델링하여 깔끔한 상태이며, 보일러 개별 난방으로 관리비 부담이 적습니다.</textarea>
-                        <div class="character-count">142 / 1000</div>
+                        <textarea class="form-textarea" name="description" maxlength="1000">${property.description}</textarea>
+                        <div class="character-count"><c:out value="${property.description != null ? property.description.length() : 0}"/> / 1000</div>
                     </div>
                 </div>
 
@@ -666,39 +670,29 @@
                         매물 사진
                     </h2>
                     <div class="photo-grid">
-                        <div class="photo-item">
-                            🏠
-                            <span class="photo-badge">대표</span>
-                            <button type="button" class="photo-remove">×</button>
-                            <div class="photo-controls">
-                                <button type="button" class="photo-control-btn">◀</button>
-                                <button type="button" class="photo-control-btn">▶</button>
-                            </div>
-                        </div>
-                        <div class="photo-item">
-                            🛋️
-                            <button type="button" class="photo-remove">×</button>
-                            <div class="photo-controls">
-                                <button type="button" class="photo-control-btn">◀</button>
-                                <button type="button" class="photo-control-btn">▶</button>
-                            </div>
-                        </div>
-                        <div class="photo-item">
-                            🍳
-                            <button type="button" class="photo-remove">×</button>
-                            <div class="photo-controls">
-                                <button type="button" class="photo-control-btn">◀</button>
-                                <button type="button" class="photo-control-btn">▶</button>
-                            </div>
-                        </div>
-                        <div class="photo-item">
-                            🚿
-                            <button type="button" class="photo-remove">×</button>
-                            <div class="photo-controls">
-                                <button type="button" class="photo-control-btn">◀</button>
-                                <button type="button" class="photo-control-btn">▶</button>
-                            </div>
-                        </div>
+                        <c:choose>
+                            <c:when test="${not empty images}">
+                                <c:forEach var="img" items="${images}" varStatus="status">
+                                    <div class="photo-item">
+                                        <img src="${pageContext.request.contextPath}${img.imgPath}" alt="매물 사진 ${status.index + 1}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <c:if test="${img.imgOrder == 0}">
+                                            <span class="photo-badge">대표</span>
+                                        </c:if>
+                                        <button type="button" class="photo-remove">×</button>
+                                        <div class="photo-controls">
+                                            <button type="button" class="photo-control-btn">◀</button>
+                                            <button type="button" class="photo-control-btn">▶</button>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="photo-item">
+                                    🏠
+                                    <span class="photo-badge">대표</span>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                         <div class="photo-item photo-add" onclick="document.getElementById('photoInput').click()">
                             ➕
                         </div>

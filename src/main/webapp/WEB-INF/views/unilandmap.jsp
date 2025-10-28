@@ -95,6 +95,44 @@
             transform: rotate(180deg);
         }
 
+        /* 매물 검색창 */
+        .property-search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .property-search-box input {
+            border: none;
+            border-bottom: 2px solid #e2e8f0;
+            outline: none;
+            font-size: 14px;
+            width: 200px;
+            padding: 8px 4px;
+            color: #2d3748;
+            background: transparent;
+            transition: border-color 0.2s;
+        }
+
+        .property-search-box input:focus {
+            border-bottom-color: #667eea;
+        }
+
+        .property-search-box input::placeholder {
+            color: #a0aec0;
+        }
+
+        .property-search-icon {
+            color: #718096;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .property-search-icon:hover {
+            color: #667eea;
+        }
+
         .user-info {
             display: flex;
             align-items: center;
@@ -1040,6 +1078,10 @@
                     <i class="fa-solid fa-sliders"></i> 조건 보기
                     <span class="arrow">▼</span>
                 </button>
+                <div class="property-search-box">
+                    <i class="fa-solid fa-search property-search-icon" onclick="searchPropertyByName()"></i>
+                    <input type="text" id="propertyNameSearch" placeholder="매물 이름 검색" onkeypress="if(event.key === 'Enter') searchPropertyByName()">
+                </div>
             </div>
             <div class="user-info">
                 <c:choose>
@@ -1381,6 +1423,9 @@
                 thumbnailPath: '${not empty property.thumbnailPath ? property.thumbnailPath : ""}',
                 studentPref: '${property.studentPref}',
                 shortCont: '${property.shortCont}',
+                contractArea: ${property.contractArea != null ? property.contractArea : 0},
+                floor: ${property.floor != null ? property.floor : 0},
+                maintenanceFee: ${property.maintenanceFee != null ? property.maintenanceFee : 0},
                 options: {
                     airConditioner: '${property.propertyOption != null ? property.propertyOption.airConditioner : "N"}',
                     heater: '${property.propertyOption != null ? property.propertyOption.heater : "N"}',
@@ -1686,6 +1731,40 @@
 
             filter.classList.toggle('active');
             btn.classList.toggle('active');
+        }
+
+        // 매물 이름 검색
+        function searchPropertyByName() {
+            const searchInput = document.getElementById('propertyNameSearch');
+            const searchText = searchInput.value.toLowerCase().trim();
+
+            if (searchText === '') {
+                alert('검색어를 입력해주세요.');
+                return;
+            }
+
+            // 검색어에 맞는 매물 필터링
+            const matchedProperties = properties.filter(property => {
+                const propertyName = property.title ? property.title.toLowerCase() : '';
+                return propertyName.includes(searchText);
+            });
+
+            if (matchedProperties.length === 0) {
+                alert('검색 결과가 없습니다.');
+                return;
+            }
+
+            // 사이드바에 검색된 매물만 표시
+            renderPropertyList(matchedProperties);
+
+            // 첫 번째 매물 위치로 지도 이동
+            const firstProperty = matchedProperties[0];
+            const moveLatLng = new kakao.maps.LatLng(firstProperty.lat, firstProperty.lng);
+            map.setCenter(moveLatLng);
+            map.setLevel(5); // 적당한 줌 레벨로 설정
+
+            // 검색 결과 알림
+            alert(matchedProperties.length + '개의 매물을 찾았습니다.');
         }
 
         // 로그아웃
@@ -1999,7 +2078,10 @@
                             image: imagePath,
                             roomType: prop.propertyType,
                             description: '상세 설명은 전체 상세보기에서 확인하실 수 있습니다.',
-                            options: optionList
+                            options: optionList,
+                            area: prop.contractArea ? prop.contractArea + '㎡ (약 ' + Math.round(prop.contractArea / 3.3) + '평)' : '정보 없음',
+                            floor: prop.floor ? prop.floor + '층' : '정보 없음',
+                            maintenanceFee: prop.maintenanceFee ? prop.maintenanceFee + '만원' : '정보 없음'
                         };
                     });
 
@@ -2398,7 +2480,10 @@
                             image: imagePath,
                             roomType: prop.propertyType,
                             description: '상세 설명은 전체 상세보기에서 확인하실 수 있습니다.',
-                            options: optionList
+                            options: optionList,
+                            area: prop.contractArea ? prop.contractArea + '㎡ (약 ' + Math.round(prop.contractArea / 3.3) + '평)' : '정보 없음',
+                            floor: prop.floor ? prop.floor + '층' : '정보 없음',
+                            maintenanceFee: prop.maintenanceFee ? prop.maintenanceFee + '만원' : '정보 없음'
                         };
                     });
 
@@ -2500,7 +2585,10 @@
                 image: imagePath,
                 roomType: prop.propertyType,
                 description: '상세 설명은 전체 상세보기에서 확인하실 수 있습니다.',
-                options: optionList
+                options: optionList,
+                area: prop.contractArea ? prop.contractArea + '㎡ (약 ' + Math.round(prop.contractArea / 3.3) + '평)' : '정보 없음',
+                floor: prop.floor ? prop.floor + '층' : '정보 없음',
+                maintenanceFee: prop.maintenanceFee ? prop.maintenanceFee + '만원' : '정보 없음'
             };
         });
 
@@ -2516,6 +2604,11 @@
             document.getElementById('detailImage').src = property.image;
             document.getElementById('detailRoomType').textContent = property.roomType;
             document.getElementById('detailDescription').textContent = property.description;
+
+            // 전용면적, 층수, 관리비 추가
+            document.getElementById('detailArea').textContent = property.area || '정보 없음';
+            document.getElementById('detailFloor').textContent = property.floor || '정보 없음';
+            document.getElementById('detailMaintenanceFee').textContent = property.maintenanceFee || '정보 없음';
 
             var optionsHtml = property.options.map(opt =>
                 '<span class="detail-option">' + opt + '</span>'
