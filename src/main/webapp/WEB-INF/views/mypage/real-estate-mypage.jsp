@@ -419,6 +419,26 @@
             font-weight: 500;
             cursor: pointer;
         }
+        
+        /* 문의 탭 스타일 */
+        .inquiry-tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 15px;
+            font-weight: 500;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .inquiry-tab:hover {
+            color: #333;
+        }
+        .inquiry-tab.active {
+            color: #8b7fc7;
+            border-bottom-color: #8b7fc7;
+        }
     </style>
 </head>
 <body>
@@ -685,11 +705,181 @@
             <div class="content-section" id="inquiries">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                     <div class="section-title" style="margin-bottom: 0;">내 문의내역</div>
-                    
-                    <button class="btn-edit" onclick="location.href='${pageContext.request.contextPath}/inquiry/contact-admin'">
+                    <button class="btn-edit" onclick="location.href='${pageContext.request.contextPath}/inquiries/contact-admin'">
                         <i class="fa-solid fa-headset"></i> 관리자에게 문의하기
                     </button>
                 </div>
+                
+                <!-- 탭 메뉴 -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+                    <button class="inquiry-tab active" data-inquiry-type="all" onclick="switchInquiryTab('all')">
+                        전체 문의
+                    </button>
+                    <button class="inquiry-tab" data-inquiry-type="admin" onclick="switchInquiryTab('admin')">
+                        관리자 문의
+                    </button>
+                    <button class="inquiry-tab" data-inquiry-type="realtor" onclick="switchInquiryTab('realtor')">
+                        중개사 문의
+                    </button>
+                </div>
+                
+                <c:choose>
+                    <c:when test="${not empty inquiries}">
+                        <c:forEach var="inquiry" items="${inquiries}">
+                            <div class="list-item inquiry-item-wrapper" 
+                                 data-inquiry-type="${inquiry.inquiryType}"
+                                 style="cursor: pointer; align-items: flex-start;" 
+                                 onclick="toggleInquiryDetail(this)">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                        <div class="list-title">${inquiry.title}</div>
+                                        
+                                        <!-- 카테고리 배지 (관리자 문의인 경우) -->
+                                        <c:if test="${inquiry.inquiryType == 'ADMIN' && not empty inquiry.category}">
+                                            <span style="padding: 4px 8px; background: #f0f0f0; color: #666; border-radius: 4px; font-size: 12px;">
+                                                ${inquiry.category}
+                                            </span>
+                                        </c:if>
+                                        
+                                        <!-- 문의 타입 배지 -->
+                                        <c:choose>
+                                            <c:when test="${inquiry.inquiryType == 'ADMIN'}">
+                                                <span style="padding: 4px 8px; background: #e0e7ff; color: #667eea; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                                    <i class="fa-solid fa-user-shield"></i> 관리자
+                                                </span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span style="padding: 4px 8px; background: #c6f6d5; color: #22543d; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                                    <i class="fa-solid fa-user-tie"></i> 중개사
+                                                </span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        
+                                        <!-- 읽음 여부 배지 -->
+                                        <c:if test="${inquiry.readYn == 'N'}">
+                                            <span style="padding: 4px 8px; background: #ff6b6b; color: white; border-radius: 4px; font-size: 11px; font-weight: 600;">
+                                                NEW
+                                            </span>
+                                        </c:if>
+                                    </div>
+                                    
+                                    <div class="list-date">
+                                        <i class="fa-solid fa-calendar"></i>
+                                        <fmt:formatDate value="${inquiry.createdAt}" pattern="yyyy.MM.dd HH:mm"/>
+                                    </div>
+                                    
+                                    <!-- 중개사 정보 표시 (중개사 문의인 경우) -->
+                                    <c:if test="${inquiry.inquiryType == 'REALTOR'}">
+                                        <c:if test="${not empty inquiry.realtorId}">
+                                            <div style="margin-top: 8px; font-size: 13px; color: #666;">
+                                                <i class="fa-solid fa-building"></i> 중개사: ${inquiry.realtorId}
+                                            </div>
+                                        </c:if>
+                                        <c:if test="${not empty inquiry.propertyId}">
+                                            <div style="margin-top: 4px; font-size: 13px; color: #666;">
+                                                <i class="fa-solid fa-home"></i> 매물번호: ${inquiry.propertyId}
+                                            </div>
+                                        </c:if>
+                                    </c:if>
+                                    
+                                    <!-- 문의 상세 내용 (토글) -->
+                                    <div class="inquiry-detail" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                                        <div style="margin-bottom: 20px;">
+                                            <div style="font-weight: 600; color: #333; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                                                <i class="fa-solid fa-comment-dots"></i> 문의 내용
+                                            </div>
+                                            <div style="color: #666; line-height: 1.8; white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 6px;">
+												${inquiry.content}
+                                            </div>
+                                        </div>
+                                        
+                                        <c:choose>
+                                            <c:when test="${inquiry.status == 'ANSWERED'}">
+                                                <div style="background: #e8f1ff; padding: 20px; border-radius: 8px; border-left: 4px solid #2c5ff5;">
+                                                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                                                        <div style="font-weight: 600; color: #2c5ff5; display: flex; align-items: center; gap: 8px;">
+                                                            <i class="fa-solid fa-check-circle"></i> 
+                                                            ${inquiry.inquiryType == 'ADMIN' ? '관리자' : '중개사'} 답변
+                                                        </div>
+                                                        <div style="font-size: 13px; color: #666;">
+                                                            <i class="fa-solid fa-clock"></i>
+                                                            <fmt:formatDate value="${inquiry.answeredAt}" pattern="yyyy.MM.dd HH:mm"/>
+                                                        </div>
+                                                    </div>
+                                                    <div style="color: #333; line-height: 1.8; white-space: pre-wrap;">
+														${inquiry.answer}
+                                                    </div>
+                                                </div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div style="background: #fff3cd; padding: 15px; border-radius: 6px; text-align: center; color: #856404; border: 1px solid #ffeaa7;">
+                                                    <i class="fa-solid fa-hourglass-half"></i> 
+                                                    ${inquiry.inquiryType == 'ADMIN' ? '관리자' : '중개사'} 답변을 기다리고 있습니다.
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                                    <div class="status-badge ${inquiry.status == 'ANSWERED' ? 'status-complete' : 'status-pending'}">
+                                        ${inquiry.status == 'ANSWERED' ? '답변완료' : '답변대기'}
+                                    </div>
+                                    <button onclick="event.stopPropagation(); toggleInquiryDetail(this.closest('.list-item'))" 
+                                            style="padding: 6px 12px; background: white; color: #8b7fc7; border: 1px solid #8b7fc7; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all 0.3s;">
+                                        <i class="fa-solid fa-chevron-down"></i> 상세보기
+                                    </button>
+                                </div>
+                            </div>
+                        </c:forEach>
+                        
+                        <!-- 필터링 결과가 없을 때 메시지 -->
+                        <div id="no-admin-inquiry" style="display: none; text-align: center; padding: 60px 20px; background: #fafafa; border-radius: 8px;">
+                            <div style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;">
+                                <i class="fa-solid fa-inbox"></i>
+                            </div>
+                            <div style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px;">
+                                관리자 문의 내역이 없습니다
+                            </div>
+                            <div style="font-size: 14px; color: #999; margin-bottom: 20px;">
+                                궁금한 사항이 있으시면 관리자에게 문의해주세요
+                            </div>
+                            <button class="btn-edit" onclick="location.href='${pageContext.request.contextPath}/inquiries/contact-admin'">
+                                <i class="fa-solid fa-headset"></i> 관리자에게 문의하기
+                            </button>
+                        </div>
+                        
+                        <div id="no-realtor-inquiry" style="display: none; text-align: center; padding: 60px 20px; background: #fafafa; border-radius: 8px;">
+                            <div style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;">
+                                <i class="fa-solid fa-inbox"></i>
+                            </div>
+                            <div style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px;">
+                                중개사 문의 내역이 없습니다
+                            </div>
+                            <div style="font-size: 14px; color: #999;">
+                                매물 상세 페이지에서 중개사에게 문의할 수 있습니다
+                            </div>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <!-- 문의 내역이 없을 때 -->
+                        <div style="text-align: center; padding: 80px 20px; background: #fafafa; border-radius: 8px;">
+                            <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;">
+                                <i class="fa-solid fa-comments"></i>
+                            </div>
+                            <div style="font-size: 20px; font-weight: 600; color: #333; margin-bottom: 12px;">
+                                등록된 문의 내역이 없습니다
+                            </div>
+                            <div style="font-size: 14px; color: #999; margin-bottom: 30px;">
+                                궁금한 사항이 있으시면 관리자에게 문의해주세요
+                            </div>
+                            <button class="btn-edit" onclick="location.href='${pageContext.request.contextPath}/inquiries/contact-admin'">
+                                <i class="fa-solid fa-headset"></i> 관리자에게 문의하기
+                            </button>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
         </div>
     </div>
     
@@ -806,6 +996,61 @@
                 closeEditModal();
             }
         });
+        
+        // 문의 타입별 필터링
+        function switchInquiryTab(type) {
+            // 탭 버튼 활성화
+            document.querySelectorAll('.inquiry-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector('[data-inquiry-type="' + type + '"]').classList.add('active');
+            
+            // 문의 항목 필터링
+            const inquiryItems = document.querySelectorAll('.inquiry-item-wrapper');
+            let hasVisibleItem = false;
+            
+            inquiryItems.forEach(item => {
+                const itemType = item.getAttribute('data-inquiry-type');
+                
+                if (type === 'all') {
+                    item.style.display = 'flex';
+                    hasVisibleItem = true;
+                } else if (type === 'admin' && itemType === 'ADMIN') {
+                    item.style.display = 'flex';
+                    hasVisibleItem = true;
+                } else if (type === 'realtor' && itemType === 'REALTOR') {
+                    item.style.display = 'flex';
+                    hasVisibleItem = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // 빈 상태 메시지 표시/숨김
+            const noAdminMsg = document.getElementById('no-admin-inquiry');
+            const noRealtorMsg = document.getElementById('no-realtor-inquiry');
+            
+            if (noAdminMsg) {
+                noAdminMsg.style.display = (type === 'admin' && !hasVisibleItem) ? 'block' : 'none';
+            }
+            if (noRealtorMsg) {
+                noRealtorMsg.style.display = (type === 'realtor' && !hasVisibleItem) ? 'block' : 'none';
+            }
+        }
+
+        // 문의 상세보기 토글
+        function toggleInquiryDetail(element) {
+            const detailDiv = element.querySelector('.inquiry-detail');
+            const button = element.querySelector('button');
+            
+            if (detailDiv.style.display === 'none' || detailDiv.style.display === '') {
+                detailDiv.style.display = 'block';
+                button.innerHTML = '<i class="fa-solid fa-chevron-up"></i> 접기';
+            } else {
+                detailDiv.style.display = 'none';
+                button.innerHTML = '<i class="fa-solid fa-chevron-down"></i> 상세보기';
+            }
+        }
     </script>
 </body>
 </html>
