@@ -658,7 +658,10 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <span class="info-label">전용면적</span>
-                            <span class="info-value">${property.contractArea != null ? property.contractArea : 20}㎡ (약 ${property.contractArea != null ? property.contractArea/3.3 : 6}평)</span>
+                            <span class="info-value">
+                                ${property.contractArea != null ? property.contractArea : 20}㎡
+                                (약 <fmt:formatNumber value="${property.contractArea != null ? property.contractArea/3.3 : 6}" pattern="0"/>평)
+                            </span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">방/욕실</span>
@@ -890,8 +893,16 @@
             <!-- 우측 고정 가격 박스 -->
             <aside class="price-sticky">
                 <div class="price-section">
-                    <div class="price-label">보증금 / 월세</div>
-                    <div class="price-main">${property.deposit != null ? property.deposit : 500} / ${property.monthlyRent != null ? property.monthlyRent : 55}</div>
+                    <c:choose>
+                        <c:when test="${property.monthlyRent == 0 or property.monthlyRent == null}">
+                            <div class="price-label">전세</div>
+                            <div class="price-main">${property.deposit != null ? property.deposit : 500}</div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="price-label">보증금 / 월세</div>
+                            <div class="price-main">${property.deposit != null ? property.deposit : 500} / ${property.monthlyRent}</div>
+                        </c:otherwise>
+                    </c:choose>
                     <div class="price-detail" style="margin-top: 20px;">
                         <div>
                             <div class="price-detail-item">관리비</div>
