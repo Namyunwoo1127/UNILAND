@@ -73,4 +73,32 @@ public interface PropertyService {
      */
     int deleteProperty(int propertyNo, String realtorId);
 
+    /**
+     * 매물 번호로 특정 매물 정보를 조회합니다.
+     * @param propertyNo 매물 번호
+     * @return 매물 정보
+     */
+    Property selectPropertyById(int propertyNo);
+
+    /**
+     * 매물 번호로 해당 매물의 옵션 목록을 조회합니다.
+     * @param propertyNo 매물 번호
+     * @return 옵션 목록
+     */
+    List<PropertyOption> selectPropertyOptions(int propertyNo);
+
+    /**
+     * 매물 번호로 해당 매물의 이미지 목록을 조회합니다.
+     * @param propertyNo 매물 번호
+     * @return 이미지 목록
+     */
+    List<PropertyImg> selectPropertyImages(int propertyNo);
+
+    /**
+     * 매물 정보를 수정합니다.
+     * @param params 수정할 매물 정보 (propertyNo, status, propertyName, deposit, monthlyRent, maintenanceFee, availableDate, description, realtorId 포함)
+     * @return 성공 여부 (1: 성공, 0: 실패)
+     */
+    int updateProperty(Map<String, Object> params);
+
 }

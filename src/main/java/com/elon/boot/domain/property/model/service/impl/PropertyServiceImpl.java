@@ -228,4 +228,38 @@ public class PropertyServiceImpl implements PropertyService {
 
         return result;
     }
+
+    /**
+     * 매물 번호로 특정 매물 정보를 조회합니다.
+     */
+    @Override
+    public Property selectPropertyById(int propertyNo) {
+        return propertyMapper.selectOneByNo(Long.valueOf(propertyNo));
+    }
+
+    /**
+     * 매물 번호로 해당 매물의 옵션 목록을 조회합니다.
+     */
+    @Override
+    public List<PropertyOption> selectPropertyOptions(int propertyNo) {
+        PropertyOption option = optionMapper.selectOnesOption(Long.valueOf(propertyNo));
+        return option != null ? java.util.Arrays.asList(option) : java.util.Collections.emptyList();
+    }
+
+    /**
+     * 매물 번호로 해당 매물의 이미지 목록을 조회합니다.
+     */
+    @Override
+    public List<PropertyImg> selectPropertyImages(int propertyNo) {
+        return propertyMapper.selectImagesByPropertyNo(Long.valueOf(propertyNo));
+    }
+
+    /**
+     * 매물 정보를 수정합니다.
+     */
+    @Transactional
+    @Override
+    public int updateProperty(Map<String, Object> params) {
+        return propertyMapper.updateProperty(params);
+    }
 }

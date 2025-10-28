@@ -62,4 +62,11 @@ public interface PropertyMapper {
      * @return 업데이트된 행의 수 (성공 시 1)
      */
     int softDeleteProperty(Map<String, Object> params);
+
+    /**
+     * 매물 정보를 수정합니다.
+     * @param params 수정할 매물 정보 (propertyNo, status, propertyName, deposit, monthlyRent, maintenanceFee, availableDate, description, realtorId 포함)
+     * @return 업데이트된 행의 수 (성공 시 1)
+     */
+    int updateProperty(Map<String, Object> params);
 }

@@ -9,6 +9,13 @@
     FROM OPTION_TBL
     WHERE PROPERTY_NO = #{id, jdbcType=NUMERIC}
   </select>
+
+  <select id="selectOptionsByPropertyNo" resultType="com.elon.boot.domain.property.model.vo.PropertyOption">
+    SELECT *
+    FROM OPTION_TBL
+    WHERE PROPERTY_NO = #{propertyNo, jdbcType=NUMERIC}
+  </select>
+
   <insert id="insertOption" parameterType="com.elon.boot.domain.property.model.vo.PropertyOption">
     <selectKey keyProperty="propertyOptionNo" order="BEFORE" resultType="long">
       SELECT SEQ_OPTION_NO.NEXTVAL FROM DUAL
