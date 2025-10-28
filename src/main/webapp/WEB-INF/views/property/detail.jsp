@@ -1117,18 +1117,21 @@
 		  }
 		}
 
-        // 문의 모달
+		// 문의 모달
         function openInquiryModal() {
-            // 로그인 체크
-            const isLoggedIn = ${not empty sessionScope.user};
+            // 로그인 체크 (map.jsp와 동일하게 loginUser 세션으로 변경)
+            const isLoggedIn = ${not empty sessionScope.loginUser}; 
 
             if (!isLoggedIn) {
+                // 로그인이 안 되어 있으면 확인 창 띄우기
                 if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
-                    window.location.href = '${pageContext.request.contextPath}/auth/login';
+                    // map.jsp처럼 로그인 후 현재 상세 페이지로 돌아오도록 redirectUrl 추가
+                    window.location.href = '${pageContext.request.contextPath}/auth/login?redirectUrl=/property/${property.propertyNo}';
                 }
-                return;
+                return; // 로그인이 안됐으므로 모달을 띄우지 않고 종료
             }
 
+            // 로그인이 되어있으면 기존 로직대로 모달 열기
             document.getElementById('inquiryModal').classList.add('active');
         }
 
