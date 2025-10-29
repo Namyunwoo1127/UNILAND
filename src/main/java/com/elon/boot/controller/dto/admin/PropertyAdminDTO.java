@@ -39,5 +39,4 @@ public class PropertyAdminDTO {
     private String currentSearchCategory;
     private String currentSearchKeyword;
     private Integer totalPages;
-    private Integer totalPages;
 }
