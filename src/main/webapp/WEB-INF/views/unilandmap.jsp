@@ -1384,10 +1384,10 @@
                 </div>
                 
                 <div class="detail-report-section">
-            		<button class="btn-report" onclick="checkLoginAndGoToReport()">
-                		<i class="fa-solid fa-flag"></i> 허위매물 신고하기
-            		</button>
-        		</div>
+					<button class="btn-report" onclick="checkLoginAndGoToReport()">
+						<i class="fa-solid fa-flag"></i> 허위매물 신고하기
+					</button>
+				</div>
                 
             </div>
         </div>
@@ -1986,7 +1986,7 @@
 
             console.log('적용된 필터:', filterRequest);
 
-            // AJAX 요청으로 필터링된 매물 조회
+			// AJAX 요청으로 필터링된 매물 조회
             fetch('${pageContext.request.contextPath}/api/properties/filter', {
                 method: 'POST',
                 headers: {
@@ -2646,7 +2646,7 @@
             window.location.href = '${pageContext.request.contextPath}/property/' + currentPropertyId;
         }
         
-     	//  중개사 문의하기 버튼 클릭 시 로그인 체크 함수
+		//  중개사 문의하기 버튼 클릭 시 로그인 체크 함수
         function checkLoginAndGoToContact() {
             // JSTL을 이용해 로그인 상태를 JavaScript 변수에 저장
             const isLoggedIn = ${not empty sessionScope.loginUser}; 
@@ -2664,7 +2664,7 @@
             // 로그인이 되어 있으면 기존 함수 호출
             goToContactPage(); 
         }
-     	
+		
      // 신고하기 버튼 클릭 시 로그인 체크 함수
         function checkLoginAndGoToReport() {
             const isLoggedIn = ${not empty sessionScope.loginUser}; 
@@ -2705,7 +2705,7 @@
             
             window.location.href = '${pageContext.request.contextPath}/inquiries/contact-admin?' + params.toString();
         }
-     	
+
     </script>
 </body>
 </html>
