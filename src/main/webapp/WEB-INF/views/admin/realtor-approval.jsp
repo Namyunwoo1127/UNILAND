@@ -188,6 +188,139 @@
     .btn-cancel { background: #f59e0b; color: white; }
     .btn-cancel:hover { background: #d97706; }
 
+    /* 모달 스타일 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      animation: slideUp 0.3s;
+    }
+
+    .modal-header {
+      padding: 24px;
+      border-bottom: 2px solid #667eea;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+    }
+    .modal-header h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #999;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .modal-close:hover {
+      color: #333;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .detail-section {
+      margin-bottom: 24px;
+    }
+    .detail-section h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .detail-row {
+      display: flex;
+      padding: 10px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+    .detail-label {
+      width: 140px;
+      font-weight: 600;
+      color: #555;
+      flex-shrink: 0;
+    }
+    .detail-value {
+      flex: 1;
+      color: #333;
+    }
+
+    .modal-footer {
+      padding: 20px 24px;
+      border-top: 1px solid #e5e5e5;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      position: sticky;
+      bottom: 0;
+      background: white;
+    }
+    .btn-modal-close {
+      padding: 10px 24px;
+      background: #e5e5e5;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      transition: all 0.2s;
+    }
+    .btn-modal-close:hover {
+      background: #d0d0d0;
+    }
+
+    /* 애니메이션 */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px); 
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0); 
+      }
+    }
+
     /* 푸터 */
     footer {
       background: #2a2a2a;
@@ -293,9 +426,8 @@
                 </c:choose>
               </td>
               <td class="action-btns">
-                <!-- 상세보기 버튼 -->
-                <button class="btn-detail" 
-                        onclick="location.href='${pageContext.request.contextPath}/admin/realtor-detail/${realtor.realtorId}'">
+                <!-- 상세보기 버튼 (모달 열기) -->
+                <button class="btn-detail" onclick="openDetailModal('${realtor.realtorId}')">
                   <i class="fa-solid fa-file-lines"></i> 상세
                 </button>
                 
@@ -353,12 +485,159 @@
     </main>
   </div>
 
+  <!-- 상세보기 모달 -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-user-tie"></i> 중개사 상세 정보</h3>
+        <button class="modal-close" onclick="closeDetailModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-section">
+          <h4>기본 정보</h4>
+          <div class="detail-row">
+            <div class="detail-label">아이디</div>
+            <div class="detail-value" id="modal-realtorId">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">대표자명</div>
+            <div class="detail-value" id="modal-realtorName">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">중개사무소명</div>
+            <div class="detail-value" id="modal-officeName">-</div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4>연락처 정보</h4>
+          <div class="detail-row">
+            <div class="detail-label">연락처</div>
+            <div class="detail-value" id="modal-realtorPhone">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">이메일</div>
+            <div class="detail-value" id="modal-realtorEmail">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">주소</div>
+            <div class="detail-value" id="modal-realtorAddress">-</div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4>사업자 정보</h4>
+          <div class="detail-row">
+            <div class="detail-label">중개사 등록번호</div>
+            <div class="detail-value" id="modal-realtorRegNum">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">사업자등록번호</div>
+            <div class="detail-value" id="modal-businessNum">-</div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4>승인 정보</h4>
+          <div class="detail-row">
+            <div class="detail-label">승인 상태</div>
+            <div class="detail-value" id="modal-approvalStatus">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">신청일</div>
+            <div class="detail-value" id="modal-createdAt">-</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-close" onclick="closeDetailModal()">
+          <i class="fa-solid fa-xmark"></i> 닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 푸터 -->
   <footer>
     © 2025 UNILAND Admin. All rights reserved.
   </footer>
 
   <script>
+    const contextPath = '${pageContext.request.contextPath}';
+
+    // 상세보기 모달 열기
+    function openDetailModal(realtorId) {
+      fetch(contextPath + '/admin/realtor-detail/' + realtorId)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const realtor = data.realtor;
+            
+            // 기본 정보
+            document.getElementById('modal-realtorId').textContent = realtor.realtorId || '-';
+            document.getElementById('modal-realtorName').textContent = realtor.realtorName || '-';
+            document.getElementById('modal-officeName').textContent = realtor.officeName || '-';
+            
+            // 연락처 정보
+            document.getElementById('modal-realtorPhone').textContent = realtor.realtorPhone || '-';
+            document.getElementById('modal-realtorEmail').textContent = realtor.realtorEmail || '-';
+            document.getElementById('modal-realtorAddress').textContent = realtor.realtorAddress || '-';
+            
+            // 사업자 정보
+            document.getElementById('modal-realtorRegNum').textContent = realtor.realtorRegNum || '-';
+            document.getElementById('modal-businessNum').textContent = realtor.businessNum || '-';
+            
+            // 승인 정보
+            let statusText = '-';
+            let statusColor = '#999';
+            if (realtor.approvalStatus === 'PENDING') {
+              statusText = '승인대기';
+              statusColor = '#f59e0b';
+            } else if (realtor.approvalStatus === 'APPROVAL') {
+              statusText = '승인완료';
+              statusColor = '#48bb78';
+            } else if (realtor.approvalStatus === 'REJECTED') {
+              statusText = '거부됨';
+              statusColor = '#e53e3e';
+            }
+            document.getElementById('modal-approvalStatus').innerHTML = 
+              '<span style="color: ' + statusColor + '; font-weight: 600;">' + statusText + '</span>';
+            
+            document.getElementById('modal-createdAt').textContent = realtor.createdAt || '-';
+            
+            // 모달 표시
+            document.getElementById('detailModal').classList.add('active');
+          } else {
+            alert('중개사 정보를 불러올 수 없습니다.');
+          }
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('중개사 정보를 불러오는 중 오류가 발생했습니다.');
+        });
+    }
+
+    // 상세보기 모달 닫기
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+
+    // 모달 배경 클릭 시 닫기
+    document.getElementById('detailModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeDetailModal();
+      }
+    });
+
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeDetailModal();
+      }
+    });
+
     // 사이드바 메뉴 클릭
     document.querySelectorAll('.sidebar li').forEach((item, index) => {
       item.addEventListener('click', function() {
@@ -366,12 +645,12 @@
         this.classList.add('active');
 
         const pages = [
-          '${pageContext.request.contextPath}/admin/dashboard',
-          '${pageContext.request.contextPath}/admin/user-management',
-          '${pageContext.request.contextPath}/admin/property-management',
-          '${pageContext.request.contextPath}/admin/content-management',
-          '${pageContext.request.contextPath}/admin/inquiry-management',
-          '${pageContext.request.contextPath}/admin/realtor-approval'
+          contextPath + '/admin/dashboard',
+          contextPath + '/admin/user-management',
+          contextPath + '/admin/property-management',
+          contextPath + '/admin/content-management',
+          contextPath + '/admin/inquiry-management',
+          contextPath + '/admin/realtor-approval'
         ];
         
         if (pages[index]) {
@@ -382,13 +661,13 @@
 
     // 로고 클릭
     document.querySelector('.logo').addEventListener('click', function() {
-      window.location.href = '${pageContext.request.contextPath}/uniland';
+      window.location.href = contextPath + '/uniland';
     });
 
     // 로그아웃
     document.querySelector('.btn-login').addEventListener('click', function() {
       if (confirm('로그아웃 하시겠습니까?')) {
-        window.location.href = '${pageContext.request.contextPath}/auth/logout';
+        window.location.href = contextPath + '/auth/logout';
       }
     });
 

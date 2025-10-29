@@ -1,7 +1,10 @@
 package com.elon.boot.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.elon.boot.controller.dto.admin.Dashboard;
@@ -21,7 +25,6 @@ import com.elon.boot.domain.community.notice.model.vo.Notice;
 import com.elon.boot.domain.inquiry.model.service.InquiryService;
 import com.elon.boot.domain.inquiry.model.vo.Inquiry;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
-import com.elon.boot.domain.user.model.service.UserService;
 import com.elon.boot.domain.user.model.vo.User;
 
 import jakarta.servlet.http.HttpSession;
@@ -456,6 +459,70 @@ public class AdminController {
         }
         
         return "redirect:/admin/realtor-approval";
+    }
+    
+    /**
+     * 중개사 상세 정보 조회 (AJAX용)
+     * GET /admin/realtor-detail/{realtorId}
+     */
+    @GetMapping("/realtor-detail/{realtorId}")
+    @ResponseBody
+    public Map<String, Object> getRealtorDetail(@PathVariable String realtorId,
+                                               HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        // 관리자 권한 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
+            response.put("success", false);
+            response.put("message", "관리자 권한이 필요합니다.");
+            return response;
+        }
+        
+        try {
+            // 중개사 정보 조회
+            Realtor realtor = adminService.getRealtorById(realtorId);
+            
+            if (realtor != null) {
+                // 날짜 포맷팅
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                Map<String, Object> realtorData = new HashMap<>();
+                
+                realtorData.put("realtorId", realtor.getRealtorId());
+                realtorData.put("realtorName", realtor.getRealtorName());
+                realtorData.put("officeName", realtor.getOfficeName());
+                realtorData.put("realtorPhone", realtor.getRealtorPhone());
+                realtorData.put("realtorEmail", realtor.getRealtorEmail());
+                realtorData.put("realtorAddress", realtor.getRealtorAddress());
+                realtorData.put("realtorRegNum", realtor.getRealtorRegNum());
+                realtorData.put("businessNum", realtor.getBusinessNum());
+                realtorData.put("approvalStatus", realtor.getApprovalStatus());
+                
+                // 날짜가 null이 아닌 경우에만 포맷팅
+                if (realtor.getCreatedAt() != null) {
+                    realtorData.put("createdAt", sdf.format(realtor.getCreatedAt()));
+                } else {
+                    realtorData.put("createdAt", "-");
+                }
+                
+                response.put("success", true);
+                response.put("realtor", realtorData);
+                
+                log.debug("중개사 상세 정보 조회 성공: {}", realtorId);
+                
+            } else {
+                response.put("success", false);
+                response.put("message", "중개사를 찾을 수 없습니다.");
+                log.warn("중개사 정보 없음: {}", realtorId);
+            }
+            
+        } catch (Exception e) {
+            log.error("중개사 상세 정보 조회 실패: realtorId={}", realtorId, e);
+            response.put("success", false);
+            response.put("message", "오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return response;
     }
 
     // 통계

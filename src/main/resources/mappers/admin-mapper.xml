@@ -135,4 +135,23 @@
         WHERE REALTOR_ID = #{realtorId}
     </update>
     
+    <!-- 중개사 상세 정보 조회 -->
+	<select id="selectRealtorById" parameterType="string" resultType="Realtor">
+	    SELECT 
+	        REALTOR_ID,
+	        REALTOR_PASSWORD,
+	        REALTOR_NAME,
+	        OFFICE_NAME,
+	        REALTOR_ADDRESS,
+	        REALTOR_PHONE,
+	        REALTOR_EMAIL,
+	        REALTOR_REG_NUM,
+	        BUSINESS_NUM,
+	        APPROVAL_STATUS,
+	        CREATED_AT,
+	        UPDATED_AT
+	    FROM REALTOR_TBL    <!-- REALTOR를 REALTOR_TBL로 수정! -->
+	    WHERE REALTOR_ID = #{realtorId}
+	</select>
+    
 </mapper>

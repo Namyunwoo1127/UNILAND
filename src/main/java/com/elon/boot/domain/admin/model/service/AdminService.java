@@ -6,6 +6,7 @@ import com.elon.boot.controller.dto.admin.Dashboard;
 import com.elon.boot.controller.dto.admin.RealtorApproval;
 import com.elon.boot.controller.dto.admin.UserManagement;
 import com.elon.boot.domain.community.notice.model.vo.Notice;
+import com.elon.boot.domain.realtor.model.vo.Realtor;
 
 public interface AdminService {
 
@@ -26,5 +27,7 @@ public interface AdminService {
 	int rejectRealtor(String realtorId);
 
 	int cancelApproval(String realtorId);
+
+	Realtor getRealtorById(String realtorId);
 
 }

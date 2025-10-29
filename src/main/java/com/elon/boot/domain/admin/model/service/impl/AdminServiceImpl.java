@@ -161,4 +161,9 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.updateRealtorApprovalStatus(params);
 	}
 
+	@Override
+	public Realtor getRealtorById(String realtorId) {
+		return adminMapper.selectRealtorById(realtorId);
+	}
+
 }

@@ -38,4 +38,6 @@ public interface AdminMapper {
 
 	int updateRealtorApprovalStatus(Map<String, Object> params);
 
+	Realtor selectRealtorById(String realtorId);
+
 }
