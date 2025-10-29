@@ -149,6 +149,22 @@
     </where>
     ORDER BY p.CREATED_AT DESC
   </select>
+  <select id="selectListByNoList" resultType="com.elon.boot.domain.property.model.vo.Property">
+  	SELECT * 
+  	FROM PROPERTY_TBL 
+  	WHERE PROPERTY_NO IN
+	<foreach collection="list" item="no" open="(" separator="," close=")">
+        #{no}
+    </foreach>
+  </select>
+    <select id="getImgListByNoList" resultType="com.elon.boot.domain.property.model.vo.PropertyImg">
+  	SELECT * 
+  	FROM PROPERTIES_IMG_TBL 
+  	WHERE PROPERTY_NO IN
+	<foreach collection="list" item="no" open="(" separator="," close=")">
+        #{no}
+    </foreach>
+  </select>
 
   <insert id="insertProperty" parameterType="com.elon.boot.domain.property.model.vo.Property">
     <selectKey keyProperty="propertyNo" order="BEFORE" resultType="long">

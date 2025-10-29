@@ -69,4 +69,6 @@ public interface PropertyMapper {
      * @return 업데이트된 행의 수 (성공 시 1)
      */
     int updateProperty(Map<String, Object> params);
+	List<Property> selectListByNoList(List<Long> propertyNos);
+	List<PropertyImg> getImgListByNoList(List<Long> propertyNos);
 }

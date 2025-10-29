@@ -101,4 +101,10 @@ public interface PropertyService {
      */
     int updateProperty(Map<String, Object> params);
 
+	List<Property> selectListByNoList(List<Long> propertyNos);
+
+	List<PropertyImg> getImgListByNoList(List<Long> propertyNos);
+
+
+
 }
