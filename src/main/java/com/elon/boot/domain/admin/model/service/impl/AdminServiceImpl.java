@@ -320,4 +320,8 @@ public class AdminServiceImpl implements AdminService {
         }
         return String.format("%,d만원", price);
     }
+	public Realtor getRealtorById(String realtorId) {
+		return adminMapper.selectRealtorById(realtorId);
+	}
+
 }

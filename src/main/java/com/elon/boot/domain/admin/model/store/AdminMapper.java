@@ -76,4 +76,6 @@ public interface AdminMapper {
      * 매물 상세 조회
      */
     Property selectPropertyByNo(@Param("propertyNo") Long propertyNo);
+	Realtor selectRealtorById(String realtorId);
+
 }

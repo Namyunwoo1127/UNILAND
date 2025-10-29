@@ -10,6 +10,7 @@ import com.elon.boot.controller.dto.admin.RealtorApproval;
 import com.elon.boot.controller.dto.admin.UserManagement;
 import com.elon.boot.domain.community.notice.model.vo.Notice;
 import com.elon.boot.domain.property.model.vo.Property;
+import com.elon.boot.domain.realtor.model.vo.Realtor;
 
 public interface AdminService {
 
@@ -55,5 +56,6 @@ public interface AdminService {
      * 매물 상세 조회
      */
     Property getPropertyByNo(Long propertyNo);
+	Realtor getRealtorById(String realtorId);
 
 }

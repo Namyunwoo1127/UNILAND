@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -32,7 +33,7 @@
             max-width: 1400px;
             min-width: 1400px;
             margin: 0 auto;
-            min-height: calc(100vh - 80px); /* 헤더 높이에 맞게 조정이 필요할 수 있습니다. */
+            min-height: calc(100vh - 80px);
         }
 
         /* 사이드바 */
@@ -112,7 +113,7 @@
         /* 통계 카드 그리드 */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin-bottom: 40px;
         }
@@ -165,11 +166,6 @@
 
         .stat-icon.warning {
             background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
-            color: white;
-        }
-
-        .stat-icon.info {
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
             color: white;
         }
 
@@ -463,10 +459,6 @@
     </style>
 </head>
 <body>
-    <%-- 
-        ✅ 외부 파일(realtor-header.jsp)을 포함하여 헤더를 추가합니다. 
-        원래 있던 <header> 태그와 관련 CSS는 모두 제거되었습니다. 
-    --%>
     <jsp:include page="/WEB-INF/views/common/realtor-header.jsp" />
 
     <div class="main-layout">
@@ -492,8 +484,8 @@
                         <span class="stat-title">전체 매물</span>
                         <div class="stat-icon primary">🏠</div>
                     </div>
-                    <div class="stat-value">24</div>
-                    <div class="stat-change">↑ 지난주 대비 +3</div>
+                    <div class="stat-value" id="totalProperties">0</div>
+                    <div class="stat-change" id="propertyChange">계산 중...</div>
                 </div>
 
                 <div class="stat-card">
@@ -501,8 +493,8 @@
                         <span class="stat-title">거래 완료</span>
                         <div class="stat-icon success">✅</div>
                     </div>
-                    <div class="stat-value">8</div>
-                    <div class="stat-change">↑ 이번 달 +2</div>
+                    <div class="stat-value" id="completedDeals">0</div>
+                    <div class="stat-change" id="dealChange">계산 중...</div>
                 </div>
 
                 <div class="stat-card">
@@ -510,17 +502,8 @@
                         <span class="stat-title">새 문의</span>
                         <div class="stat-icon warning">📩</div>
                     </div>
-                    <div class="stat-value">12</div>
-                    <div class="stat-change">↑ 오늘 +5</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span class="stat-title">조회수</span>
-                        <div class="stat-icon info">👁️</div>
-                    </div>
-                    <div class="stat-value">1.2K</div>
-                    <div class="stat-change">↑ 이번 주 +15%</div>
+                    <div class="stat-value" id="newInquiries">0</div>
+                    <div class="stat-change" id="inquiryChange">계산 중...</div>
                 </div>
             </div>
 
@@ -537,11 +520,229 @@
                     <div class="action-card" onclick="location.href='${pageContext.request.contextPath}/realtor/inquiry-management'">
                         <div class="action-icon">💬</div>
                         <h3 class="action-title">문의 답변</h3>
-                        <p class="action-desc">대기 중인 문의 12건</p>
+                        <p class="action-desc" id="inquiryActionDesc">대기 중인 문의 확인</p>
                     </div>
                 </div>
             </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">최근 등록 매물</h2>
+                    <span class="view-all" onclick="location.href='${pageContext.request.contextPath}/realtor/property-management'">전체보기 →</span>
+                </div>
+                <table class="property-table">
+                    <thead>
+                        <tr>
+                            <th>매물정보</th>
+                            <th>거래유형</th>
+                            <th>가격</th>
+                            <th>상태</th>
+                            <th>등록일</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentPropertiesBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: #a0aec0;">
+                                등록된 매물이 없습니다
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">최근 문의</h2>
+                    <span class="view-all" onclick="location.href='${pageContext.request.contextPath}/realtor/inquiry-management'">전체보기 →</span>
+                </div>
+                <ul class="inquiry-list" id="recentInquiriesList">
+                    <li style="text-align: center; padding: 40px; color: #a0aec0;">
+                        받은 문의가 없습니다
+                    </li>
+                </ul>
+            </div>
         </main>
     </div>
+
+    <script>
+        // 대시보드 데이터 로드
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardStats();
+            loadRecentProperties();
+            loadRecentInquiries();
+        });
+
+        // 통계 데이터 로드
+        function loadDashboardStats() {
+            // 실제로는 서버에서 데이터를 가져와야 합니다
+            // 여기서는 샘플 데이터로 시뮬레이션합니다
+            fetch('${pageContext.request.contextPath}/api/realtor/dashboard/stats')
+                .then(response => response.json())
+                .then(data => {
+                    updateStatCard('totalProperties', data.totalProperties, data.propertyChange);
+                    updateStatCard('completedDeals', data.completedDeals, data.dealChange);
+                    updateStatCard('newInquiries', data.newInquiries, data.inquiryChange);
+                    
+                    // 문의 카운트 업데이트
+                    document.getElementById('inquiryActionDesc').textContent = 
+                        `대기 중인 문의 ${data.newInquiries}건`;
+                })
+                .catch(error => {
+                    console.error('통계 데이터 로드 실패:', error);
+                    // 에러 시 기본값 표시
+                    setDefaultStats();
+                });
+        }
+
+        // 통계 카드 업데이트
+        function updateStatCard(id, value, change) {
+            document.getElementById(id).textContent = value;
+            const changeElement = document.getElementById(id.replace(/[A-Z]/g, m => '-' + m.toLowerCase()) + '-change');
+            if (changeElement) {
+                changeElement.textContent = change;
+                if (change.includes('-')) {
+                    changeElement.classList.add('negative');
+                }
+            }
+        }
+
+        // 기본 통계값 설정
+        function setDefaultStats() {
+            document.getElementById('totalProperties').textContent = '24';
+            document.getElementById('propertyChange').textContent = '↑ 지난주 대비 +3';
+            document.getElementById('completedDeals').textContent = '8';
+            document.getElementById('dealChange').textContent = '↑ 이번 달 +2';
+            document.getElementById('newInquiries').textContent = '12';
+            document.getElementById('inquiryChange').textContent = '↑ 오늘 +5';
+            document.getElementById('inquiryActionDesc').textContent = '대기 중인 문의 12건';
+        }
+
+        // 최근 매물 로드
+        function loadRecentProperties() {
+            fetch('${pageContext.request.contextPath}/api/realtor/properties/recent?limit=5')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('recentPropertiesBody');
+                    if (data && data.length > 0) {
+                        tbody.innerHTML = data.map(property => `
+                            <tr onclick="location.href='${pageContext.request.contextPath}/realtor/property-detail/${property.id}'">
+                                <td>
+                                    <div class="property-title">${property.title}</div>
+                                    <div class="property-location">${property.location}</div>
+                                </td>
+                                <td>${property.dealType}</td>
+                                <td class="property-price">${formatPrice(property.price)}</td>
+                                <td><span class="status-badge ${property.status}">${getStatusText(property.status)}</span></td>
+                                <td>${formatDate(property.createdAt)}</td>
+                            </tr>
+                        `).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('최근 매물 로드 실패:', error);
+                });
+        }
+
+        // 최근 문의 로드
+        function loadRecentInquiries() {
+            fetch('${pageContext.request.contextPath}/api/realtor/inquiries/recent?limit=5')
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById('recentInquiriesList');
+                    if (data && data.length > 0) {
+                        list.innerHTML = data.map(inquiry => `
+                            <li class="inquiry-item" onclick="location.href='${pageContext.request.contextPath}/realtor/inquiry-detail/${inquiry.id}'">
+                                <div class="inquiry-header">
+                                    <div class="inquiry-user">
+                                        <div class="inquiry-avatar">${inquiry.userName.charAt(0)}</div>
+                                        <div class="inquiry-info">
+                                            <h4>${inquiry.userName}</h4>
+                                            <span class="inquiry-date">${formatDate(inquiry.createdAt)}</span>
+                                        </div>
+                                    </div>
+                                    <span class="inquiry-badge ${inquiry.status}">' + (inquiry.status === 'new' ? '새 문의' : '답변완료') + '</span>
+                                </div>
+                                <p class="inquiry-content">${inquiry.content}</p>
+                            </li>
+                        `).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('최근 문의 로드 실패:', error);
+                });
+        }
+
+        // 유틸리티 함수들
+        function formatPrice(price) {
+            if (price >= 100000000) {
+                return (price / 100000000).toFixed(1) + '억';
+            } else if (price >= 10000) {
+                return (price / 10000).toFixed(0) + '만';
+            }
+            return price.toLocaleString() + '원';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (days === 0) return '오늘';
+            if (days === 1) return '어제';
+            if (days < 7) return days + '일 전';
+            
+            return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'active': '판매중',
+                'reserved': '예약중',
+                'completed': '거래완료'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 페이지 로드 시 기본 통계 표시 (API 응답 전까지)
+        setDefaultStats();
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch("/realtor/api/dashboard")
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+
+                    // 1. 매물 통계 표시
+                    document.getElementById("totalProperties").textContent = data.totalProperties;
+                    document.getElementById("activeProperties").textContent = data.activeProperties;
+                    document.getElementById("completedDeals").textContent = data.completedDeals;
+                    document.getElementById("reservedProperties").textContent = data.reservedProperties;
+
+                    // 2. 최근 매물 표시
+                    const recentPropContainer = document.getElementById("recentProperties");
+                    recentPropContainer.innerHTML = "";
+                    data.recentProperties.forEach(prop => {
+                        const li = document.createElement("li");
+                        li.textContent = `${prop.propertyName} (${prop.status}) - ${prop.deposit}/${prop.monthlyRent}`;
+                        recentPropContainer.appendChild(li);
+                    });
+
+                    // 3. 최근 문의 표시
+                    const recentInquiryContainer = document.getElementById("recentInquiries");
+                    recentInquiryContainer.innerHTML = "";
+                    data.recentInquiries.forEach(inq => {
+                        const li = document.createElement("li");
+                        li.textContent = `${inq.userName}: ${inq.title} [${inq.status}]`;
+                        recentInquiryContainer.appendChild(li);
+                    });
+
+                })
+                .catch(err => console.error("대시보드 데이터 로드 실패:", err));
+        });
+    </script>
 </body>
 </html>
