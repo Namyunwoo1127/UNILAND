@@ -651,4 +651,5 @@ public class RealtorController {
         
         return "redirect:/realtor/realtor-mypage";
     }
+
 }
