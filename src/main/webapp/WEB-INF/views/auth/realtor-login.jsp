@@ -158,7 +158,9 @@
     <div class="main-container">
         <div class="login-card">
             <div class="login-logo">
-                <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
+            	<a href="${pageContext.request.contextPath}/">
+	                <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
+            	</a>
             </div>
             <div class="login-subtitle">중개사 로그인 페이지</div>
 

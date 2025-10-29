@@ -362,7 +362,7 @@
 
       <div class="control-box">
         <div class="search-box">
-          <select id="searchCategory" name="currentSearchCategory">
+          <select id="searchCategory">
             <option value="name">건물명</option>
             <option value="type">유형</option>
             <option value="price">가격</option>
@@ -371,7 +371,7 @@
             <option value="contact">연락처</option>
             <option value="date">등록일</option>
           </select>
-          <input type="text" id="searchInput" placeholder="검색어를 입력하세요" onkeypress="handleEnterKey(event)" name="currentSearchKeyword">
+          <input type="text" id="searchInput" placeholder="검색어를 입력하세요" onkeypress="handleEnterKey(event)">
           <button class="btn-search" onclick="searchListing()"><i class="fa-solid fa-magnifying-glass"></i> 검색</button>
         </div>
         <div class="page-size-box">
@@ -460,13 +460,11 @@
 
       <!-- 페이징 -->
       <div class="pagination" id="pagination">
-      
         <button onclick="goToPage(1)" ${pageInfo.first ? 'disabled' : ''}>
           <i class="fa-solid fa-angles-left"></i>
         </button>
-        
         <button onclick="goToPage(${pageInfo.currentPage - 1})" ${!pageInfo.hasPrevious ? 'disabled' : ''}>
-          <i class="fa-solid fa-angle-left"><</i>
+          <i class="fa-solid fa-angle-left"></i>
         </button>
         
         <c:forEach items="${pageInfo.pageNumbers}" var="pageNum">
@@ -476,9 +474,8 @@
         </c:forEach>
         
         <button onclick="goToPage(${pageInfo.currentPage + 1})" ${!pageInfo.hasNext ? 'disabled' : ''}>
-          <i class="fa-solid fa-angle-right">></i>
+          <i class="fa-solid fa-angle-right"></i>
         </button>
-        
         <button onclick="goToPage(${pageInfo.totalPages})" ${pageInfo.last ? 'disabled' : ''}>
           <i class="fa-solid fa-angles-right"></i>
         </button>
@@ -520,16 +517,16 @@
     let totalPages = ${pageInfo.totalPages};
 
     function goToPage(page) {
-        if (page < 1 || page > totalPages) return;
+   	  if (page < 1 || page > totalPages) return;
 
-        const url = '${pageContext.request.contextPath}/admin/api/properties/search' +
-                    '?page=' + page +
-                    '&size=' + currentPageSize +
-                    '&searchCategory=' + encodeURIComponent(currentSearchCategory) +
-                    '&searchKeyword=' + encodeURIComponent(currentSearchKeyword);
-        
-        loadProperties(url);
-      }
+   	  const url = '${pageContext.request.contextPath}/admin/api/properties/search' +
+   	              '?page=' + page +
+   	              '&size=' + currentPageSize +
+   	              '&searchCategory=' + encodeURIComponent(currentSearchCategory) +
+   	              '&searchKeyword=' + encodeURIComponent(currentSearchKeyword);
+   	  
+   	  loadProperties(url);
+   	}
 
 
     function changePageSize() {
@@ -586,49 +583,49 @@
     }
 
     function renderTable(properties, pageInfo) {
-       const tbody = document.querySelector('#listingTable');
-       if (!tbody) return; // table 구조가 처음 없으면 무시
+  	  const tbody = document.querySelector('#listingTable');
+  	  if (!tbody) return; // table 구조가 처음 없으면 무시
 
-       if (properties.length === 0) {
-         tbody.innerHTML = `
-           <tr><td colspan="11" style="text-align:center;">검색 결과가 없습니다.</td></tr>
-         `;
-         return;
-       }
+  	  if (properties.length === 0) {
+  	    tbody.innerHTML = `
+  	      <tr><td colspan="11" style="text-align:center;">검색 결과가 없습니다.</td></tr>
+  	    `;
+  	    return;
+  	  }
 
-       let rows = '';
-       properties.forEach((property, index) => {
-         const rowNum = (pageInfo.currentPage - 1) * pageInfo.size + index + 1;
-         const createdDate = new Date(property.createdAt).toISOString().split('T')[0];
-         const statusClass = property.status === 'ACTIVE' ? 'status-active' :
-                            property.status === 'RESERVED' ? 'status-reserved' :
-                            property.status === 'COMPLETED' ? 'status-completed' : '';
+  	  let rows = '';
+  	  properties.forEach((property, index) => {
+  	    const rowNum = (pageInfo.currentPage - 1) * pageInfo.size + index + 1;
+  	    const createdDate = new Date(property.createdAt).toISOString().split('T')[0];
+  	    const statusClass = property.status === 'ACTIVE' ? 'status-active' :
+  	                       property.status === 'RESERVED' ? 'status-reserved' :
+  	                       property.status === 'COMPLETED' ? 'status-completed' : '';
 
-         rows += `
-           <tr>
-             <td>${rowNum}</td>
-             <td>${property.propertyName || '-'}</td>
-             <td>${property.propertyType || '-'}</td>
-             <td>${property.priceDisplay || '-'}</td>
-             <td>${property.location || '-'}</td>
-             <td>${property.ownerName || '-'}</td>
-             <td>${property.ownerType || '-'}</td>
-             <td>${property.ownerContact || '-'}</td>
-             <td><span class="${statusClass}">${property.status}</span></td>
-             <td>${createdDate}</td>
-             <td class="action-btns">
-               <button class="btn-edit" onclick="openStatusModal(${property.propertyNo}, '${property.status}')">
-                 <i class="fa-solid fa-pen"></i> 수정
-               </button>
-               <button class="btn-delete" onclick="deleteProperty(${property.propertyNo})">
-                 <i class="fa-solid fa-trash"></i> 삭제
-               </button>
-             </td>
-           </tr>
-         `;
-       });
-       tbody.innerHTML = rows;
-     }
+  	    rows += `
+  	      <tr>
+  	        <td>${rowNum}</td>
+  	        <td>${property.propertyName || '-'}</td>
+  	        <td>${property.propertyType || '-'}</td>
+  	        <td>${property.priceDisplay || '-'}</td>
+  	        <td>${property.location || '-'}</td>
+  	        <td>${property.ownerName || '-'}</td>
+  	        <td>${property.ownerType || '-'}</td>
+  	        <td>${property.ownerContact || '-'}</td>
+  	        <td><span class="${statusClass}">${property.status}</span></td>
+  	        <td>${createdDate}</td>
+  	        <td class="action-btns">
+  	          <button class="btn-edit" onclick="openStatusModal(${property.propertyNo}, '${property.status}')">
+  	            <i class="fa-solid fa-pen"></i> 수정
+  	          </button>
+  	          <button class="btn-delete" onclick="deleteProperty(${property.propertyNo})">
+  	            <i class="fa-solid fa-trash"></i> 삭제
+  	          </button>
+  	        </td>
+  	      </tr>
+  	    `;
+  	  });
+  	  tbody.innerHTML = rows;
+  	}
 
     function renderPagination(pageInfo) {
       const container = document.getElementById('pagination');

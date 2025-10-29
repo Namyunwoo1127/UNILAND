@@ -85,7 +85,9 @@
     <div class="main-container">
         <div class="signup-card">
             <div class="page-logo">
-                <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
+            	<a href="${pageContext.request.contextPath}/">
+                	<img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND">
+            	</a>
             </div>
             <h1 class="page-title">중개사 회원가입</h1>
             <div class="form-wrapper">

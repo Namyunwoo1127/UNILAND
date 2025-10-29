@@ -1,18 +1,28 @@
 package com.elon.boot.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.elon.boot.controller.dto.admin.Dashboard;
+import com.elon.boot.controller.dto.admin.PageRequestDTO;
+import com.elon.boot.controller.dto.admin.PageResponseDTO;
+import com.elon.boot.controller.dto.admin.PropertyAdminDTO;
 import com.elon.boot.controller.dto.admin.RealtorApproval;
 import com.elon.boot.controller.dto.admin.UserManagement;
 import com.elon.boot.domain.admin.model.service.AdminService;
@@ -21,7 +31,6 @@ import com.elon.boot.domain.community.notice.model.vo.Notice;
 import com.elon.boot.domain.inquiry.model.service.InquiryService;
 import com.elon.boot.domain.inquiry.model.vo.Inquiry;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
-import com.elon.boot.domain.user.model.service.UserService;
 import com.elon.boot.domain.user.model.vo.User;
 
 import jakarta.servlet.http.HttpSession;
@@ -149,10 +158,131 @@ public class AdminController {
         return "redirect:/admin/user-management";
     }
 
-    // 매물관리
+    /**
+     * 매물관리 페이지
+     */
     @GetMapping("/property-management")
-    public String propertyManagement() {
+    public String propertyManagementPage(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        
+        log.info("매물관리 페이지 요청 - 페이지: {}, 크기: {}", page, size);
+        
+        PageRequestDTO pageRequest = PageRequestDTO.builder()
+            .page(page)
+            .size(size)
+            .build();
+        
+        PageResponseDTO<PropertyAdminDTO> response = adminService.getPropertyListWithPaging(pageRequest);
+        
+        model.addAttribute("propertyList", response.getContent());
+        model.addAttribute("pageInfo", response);
+        
         return "admin/property-management";
+    }
+    
+    /**
+     * 매물 검색 API (페이징 포함)
+     */
+    @GetMapping("/api/properties/search")
+    @ResponseBody
+    public ResponseEntity<PageResponseDTO<PropertyAdminDTO>> searchProperties(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "") String searchCategory,
+            @RequestParam(required = false, defaultValue = "") String searchKeyword) {
+        
+        log.info("매물 검색 API 호출 - 페이지: {}, 크기: {}, 카테고리: {}, 키워드: {}", 
+            page, size, searchCategory, searchKeyword);
+        
+        try {
+            PageRequestDTO pageRequest = PageRequestDTO.builder()
+                .page(page)
+                .size(size)
+                .searchCategory(searchCategory)
+                .searchKeyword(searchKeyword)
+                .build();
+            
+            PageResponseDTO<PropertyAdminDTO> pageResponse = adminService.getPropertyListWithPaging(pageRequest);
+            
+            log.info("검색 결과 - 전체: {}, 현재 페이지: {}/{}", 
+                pageResponse.getTotalElements(), 
+                pageResponse.getCurrentPage(), 
+                pageResponse.getTotalPages());
+            
+            return ResponseEntity.ok(pageResponse);
+            
+        } catch (Exception e) {
+            log.error("매물 검색 중 오류 발생", e);
+            return ResponseEntity.status(500).build();
+        }
+    }
+    
+    /**
+     * 매물 상태 변경 API (수정 버튼)
+     */
+    @PutMapping("/api/properties/{propertyNo}/status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updatePropertyStatus(
+            @PathVariable Long propertyNo,
+            @RequestParam String status) {
+        
+        log.info("매물 상태 변경 API 호출 - 매물번호: {}, 상태: {}", propertyNo, status);
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            boolean success = adminService.updatePropertyStatus(propertyNo, status);
+            
+            if (success) {
+                response.put("success", true);
+                response.put("message", "상태가 변경되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "상태 변경에 실패했습니다.");
+            }
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            log.error("매물 상태 변경 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "상태 변경 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+    
+    /**
+     * 매물 삭제 API (삭제 버튼 - DELETED 상태로 변경)
+     */
+    @DeleteMapping("/api/properties/{propertyNo}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteProperty(@PathVariable Long propertyNo) {
+        
+        log.info("매물 삭제 API 호출 - 매물번호: {}", propertyNo);
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            boolean success = adminService.updatePropertyStatus(propertyNo, "DELETED");
+            
+            if (success) {
+                response.put("success", true);
+                response.put("message", "매물이 삭제되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "삭제에 실패했습니다.");
+            }
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            log.error("매물 삭제 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "삭제 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(response);
+        }
     }
 
     // 공지사항관리
@@ -456,6 +586,70 @@ public class AdminController {
         }
         
         return "redirect:/admin/realtor-approval";
+    }
+    
+    /**
+     * 중개사 상세 정보 조회 (AJAX용)
+     * GET /admin/realtor-detail/{realtorId}
+     */
+    @GetMapping("/realtor-detail/{realtorId}")
+    @ResponseBody
+    public Map<String, Object> getRealtorDetail(@PathVariable String realtorId,
+                                               HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        // 관리자 권한 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null || !"Y".equals(loginUser.getAdminYn())) {
+            response.put("success", false);
+            response.put("message", "관리자 권한이 필요합니다.");
+            return response;
+        }
+        
+        try {
+            // 중개사 정보 조회
+            Realtor realtor = adminService.getRealtorById(realtorId);
+            
+            if (realtor != null) {
+                // 날짜 포맷팅
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                Map<String, Object> realtorData = new HashMap<>();
+                
+                realtorData.put("realtorId", realtor.getRealtorId());
+                realtorData.put("realtorName", realtor.getRealtorName());
+                realtorData.put("officeName", realtor.getOfficeName());
+                realtorData.put("realtorPhone", realtor.getRealtorPhone());
+                realtorData.put("realtorEmail", realtor.getRealtorEmail());
+                realtorData.put("realtorAddress", realtor.getRealtorAddress());
+                realtorData.put("realtorRegNum", realtor.getRealtorRegNum());
+                realtorData.put("businessNum", realtor.getBusinessNum());
+                realtorData.put("approvalStatus", realtor.getApprovalStatus());
+                
+                // 날짜가 null이 아닌 경우에만 포맷팅
+                if (realtor.getCreatedAt() != null) {
+                    realtorData.put("createdAt", sdf.format(realtor.getCreatedAt()));
+                } else {
+                    realtorData.put("createdAt", "-");
+                }
+                
+                response.put("success", true);
+                response.put("realtor", realtorData);
+                
+                log.debug("중개사 상세 정보 조회 성공: {}", realtorId);
+                
+            } else {
+                response.put("success", false);
+                response.put("message", "중개사를 찾을 수 없습니다.");
+                log.warn("중개사 정보 없음: {}", realtorId);
+            }
+            
+        } catch (Exception e) {
+            log.error("중개사 상세 정보 조회 실패: realtorId={}", realtorId, e);
+            response.put("success", false);
+            response.put("message", "오류가 발생했습니다: " + e.getMessage());
+        }
+        
+        return response;
     }
 
     // 통계

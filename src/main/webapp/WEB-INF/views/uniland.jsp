@@ -1156,7 +1156,11 @@
             // TODO: 매물 목록 페이지로 이동
             alert('매물 목록 페이지는 준비 중입니다.');
         });
-
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("sessionExpired") === "true") {
+            alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+        }
     </script>
 </body>
 </html>
