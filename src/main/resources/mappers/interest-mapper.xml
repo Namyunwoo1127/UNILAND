@@ -20,6 +20,12 @@
      WHERE USER_ID = #{userId}
        AND PROPERTY_NO = #{propertyNo}
   </select>
+  <select id="getListById" resultMap="interestMap">
+    SELECT *
+      FROM INTEREST_TBL
+     WHERE USER_ID = #{userId}
+     ORDER BY CREATED_AT DESC
+  </select>
 
   <insert id="insertFavorite">
     INSERT INTO INTEREST_TBL (INTEREST_NO, USER_ID, PROPERTY_NO, IS_FAVORITE)
@@ -47,5 +53,6 @@
      WHERE PROPERTY_NO = #{value}
        AND IS_FAVORITE = 'Y'
   </select>
+  
 
 </mapper>

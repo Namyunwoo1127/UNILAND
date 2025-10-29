@@ -1,5 +1,7 @@
 package com.elon.boot.domain.interest.service.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,5 +39,11 @@ public class InterestServiceImpl implements InterestService {
         iMapper.toggleFavorite(interest);     // 토글
         return isFavorited(interest);             
     }
+
+	@Override
+	public List<Interest> getListById(String userId) {
+		
+		return iMapper.getListById(userId);
+	}
 
 }

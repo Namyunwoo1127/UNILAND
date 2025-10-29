@@ -262,4 +262,14 @@ public class PropertyServiceImpl implements PropertyService {
     public int updateProperty(Map<String, Object> params) {
         return propertyMapper.updateProperty(params);
     }
+
+	@Override
+	public List<Property> selectListByNoList(List<Long> propertyNos) {
+		return propertyMapper.selectListByNoList(propertyNos);
+	}
+
+	@Override
+	public List<PropertyImg> getImgListByNoList(List<Long> propertyNos) {
+		return propertyMapper.getImgListByNoList(propertyNos);
+	}
 }

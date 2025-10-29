@@ -595,24 +595,43 @@
                 <div class="section-title">찜매물</div>
                 <div class="card-grid">
                     <c:choose>
-                        <c:when test="${not empty wishlist}">
-                            <c:forEach var="property" items="${wishlist}">
-                                <div class="card" onclick="location.href='${pageContext.request.contextPath}/property/${property.propertyId}'">
-                                    <div class="card-image">
-                                        <c:choose>
-                                            <c:when test="${not empty property.imageUrl}">
-                                                <img src="${pageContext.request.contextPath}${property.imageUrl}" alt="${property.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
-                                            </c:when>
-                                            <c:otherwise>
-                                                매물 이미지
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                    <div class="card-title">${property.title}</div>
-                                    <div class="card-desc">${property.area}㎡ | ${property.priceInfo}</div>
-                                </div>
-                            </c:forEach>
-                        </c:when>
+                    
+					<c:when test="${not empty wishlist}">
+					    <c:forEach var="property" items="${wishlist}">
+					        <div class="card" onclick="location.href='${pageContext.request.contextPath}/property/${property.propertyNo}'">
+					            <div class="card-image">
+					                <c:choose>
+					                    <c:when test="${not empty wImg}">
+					                        <c:forEach var="img" items="${wImg}">
+					                            <c:if test="${img.propertyNo == property.propertyNo && img.imgOrder == 0}">
+					                                <img src="${pageContext.request.contextPath}${img.imgPath}" 
+					                                     alt="${property.propertyName}" 
+					                                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+					                            </c:if>
+					                        </c:forEach>
+					                    </c:when>
+					                    <c:otherwise>
+					                        매물 이미지
+					                    </c:otherwise>
+					                </c:choose>
+					            </div>
+					
+					            <div class="card-title">${property.propertyName}</div>
+					            <div class="card-desc">
+					                ${property.contractArea}㎡ | 
+					                <c:choose>
+					                    <c:when test="${property.priceType eq '월세'}">
+					                        보증금 ${property.deposit} / 월세 ${property.monthlyRent}
+					                    </c:when>
+					                    <c:otherwise>
+					                        매매가 ${property.deposit}
+					                    </c:otherwise>
+					                </c:choose>
+					            </div>
+					        </div>
+					    </c:forEach>
+					</c:when>
+                        
                         <c:otherwise>
                             <div class="card">
                                 <div class="card-image">매물 이미지</div>

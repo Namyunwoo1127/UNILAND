@@ -1392,7 +1392,7 @@
             </div>
         </div>
 		<div class="detail-actions">
-            <button class="btn-favorite">♡ 찜하기</button>
+            <button class="btn-favorite" id="btnFavorite" onclick="toggleWishlist()">♡ 찜하기</button>
             <button class="btn-contact" onclick="checkLoginAndGoToContact()">중개사 문의하기</button>
             <button class="btn-detail" onclick="openDetailPage()">🔍 전체 상세보기</button>
         </div>
@@ -2705,7 +2705,65 @@
             
             window.location.href = '${pageContext.request.contextPath}/inquiries/contact-admin?' + params.toString();
         }
+        
+        //찜 토글
+        function toggleWishlist() {
+            const isLoggedIn = ${not empty sessionScope.loginUser};
+            if (!isLoggedIn) {
+              if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
+                window.location.href = '${pageContext.request.contextPath}/auth/login?redirectUrl=/map';
+              }
+              return;
+            }
+            if (!currentPropertyId) {
+              alert('매물을 먼저 선택하세요.');
+              return;
+            }
+            toggleWishlistAjax(currentPropertyId);
+          }
 
+        function toggleWishlistAjax(propertyId) {
+        	  const headers = { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
+        	  const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        	  const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+        	  if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+
+        	  fetch('${pageContext.request.contextPath}/property/' + propertyId + '/wishlist', {
+        	    method: 'POST',
+        	    headers,
+        	    body: '{}'
+        	  })
+        	  .then(res => {
+        	    if (res.redirected) {
+        	      const btn = document.getElementById('btnFavorite');
+        	      if (btn) {
+        	        const liked = btn.classList.toggle('active');
+        	        btn.textContent = liked ? '♥ 찜해제' : '♡ 찜하기';
+        	      }
+        	      return { _handled: true };
+        	    }
+        	    return res.json().catch(() => null);
+        	  })
+        	  .then(data => {
+        	    if (!data || data._handled) return;
+
+        	    const btn = document.getElementById('btnFavorite');
+        	    if (!btn) return;
+
+        	    if (data.success !== undefined) {
+        	      const liked = !!data.liked;
+        	      btn.classList.toggle('active', liked);
+        	      btn.textContent = liked ? '♥ 찜해제' : '♡ 찜하기';
+        	    } else {
+        	      const liked = btn.classList.toggle('active');
+        	      btn.textContent = liked ? '♥ 찜해제' : '♡ 찜하기';
+        	    }
+        	  })
+        	  .catch(err => {
+        	    console.error(err);
+        	    alert('찜 처리 중 오류가 발생했습니다.');
+        	  });
+        	}
     </script>
 </body>
 </html>
