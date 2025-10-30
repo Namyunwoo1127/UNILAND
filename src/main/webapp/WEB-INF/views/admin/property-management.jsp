@@ -517,16 +517,16 @@
     let totalPages = ${pageInfo.totalPages};
 
     function goToPage(page) {
-   	  if (page < 1 || page > totalPages) return;
+        if (page < 1 || page > totalPages) return;
 
-   	  const url = '${pageContext.request.contextPath}/admin/api/properties/search' +
-   	              '?page=' + page +
-   	              '&size=' + currentPageSize +
-   	              '&searchCategory=' + encodeURIComponent(currentSearchCategory) +
-   	              '&searchKeyword=' + encodeURIComponent(currentSearchKeyword);
-   	  
-   	  loadProperties(url);
-   	}
+        const url = '${pageContext.request.contextPath}/admin/api/properties/search' +
+                    '?page=' + page +
+                    '&size=' + currentPageSize +
+                    '&searchCategory=' + encodeURIComponent(currentSearchCategory) +
+                    '&searchKeyword=' + encodeURIComponent(currentSearchKeyword);
+        
+        loadProperties(url);
+      }
 
 
     function changePageSize() {
@@ -554,13 +554,12 @@
       fetch(url)
         .then(response => response.json())
         .then(pageResponse => {
-          console.log('응답 데이터:', pageResponse);
-          
           if (pageResponse && pageResponse.content) {
             renderTable(pageResponse.content, pageResponse);
             renderPagination(pageResponse);
             document.getElementById('totalCount').textContent = '총 ' + pageResponse.totalElements + '건';
             currentPage = pageResponse.currentPage;
+            totalPages = pageResponse.totalPages;
           } else {
             alert('조회 중 오류가 발생했습니다.');
           }
@@ -573,91 +572,116 @@
           document.getElementById('loading').style.display = 'none';
           document.getElementById('tableContainer').style.display = 'block';
         });
-      
-      
-      totalPages = pageResponse.totalPages;
-      
-      console.log("📍 현재 페이지:", pageResponse.currentPage);
-      console.log("📍 총 페이지 수:", pageResponse.totalPages);
-      console.log("📍 받은 데이터 개수:", pageResponse.content.length);
     }
 
     function renderTable(properties, pageInfo) {
-  	  const tbody = document.querySelector('#listingTable');
-  	  if (!tbody) return; // table 구조가 처음 없으면 무시
+      const container = document.getElementById('tableContainer');
+      if (!container) return;
 
-  	  if (properties.length === 0) {
-  	    tbody.innerHTML = `
-  	      <tr><td colspan="11" style="text-align:center;">검색 결과가 없습니다.</td></tr>
-  	    `;
-  	    return;
-  	  }
+      if (properties.length === 0) {
+        container.innerHTML = '<div class="empty-list"><i class="fa-solid fa-folder-open" style="font-size: 48px; color: #ddd; margin-bottom: 10px;"></i><p>검색 결과가 없습니다.</p></div>';
+        return;
+      }
 
-  	  let rows = '';
-  	  properties.forEach((property, index) => {
-  	    const rowNum = (pageInfo.currentPage - 1) * pageInfo.size + index + 1;
-  	    const createdDate = new Date(property.createdAt).toISOString().split('T')[0];
-  	    const statusClass = property.status === 'ACTIVE' ? 'status-active' :
-  	                       property.status === 'RESERVED' ? 'status-reserved' :
-  	                       property.status === 'COMPLETED' ? 'status-completed' : '';
+      let tableHTML = '<table><thead><tr><th>No.</th><th>건물명</th><th>유형</th><th>가격</th><th>위치</th><th>등록자</th><th>등록자 구분</th><th>연락처</th><th>상태</th><th>등록일</th><th>관리</th></tr></thead><tbody id="listingTable">';
 
-  	    rows += `
-  	      <tr>
-  	        <td>${rowNum}</td>
-  	        <td>${property.propertyName || '-'}</td>
-  	        <td>${property.propertyType || '-'}</td>
-  	        <td>${property.priceDisplay || '-'}</td>
-  	        <td>${property.location || '-'}</td>
-  	        <td>${property.ownerName || '-'}</td>
-  	        <td>${property.ownerType || '-'}</td>
-  	        <td>${property.ownerContact || '-'}</td>
-  	        <td><span class="${statusClass}">${property.status}</span></td>
-  	        <td>${createdDate}</td>
-  	        <td class="action-btns">
-  	          <button class="btn-edit" onclick="openStatusModal(${property.propertyNo}, '${property.status}')">
-  	            <i class="fa-solid fa-pen"></i> 수정
-  	          </button>
-  	          <button class="btn-delete" onclick="deleteProperty(${property.propertyNo})">
-  	            <i class="fa-solid fa-trash"></i> 삭제
-  	          </button>
-  	        </td>
-  	      </tr>
-  	    `;
-  	  });
-  	  tbody.innerHTML = rows;
-  	}
+      properties.forEach((property, index) => {
+        const rowNum = (pageInfo.currentPage - 1) * pageInfo.size + index + 1;
+        const createdDate = property.createdAt ? new Date(property.createdAt).toISOString().split('T')[0] : '-';
+
+        let statusText = '-';
+        let statusClass = '';
+        if (property.status === 'ACTIVE') {
+          statusText = '등록';
+          statusClass = 'status-active';
+        } else if (property.status === 'RESERVED') {
+          statusText = '예약중';
+          statusClass = 'status-reserved';
+        } else if (property.status === 'COMPLETED') {
+          statusText = '거래완료';
+          statusClass = 'status-completed';
+        } else if (property.status) {
+          statusText = property.status;
+        }
+
+        const propertyName = property.propertyName || '-';
+        const propertyType = property.propertyType || '-';
+        const priceDisplay = property.priceDisplay || '-';
+        const location = property.location || '-';
+        const ownerName = property.ownerName || '-';
+        const ownerType = property.ownerType || '-';
+        const ownerContact = property.ownerContact || '-';
+
+        tableHTML += '<tr>' +
+          '<td>' + rowNum + '</td>' +
+          '<td>' + propertyName + '</td>' +
+          '<td>' + propertyType + '</td>' +
+          '<td>' + priceDisplay + '</td>' +
+          '<td>' + location + '</td>' +
+          '<td>' + ownerName + '</td>' +
+          '<td>' + ownerType + '</td>' +
+          '<td>' + ownerContact + '</td>' +
+          '<td><span class="' + statusClass + '">' + statusText + '</span></td>' +
+          '<td>' + createdDate + '</td>' +
+          '<td class="action-btns">' +
+          '<button class="btn-edit" onclick="openStatusModal(' + property.propertyNo + ', \'' + property.status + '\')"><i class="fa-solid fa-pen"></i> 수정</button>' +
+          '<button class="btn-delete" onclick="deleteProperty(' + property.propertyNo + ')"><i class="fa-solid fa-trash"></i> 삭제</button>' +
+          '</td>' +
+          '</tr>';
+      });
+
+      tableHTML += '</tbody></table>';
+      container.innerHTML = tableHTML;
+    }
 
     function renderPagination(pageInfo) {
       const container = document.getElementById('pagination');
-      
-      let paginationHTML = `
-        <button onclick="goToPage(1)" ${pageInfo.first ? 'disabled' : ''}>
-          <i class="fa-solid fa-angles-left"></i>
-        </button>
-        <button onclick="goToPage(${pageInfo.currentPage - 1})" ${!pageInfo.hasPrevious ? 'disabled' : ''}>
-          <i class="fa-solid fa-angle-left"></i>
-        </button>
-      `;
-      
+      container.innerHTML = '';
+
+      // 첫 페이지로 이동 버튼
+      const firstBtn = document.createElement('button');
+      firstBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i>';
+      firstBtn.onclick = () => goToPage(1);
+      firstBtn.disabled = pageInfo.first;
+      container.appendChild(firstBtn);
+
+      // 이전 페이지 버튼
+      const prevBtn = document.createElement('button');
+      prevBtn.innerHTML = '<i class="fa-solid fa-angle-left"></i>';
+      prevBtn.onclick = () => goToPage(pageInfo.currentPage - 1);
+      prevBtn.disabled = !pageInfo.hasPrevious;
+      container.appendChild(prevBtn);
+
+      // 페이지 번호 버튼들
       pageInfo.pageNumbers.forEach(pageNum => {
-        paginationHTML += `
-          <button onclick="goToPage(${pageNum})" class="${pageNum == pageInfo.currentPage ? 'active' : ''}">
-            ${pageNum}
-          </button>
-        `;
+        const pageBtn = document.createElement('button');
+        pageBtn.textContent = pageNum;
+        pageBtn.onclick = () => goToPage(pageNum);
+        if (pageNum === pageInfo.currentPage) {
+          pageBtn.classList.add('active');
+        }
+        container.appendChild(pageBtn);
       });
-      
-      paginationHTML += `
-        <button onclick="goToPage(${pageInfo.currentPage + 1})" ${!pageInfo.hasNext ? 'disabled' : ''}>
-          <i class="fa-solid fa-angle-right"></i>
-        </button>
-        <button onclick="goToPage(${pageInfo.totalPages})" ${pageInfo.last ? 'disabled' : ''}>
-          <i class="fa-solid fa-angles-right"></i>
-        </button>
-        <span class="page-info">${pageInfo.currentPage} / ${pageInfo.totalPages} 페이지</span>
-      `;
-      
-      container.innerHTML = paginationHTML;
+
+      // 다음 페이지 버튼
+      const nextBtn = document.createElement('button');
+      nextBtn.innerHTML = '<i class="fa-solid fa-angle-right"></i>';
+      nextBtn.onclick = () => goToPage(pageInfo.currentPage + 1);
+      nextBtn.disabled = !pageInfo.hasNext;
+      container.appendChild(nextBtn);
+
+      // 마지막 페이지로 이동 버튼
+      const lastBtn = document.createElement('button');
+      lastBtn.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
+      lastBtn.onclick = () => goToPage(pageInfo.totalPages);
+      lastBtn.disabled = pageInfo.last;
+      container.appendChild(lastBtn);
+
+      // 페이지 정보 표시
+      const pageInfo_span = document.createElement('span');
+      pageInfo_span.className = 'page-info';
+      pageInfo_span.textContent = `${pageInfo.currentPage} / ${pageInfo.totalPages} 페이지`;
+      container.appendChild(pageInfo_span);
     }
 
     function openStatusModal(propertyNo, currentStatus) {
