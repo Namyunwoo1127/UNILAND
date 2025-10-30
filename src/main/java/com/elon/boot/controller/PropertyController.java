@@ -112,4 +112,28 @@ public class PropertyController {
     	iService.toggle(interest);
     	return "redirect:/property/" + id;
     }
+    
+    @PostMapping(value = "/{id}/wishlistM", produces = "application/json")
+    @ResponseBody
+    public java.util.Map<String, Object> toggleWishlist2(@PathVariable Long id, HttpSession session) {
+        User loginUser = (User) session.getAttribute("loginUser");
+        
+//        boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));로 작동
+        if (loginUser == null) {
+            return java.util.Map.of("success", false, "message", "LOGIN_REQUIRED");
+        }
+
+        Interest interest = new Interest();
+        interest.setUserId(loginUser.getUserId());
+        interest.setPropertyNo(id);
+
+        boolean liked = iService.toggle(interest);
+        int favoriteCount = iService.countFavorites(id);
+
+        return java.util.Map.of(
+            "success", true,
+            "liked", liked,
+            "favoriteCount", favoriteCount
+        );
+    }
 }
