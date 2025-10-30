@@ -701,11 +701,33 @@
                                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                                         <div class="list-title">${inquiry.title}</div>
                                         
-                                        <c:if test="${inquiry.inquiryType == 'ADMIN' && not empty inquiry.category}">
-                                            <span style="padding: 4px 8px; background: #f0f0f0; color: #666; border-radius: 4px; font-size: 12px;">
-                                                ${inquiry.category}
-                                            </span>
-                                        </c:if>
+										<c:if test="${not empty inquiry.category}">
+										    <span style="padding: 4px 8px; background: #f0f0f0; color: #666; border-radius: 4px; font-size: 12px;">
+										        
+										        <%-- DB의 영어 카테고리 값을 요청하신 한글로 변환합니다. --%>
+										        <c:choose>
+										            <%-- '방문 문의'에 대한 DB 값 'VISIT' --%>
+										            <c:when test="${inquiry.category == 'VISIT'}">
+										                방문 문의
+										            </c:when>
+										            <c:when test="${inquiry.category == 'PRICE'}">
+										                가격 문의
+										            </c:when>
+										            <c:when test="${inquiry.category == 'CONTRACT'}">
+										                계약 문의
+										            </c:when>
+										            <c:when test="${inquiry.category == 'ETC'}">
+										                기타
+										            </c:when>
+										            
+										            <%-- 일치하는 항목이 없으면 원본을 그대로 표시 --%>
+										            <c:otherwise>
+										                ${inquiry.category}
+										            </c:otherwise>
+										        </c:choose>
+										        
+										    </span>
+										</c:if>
                                         
                                         <c:choose>
                                             <c:when test="${inquiry.inquiryType == 'ADMIN'}">
@@ -737,6 +759,9 @@
                                         <c:if test="${not empty inquiry.realtorId}">
                                             <div style="margin-top: 8px; font-size: 13px; color: #666;">
                                                 <i class="fa-solid fa-building"></i> 중개사: ${inquiry.realtorId}
+                                                <span style="margin-left: 15px;">
+									                <i class="fa-solid fa-user"></i> 사용자: ${inquiry.userId}
+									            </span>
                                             </div>
                                         </c:if>
                                         <c:if test="${not empty inquiry.propertyId}">
