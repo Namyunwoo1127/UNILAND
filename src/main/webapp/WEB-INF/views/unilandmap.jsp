@@ -2736,14 +2736,11 @@
           }
 
         function toggleWishlistAjax(propertyId) {
-        	  const headers = { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
-        	  const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
-        	  const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
-        	  if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+        	  const headers = 
 
-        	  fetch('${pageContext.request.contextPath}/property/' + propertyId + '/wishlist', {
+        	  fetch('${pageContext.request.contextPath}/property/' + propertyId + '/wishlistM', {
         	    method: 'POST',
-        	    headers,
+        	    headers{ 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };,
         	    body: '{}'
         	  })
         	  .then(res => {

@@ -66,7 +66,7 @@ public class MypageController {
         model.addAttribute("wishlist", wishlist);
         model.addAttribute("wImg", wImg);
         model.addAttribute("contractedProperties", contractedProperties);
-
+        model.addAttribute("user", loginUser);
         return "mypage/real-estate-mypage";
     }
     // 임시: 로그인 체크 비활성화 (개발용)
