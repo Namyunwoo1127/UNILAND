@@ -140,7 +140,27 @@ public class RealtorController {
 
     /** ✅ 대시보드 페이지 */
     @GetMapping("/realtor-dashboard")
-    public String showRealtorDashboard() {
+    public String showRealtorDashboard(HttpSession session, 
+            Model model) {
+    		Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+        
+        if (loginRealtor == null) {
+            return "redirect:/realtor/realtor-login";
+        }
+        
+        String realtorId = loginRealtor.getRealtorId();
+        
+        // 2. 통계 조회
+        Map<String, Integer> stats2 = inquiryService.getRealtorInquiryStats(realtorId);
+        
+        
+        
+        // 1. 매물 통계 조회
+        Map<String, Integer> stats = propertyService.getPropertyStatsByRealtor(realtorId);
+        model.addAttribute("allCount", stats.getOrDefault("ALL_COUNT", 0));
+        model.addAttribute("completedCount", stats.getOrDefault("COMPLETED_COUNT", 0));
+        model.addAttribute("stats", stats2);
+        
         return "realtor/realtor-dashboard";
     }
 

@@ -3,8 +3,12 @@ package com.elon.boot.domain.realtor.model.store;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.elon.boot.domain.inquiry.model.vo.Inquiry;
 import com.elon.boot.domain.realtor.model.vo.Realtor;
+
+import java.util.List;
 import java.util.Map; // Map 타입을 사용하기 위해 추가
+import java.util.Properties;
 
 @Mapper
 public interface RealtorMapper {
@@ -47,4 +51,10 @@ public interface RealtorMapper {
      * @return 전화번호와 일치하는 Realtor 객체 또는 null
      */
     Realtor findByPhone(@Param("phone") String phone);
+    
+    int countProperties(String realtorId);
+    int countCompletedDeals(String realtorId);
+    int countNewInquiries(String realtorId);
+    List<Properties> selectRecentProperties(String realtorId);
+    List<Inquiry> selectRecentInquiries(String realtorId);
 }

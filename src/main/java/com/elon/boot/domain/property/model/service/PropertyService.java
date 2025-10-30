@@ -105,6 +105,10 @@ public interface PropertyService {
 
 	List<PropertyImg> getImgListByNoList(List<Long> propertyNos);
 
-
+	/**
+	 * 최근 등록된 매물 5개를 조회합니다. (썸네일 이미지 및 옵션 포함)
+	 * @return 최근 등록 매물 목록 (최대 5개)
+	 */
+	List<Property> getRecentProperties();
 
 }

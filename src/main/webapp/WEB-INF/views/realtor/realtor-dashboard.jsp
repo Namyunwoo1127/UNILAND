@@ -484,7 +484,7 @@
                         <span class="stat-title">전체 매물</span>
                         <div class="stat-icon primary">🏠</div>
                     </div>
-                    <div class="stat-value" id="totalProperties">0</div>
+                    <div class="stat-value" id="totalProperties">${allCount }</div>
                     <div class="stat-change" id="propertyChange">계산 중...</div>
                 </div>
 
@@ -493,7 +493,7 @@
                         <span class="stat-title">거래 완료</span>
                         <div class="stat-icon success">✅</div>
                     </div>
-                    <div class="stat-value" id="completedDeals">0</div>
+                    <div class="stat-value" id="completedDeals">${completedCount }</div>
                     <div class="stat-change" id="dealChange">계산 중...</div>
                 </div>
 
@@ -502,7 +502,7 @@
                         <span class="stat-title">새 문의</span>
                         <div class="stat-icon warning">📩</div>
                     </div>
-                    <div class="stat-value" id="newInquiries">0</div>
+                    <div class="stat-value" id="newInquiries">${stats.pendingCount}</div>
                     <div class="stat-change" id="inquiryChange">계산 중...</div>
                 </div>
             </div>

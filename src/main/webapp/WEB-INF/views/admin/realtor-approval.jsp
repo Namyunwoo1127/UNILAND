@@ -1,100 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNILAND 관리자 - 중개사 승인</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<c:set var="currentPage" value="realtor-approval" scope="request"/>
+<c:set var="pageTitle" value="UNILAND 관리자 - 중개사 승인" scope="request"/>
+<%@ include file="../common/admin-header.jsp" %>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-      background-color: #f5f5f5;
-      color: #1a1a1a;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    /* 헤더 */
-    header {
-      background: white;
-      border-bottom: 1px solid #e5e5e5;
-      padding: 18px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .header-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 24px;
-    }
-    .logo img {
-      height: 60px;
-      object-fit: contain;
-      object-position: center;
-      cursor: pointer;
-    }
-    .btn-login {
-      background: linear-gradient(90deg, #667eea, #764ba2);
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 25px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    .btn-login:hover { 
-      background: linear-gradient(90deg, #5a67d8, #6b46c1);
-      transform: translateY(-2px); 
-    }
-
-    /* 레이아웃 */
-    .admin-container { flex: 1; display: flex; min-height: calc(100vh - 150px); }
-
-    /* 사이드바 */
-    .sidebar {
-      width: 240px;
-      background: #ffffff;
-      border-right: 1px solid #e5e5e5;
-      padding-top: 24px;
-    }
-    .sidebar h3 {
-      text-align: center;
-      color: #667eea;
-      margin-bottom: 20px;
-      font-size: 18px;
-      font-weight: 700;
-    }
-    .sidebar ul { list-style: none; }
-    .sidebar li {
-      padding: 14px 24px;
-      color: #333;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.2s;
-    }
-    .sidebar li:hover { background: #f0f2ff; color: #667eea; }
-    .sidebar li.active { background: #e6e8ff; color: #5568d3; font-weight: 600; }
-
-    /* 메인 콘텐츠 */
-    .main-content {
-      flex: 1;
-      padding: 32px;
-      overflow-y: auto;
-    }
 
     .page-header {
       display: flex;
@@ -317,52 +228,13 @@
       }
       to { 
         opacity: 1;
-        transform: translateY(0); 
+        transform: translateY(0);
       }
     }
-
-    /* 푸터 */
-    footer {
-      background: #2a2a2a;
-      color: #999;
-      padding: 40px 0;
-      border-top: 1px solid #3a3a3a;
-      text-align: center;
-      font-size: 13px;
-    }
   </style>
-</head>
-
-<body>
-  <!-- 헤더 -->
-  <header>
-    <div class="header-container">
-      <div class="logo">
-        <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND 관리자">
-      </div>
-      <div class="auth-buttons">
-        <button class="btn-login"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- 메인 -->
-  <div class="admin-container">
-    <!-- 사이드바 -->
-    <aside class="sidebar">
-      <h3>관리 메뉴</h3>
-      <ul>
-        <li><i class="fa-solid fa-chart-line"></i> 대시보드</li>
-        <li><i class="fa-solid fa-users"></i> 회원관리</li>
-        <li><i class="fa-solid fa-building"></i> 매물관리</li>
-        <li><i class="fa-solid fa-bullhorn"></i> 공지사항관리</li>
-        <li><i class="fa-solid fa-envelope"></i> 문의관리</li>
-        <li class="active"><i class="fa-solid fa-user-check"></i> 중개사 승인</li>
-      </ul>
-    </aside>
 
     <!-- 메인 콘텐츠 -->
-    <main class="main-content">
+    <!-- admin-header.jsp에서 시작된 main-content가 이어집니다 -->
       <div class="page-header">
         <h2>중개사 승인 관리</h2>
       </div>
@@ -482,8 +354,6 @@
           </c:if>
         </tbody>
       </table>
-    </main>
-  </div>
 
   <!-- 상세보기 모달 -->
   <div class="modal-overlay" id="detailModal">
@@ -559,11 +429,6 @@
     </div>
   </div>
 
-  <!-- 푸터 -->
-  <footer>
-    © 2025 UNILAND Admin. All rights reserved.
-  </footer>
-
   <script>
     const contextPath = '${pageContext.request.contextPath}';
 
@@ -638,39 +503,6 @@
       }
     });
 
-    // 사이드바 메뉴 클릭
-    document.querySelectorAll('.sidebar li').forEach((item, index) => {
-      item.addEventListener('click', function() {
-        document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
-        this.classList.add('active');
-
-        const pages = [
-          contextPath + '/admin/dashboard',
-          contextPath + '/admin/user-management',
-          contextPath + '/admin/property-management',
-          contextPath + '/admin/content-management',
-          contextPath + '/admin/inquiry-management',
-          contextPath + '/admin/realtor-approval'
-        ];
-        
-        if (pages[index]) {
-          window.location.href = pages[index];
-        }
-      });
-    });
-
-    // 로고 클릭
-    document.querySelector('.logo').addEventListener('click', function() {
-      window.location.href = contextPath + '/uniland';
-    });
-
-    // 로그아웃
-    document.querySelector('.btn-login').addEventListener('click', function() {
-      if (confirm('로그아웃 하시겠습니까?')) {
-        window.location.href = contextPath + '/auth/logout';
-      }
-    });
-
     // 알림 메시지 자동 사라지기
     setTimeout(function() {
       const alerts = document.querySelectorAll('.alert');
@@ -681,5 +513,5 @@
       });
     }, 3000);
   </script>
-</body>
-</html>
+
+<%@ include file="../common/admin-footer.jsp" %>
