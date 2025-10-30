@@ -344,4 +344,34 @@
       AND REALTOR_ID = #{realtorId}
   </update>
 
+  <!-- 최근 등록 매물 5개 조회 (썸네일 이미지 포함) -->
+  <select id="selectRecentProperties" resultType="com.elon.boot.domain.property.model.vo.Property">
+    SELECT *
+    FROM (
+        SELECT
+            P.PROPERTY_NO,
+            P.REALTOR_ID,
+            P.PROPERTY_NAME,
+            P.PROPERTY_TYPE,
+            P.DEPOSIT,
+            P.MONTHLY_RENT,
+            P.ROAD_ADDRESS,
+            P.PARCEL_ADDRESS,
+            P.DISTRICT,
+            P.PROVINCE,
+            P.CREATED_AT,
+            P.STATUS,
+            -- 썸네일 이미지 조회 (IMG_ORDER = 0인 첫 번째 이미지)
+            (SELECT IMG_PATH
+             FROM PROPERTIES_IMG_TBL PI
+             WHERE PI.PROPERTY_NO = P.PROPERTY_NO
+             AND PI.IMG_ORDER = 0
+             AND ROWNUM = 1) AS THUMBNAILPATH
+        FROM PROPERTY_TBL P
+        WHERE P.STATUS = 'ACTIVE'
+        ORDER BY P.CREATED_AT DESC
+    )
+    WHERE ROWNUM <![CDATA[<=]]> 5
+  </select>
+
 </mapper>

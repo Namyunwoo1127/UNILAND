@@ -35,16 +35,12 @@ public class PageResponseDTO <T> {
     private int size;               // 페이지당 항목 수
     
     // boolean 필드는 is 접두어 제거 (Jackson 직렬화 문제 해결)
-    @JsonProperty("first")
     private boolean first;          // 첫 페이지 여부
     
-    @JsonProperty("last")
     private boolean last;           // 마지막 페이지 여부
     
-    @JsonProperty("hasNext")
     private boolean hasNext;        // 다음 페이지 존재 여부
     
-    @JsonProperty("hasPrevious")
     private boolean hasPrevious;    // 이전 페이지 존재 여부
     
     @JsonProperty("pageNumbers")
@@ -53,6 +49,11 @@ public class PageResponseDTO <T> {
     // 생성자 - 페이징 정보 자동 계산
     public static <T> PageResponseDTO<T> of(List<T> content, int currentPage, int size, long totalElements) {
         int totalPages = (int) Math.ceil((double) totalElements / size);
+        
+           if (totalPages == 0) {
+        	       totalPages = 1;                 // 페이지바 표시를 위한 최소 1페이지
+        	       currentPage = 1;
+        	   }
         
         PageResponseDTO<T> response = new PageResponseDTO<>();
         response.setContent(content);
