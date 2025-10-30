@@ -272,4 +272,20 @@ public class PropertyServiceImpl implements PropertyService {
 	public List<PropertyImg> getImgListByNoList(List<Long> propertyNos) {
 		return propertyMapper.getImgListByNoList(propertyNos);
 	}
+
+	/**
+	 * 최근 등록된 매물 5개를 조회합니다. (썸네일 이미지 및 옵션 포함)
+	 */
+	@Override
+	public List<Property> getRecentProperties() {
+		List<Property> properties = propertyMapper.selectRecentProperties();
+
+		// 각 매물에 대해 옵션 정보를 조회하여 설정
+		for (Property property : properties) {
+			PropertyOption option = optionMapper.selectOnesOption(property.getPropertyNo());
+			property.setPropertyOption(option);
+		}
+
+		return properties;
+	}
 }

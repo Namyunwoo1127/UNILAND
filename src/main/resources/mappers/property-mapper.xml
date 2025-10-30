@@ -150,20 +150,34 @@
     ORDER BY p.CREATED_AT DESC
   </select>
   <select id="selectListByNoList" resultType="com.elon.boot.domain.property.model.vo.Property">
-  	SELECT * 
-  	FROM PROPERTY_TBL 
-  	WHERE PROPERTY_NO IN
-	<foreach collection="list" item="no" open="(" separator="," close=")">
-        #{no}
-    </foreach>
+  	SELECT *
+  	FROM PROPERTY_TBL
+  	<where>
+  	  <if test="list != null and list.size() > 0">
+  	    PROPERTY_NO IN
+	    <foreach collection="list" item="no" open="(" separator="," close=")">
+	      #{no}
+	    </foreach>
+	  </if>
+	  <if test="list == null or list.size() == 0">
+	    1 = 0
+	  </if>
+	</where>
   </select>
     <select id="getImgListByNoList" resultType="com.elon.boot.domain.property.model.vo.PropertyImg">
-  	SELECT * 
-  	FROM PROPERTIES_IMG_TBL 
-  	WHERE PROPERTY_NO IN
-	<foreach collection="list" item="no" open="(" separator="," close=")">
-        #{no}
-    </foreach>
+  	SELECT *
+  	FROM PROPERTIES_IMG_TBL
+  	<where>
+  	  <if test="list != null and list.size() > 0">
+  	    PROPERTY_NO IN
+	    <foreach collection="list" item="no" open="(" separator="," close=")">
+	      #{no}
+	    </foreach>
+	  </if>
+	  <if test="list == null or list.size() == 0">
+	    1 = 0
+	  </if>
+	</where>
   </select>
 
   <insert id="insertProperty" parameterType="com.elon.boot.domain.property.model.vo.Property">
@@ -329,5 +343,35 @@
     WHERE PROPERTY_NO = #{propertyNo}
       AND REALTOR_ID = #{realtorId}
   </update>
+
+  <!-- 최근 등록 매물 5개 조회 (썸네일 이미지 포함) -->
+  <select id="selectRecentProperties" resultType="com.elon.boot.domain.property.model.vo.Property">
+    SELECT *
+    FROM (
+        SELECT
+            P.PROPERTY_NO,
+            P.REALTOR_ID,
+            P.PROPERTY_NAME,
+            P.PROPERTY_TYPE,
+            P.DEPOSIT,
+            P.MONTHLY_RENT,
+            P.ROAD_ADDRESS,
+            P.PARCEL_ADDRESS,
+            P.DISTRICT,
+            P.PROVINCE,
+            P.CREATED_AT,
+            P.STATUS,
+            -- 썸네일 이미지 조회 (IMG_ORDER = 0인 첫 번째 이미지)
+            (SELECT IMG_PATH
+             FROM PROPERTIES_IMG_TBL PI
+             WHERE PI.PROPERTY_NO = P.PROPERTY_NO
+             AND PI.IMG_ORDER = 0
+             AND ROWNUM = 1) AS THUMBNAILPATH
+        FROM PROPERTY_TBL P
+        WHERE P.STATUS = 'ACTIVE'
+        ORDER BY P.CREATED_AT DESC
+    )
+    WHERE ROWNUM <![CDATA[<=]]> 5
+  </select>
 
 </mapper>
