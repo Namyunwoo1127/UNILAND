@@ -30,11 +30,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MypageController {
 
-	private final UserService uService;
-	private final InquiryService inquiryService;
-	private final InterestService iService;
-	private final PropertyService pService;
-	
+   private final UserService uService;
+   private final InquiryService inquiryService;
+   private final InterestService iService;
+   private final PropertyService pService;
+   
     // 일반 사용자 마이페이지
     @GetMapping
     public String mypage(HttpSession session, Model model) {
@@ -47,8 +47,8 @@ public class MypageController {
         List<Inquiry> inquiries = inquiryService.getInquiriesByUserId(loginUser.getUserId());
         List<Interest> iList = iService.getListById(loginUser.getUserId());
         List<Long> propertyNos = iList.stream()
-        	    .map(Interest::getPropertyNo)
-        	    .collect(Collectors.toList());
+               .map(Interest::getPropertyNo)
+               .collect(Collectors.toList());
         List<Property> wishlist = pService.selectListByNoList(propertyNos);
         List<PropertyImg> wImg = pService.getImgListByNoList(propertyNos);
 
@@ -86,7 +86,7 @@ public class MypageController {
     public String updateProfile(
             @ModelAttribute UserModRequest userModiReq,
             HttpSession session) {
-    	int result = uService.updateUser(userModiReq);
+       int result = uService.updateUser(userModiReq);
 
 
         return "redirect:/mypage";

@@ -610,7 +610,11 @@
                                                     ${inquiry.userName.substring(0, 1)}
                                                 </div>
                                                 <div class="inquiry-user-detail">
-                                                    <h3>${inquiry.userName} 님</h3>
+                                                    <h3>${inquiry.userName} 님
+	                                                <span style="margin-left: 15px; font-size: 13px; color: #718096; font-weight: 500;">
+												        <i class="fa-solid fa-user"></i> : ${inquiry.userId}
+												    </span>
+                                                    </h3>
                                                     <div class="inquiry-meta">
                                                         <span><i class="fas fa-phone"></i> ${inquiry.userPhone}</span>
                                                         <span><i class="fas fa-clock"></i> <fmt:formatDate value="${inquiry.createdAt}" pattern="yyyy.MM.dd HH:mm"/></span>
