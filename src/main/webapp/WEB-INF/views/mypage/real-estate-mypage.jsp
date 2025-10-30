@@ -551,60 +551,22 @@
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
-                        <div class="contract-card">
-                    <div class="contract-status">진행중</div>
-                    <div class="contract-title">강남구 역삼동 아파트</div>
-                    <div class="contract-location">📍 서울 강남구 역삼동 123-45</div>
+                            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #fafafa; border-radius: 8px;">
+                                <div style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;">
+                                    <i class="fa-solid fa-house-user"></i>
+                                </div>
+                                <div style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px;">
+                                    계약한 매물이 없습니다
+                                </div>
+                                <div style="font-size: 14px; color: #999; margin-bottom: 20px;">
+                                    매물을 둘러보세요
+                                </div>
+                                <button class="btn-edit" onclick="location.href='${pageContext.request.contextPath}/map'">
+                                    <i class="fa-solid fa-search"></i> 매물 찾아보기
+                                </button>
+                            </div>
+                        </c:otherwise>
                     
-                    <div class="agent-info">
-                        <div class="agent-row">
-                            <div class="agent-label">중개사</div>
-                            <div class="agent-value">우리공인중개사</div>
-                        </div>
-                        <div class="agent-row">
-                            <div class="agent-label">중개사 전화</div>
-                            <div class="agent-value">02-123-4567</div>
-                        </div>
-                        <div class="agent-row">
-                            <div class="agent-label">담당자</div>
-                            <div class="agent-value">김상담 공인중개사</div>
-                        </div>
-                        <div class="agent-row">
-                            <div class="agent-label">거래 단계</div>
-                            <div class="agent-value">계약금 입금 대기</div>
-                        </div>
-                    </div>
-                    
-                    <button class="btn-chat">💬 중개사 채팅</button>
-                </div>
-                
-                <div class="contract-card">
-                    <div class="contract-status" style="background: #e8f1ff; color: #2c5ff5;">완료</div>
-                    <div class="contract-title">서초구 서초동 오피스텔</div>
-                    <div class="contract-location">📍 서울 서초구 서초동 456-78</div>
-                    
-                    <div class="agent-info">
-                        <div class="agent-row">
-                            <div class="agent-label">중개사</div>
-                            <div class="agent-value">신세계공인중개사</div>
-                        </div>
-                        <div class="agent-row">
-                            <div class="agent-label">중개사 전화</div>
-                            <div class="agent-value">02-987-6543</div>
-                        </div>
-                        <div class="agent-row">
-                            <div class="agent-label">담당자</div>
-                            <div class="agent-value">이전문 공인중개사</div>
-                        </div>
-                        <div class="agent-row">
-                            <div class="agent-label">거래 단계</div>
-                            <div class="agent-value">계약 완료</div>
-                        </div>
-                    </div>
-
-                    <button class="btn-chat">💬 중개사 채팅</button>
-                </div>
-                    </c:otherwise>
                 </c:choose>
             </div>
             
