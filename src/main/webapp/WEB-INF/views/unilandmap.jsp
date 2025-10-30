@@ -2736,11 +2736,10 @@
           }
 
         function toggleWishlistAjax(propertyId) {
-        	  const headers = 
 
         	  fetch('${pageContext.request.contextPath}/property/' + propertyId + '/wishlistM', {
         	    method: 'POST',
-        	    headers{ 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };,
+        	    headers: {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };,
         	    body: '{}'
         	  })
         	  .then(res => {
