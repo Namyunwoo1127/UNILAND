@@ -9,24 +9,24 @@
     FROM PROPERTY_TBL
     WHERE PROPERTY_NO = #{id, jdbcType=NUMERIC}
   </select>
-	<select id="selectImagesByPropertyNo"
-	        parameterType="long"
-	        resultType="com.elon.boot.domain.property.model.vo.PropertyImg">
-	  SELECT
-	    IMG_NO            AS imgNo,
-	    PROPERTY_NO       AS propertyNo,
-	    IMG_PATH          AS imgPath,
-	    IMG_RENAME        AS imgRename,
-	    IMG_ORIGINAL_NAME AS imgOriginalName,
-	    IMG_ORDER         AS imgOrder
-	  FROM PROPERTIES_IMG_TBL
-	  WHERE PROPERTY_NO = #{id}
-	  ORDER BY IMG_ORDER ASC, IMG_NO ASC
-	</select>
-	<select id="selectRealtorById" resultType="com.elon.boot.domain.realtor.model.vo.Realtor">
-		SELECT * FROM REALTOR_TBL
-		WHERE REALTOR_ID = #{rId}
-	</select>
+   <select id="selectImagesByPropertyNo"
+           parameterType="long"
+           resultType="com.elon.boot.domain.property.model.vo.PropertyImg">
+     SELECT
+       IMG_NO            AS imgNo,
+       PROPERTY_NO       AS propertyNo,
+       IMG_PATH          AS imgPath,
+       IMG_RENAME        AS imgRename,
+       IMG_ORIGINAL_NAME AS imgOriginalName,
+       IMG_ORDER         AS imgOrder
+     FROM PROPERTIES_IMG_TBL
+     WHERE PROPERTY_NO = #{id}
+     ORDER BY IMG_ORDER ASC, IMG_NO ASC
+   </select>
+   <select id="selectRealtorById" resultType="com.elon.boot.domain.realtor.model.vo.Realtor">
+      SELECT * FROM REALTOR_TBL
+      WHERE REALTOR_ID = #{rId}
+   </select>
 
 
   <select id="selectOnesOption" resultType="com.elon.boot.domain.property.model.vo.PropertyOption">
@@ -150,20 +150,34 @@
     ORDER BY p.CREATED_AT DESC
   </select>
   <select id="selectListByNoList" resultType="com.elon.boot.domain.property.model.vo.Property">
-  	SELECT * 
-  	FROM PROPERTY_TBL 
-  	WHERE PROPERTY_NO IN
-	<foreach collection="list" item="no" open="(" separator="," close=")">
-        #{no}
-    </foreach>
+     SELECT *
+     FROM PROPERTY_TBL
+     <where>
+       <if test="list != null and list.size() > 0">
+         PROPERTY_NO IN
+       <foreach collection="list" item="no" open="(" separator="," close=")">
+         #{no}
+       </foreach>
+     </if>
+     <if test="list == null or list.size() == 0">
+       1 = 0
+     </if>
+   </where>
   </select>
     <select id="getImgListByNoList" resultType="com.elon.boot.domain.property.model.vo.PropertyImg">
-  	SELECT * 
-  	FROM PROPERTIES_IMG_TBL 
-  	WHERE PROPERTY_NO IN
-	<foreach collection="list" item="no" open="(" separator="," close=")">
-        #{no}
-    </foreach>
+     SELECT *
+     FROM PROPERTIES_IMG_TBL
+     <where>
+       <if test="list != null and list.size() > 0">
+         PROPERTY_NO IN
+       <foreach collection="list" item="no" open="(" separator="," close=")">
+         #{no}
+       </foreach>
+     </if>
+     <if test="list == null or list.size() == 0">
+       1 = 0
+     </if>
+   </where>
   </select>
 
   <insert id="insertProperty" parameterType="com.elon.boot.domain.property.model.vo.Property">
