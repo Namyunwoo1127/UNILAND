@@ -1,92 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNILAND 관리자 - 매물관리</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<c:set var="pageTitle" value="UNILAND 관리자 - 매물관리" />
+<c:set var="currentPage" value="property-management" />
+<jsp:include page="/WEB-INF/views/common/admin-header.jsp"/>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-      background-color: #f5f5f5;
-      color: #1a1a1a;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    header {
-      background: white;
-      border-bottom: 1px solid #e5e5e5;
-      padding: 18px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .header-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 24px;
-    }
-    .logo img {
-      height: 60px;
-      object-fit: contain;
-      cursor: pointer;
-    }
-    .btn-login {
-      background: #667eea;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 25px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-    .btn-login:hover { background: #5a67d8; transform: translateY(-2px); }
-
-    .admin-container { flex: 1; display: flex; min-height: calc(100vh - 150px); }
-
-    .sidebar {
-      width: 240px;
-      background: #ffffff;
-      border-right: 1px solid #e5e5e5;
-      padding-top: 24px;
-    }
-    .sidebar h3 {
-      text-align: center;
-      color: #667eea;
-      margin-bottom: 20px;
-      font-size: 18px;
-      font-weight: 700;
-    }
-    .sidebar ul { list-style: none; }
-    .sidebar li {
-      padding: 14px 24px;
-      color: #333;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.2s;
-    }
-    .sidebar li:hover { background: #f0f2ff; color: #667eea; }
-    .sidebar li.active { background: #e6e8ff; color: #5568d3; font-weight: 600; }
-
-    .main-content {
-      flex: 1;
-      padding: 32px;
-      overflow-y: auto;
-    }
     .page-header {
       display: flex;
       justify-content: space-between;
@@ -164,6 +83,7 @@
       text-align: center;
       border-bottom: 1px solid #f0f0f0;
       font-size: 14px;
+      white-space: nowrap;
     }
     th {
       background: #f8f8f8;
@@ -171,6 +91,23 @@
       font-weight: 600;
     }
     tr:hover td { background: #f9faff; }
+
+    /* 각 열별 너비 설정 */
+    th:nth-child(1), td:nth-child(1) { width: 50px; }  /* No. */
+    th:nth-child(2), td:nth-child(2) {
+      max-width: 150px;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.4;
+    }  /* 건물명 - 두 줄 가능 */
+    th:nth-child(3), td:nth-child(3) { width: 70px; }  /* 유형 */
+    th:nth-child(4), td:nth-child(4) { width: 90px; }  /* 가격 */
+    th:nth-child(5), td:nth-child(5) { max-width: 120px; }  /* 위치 */
+    th:nth-child(6), td:nth-child(6) { width: 80px; }  /* 등록자 */
+    th:nth-child(7), td:nth-child(7) { width: 110px; }  /* 연락처 */
+    th:nth-child(8), td:nth-child(8) { width: 70px; }  /* 상태 */
+    th:nth-child(9), td:nth-child(9) { width: 100px; }  /* 등록일 */
+    th:nth-child(10), td:nth-child(10) { width: 140px; }  /* 관리 */
 
     .action-btns {
       display: flex;
@@ -316,44 +253,8 @@
       background: white;
       border-radius: 8px;
     }
-
-    footer {
-      background: #2a2a2a;
-      color: #999;
-      padding: 40px 0;
-      border-top: 1px solid #3a3a3a;
-      text-align: center;
-      font-size: 13px;
-    }
   </style>
-</head>
 
-<body>
-  <header>
-    <div class="header-container">
-      <div class="logo">
-        <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND 관리자">
-      </div>
-      <div class="auth-buttons">
-        <button class="btn-login" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
-      </div>
-    </div>
-  </header>
-
-  <div class="admin-container">
-    <aside class="sidebar">
-      <h3>관리 메뉴</h3>
-      <ul>
-        <li><i class="fa-solid fa-chart-line"></i> 대시보드</li>
-        <li><i class="fa-solid fa-users"></i> 회원관리</li>
-        <li class="active"><i class="fa-solid fa-building"></i> 매물관리</li>
-        <li><i class="fa-solid fa-bullhorn"></i> 공지사항관리</li>
-        <li><i class="fa-solid fa-envelope"></i> 문의관리</li>
-        <li><i class="fa-solid fa-user-check"></i> 중개사 승인</li>
-      </ul>
-    </aside>
-
-    <main class="main-content">
       <div class="page-header">
         <div>
           <h2>매물관리 <span class="total-count" id="totalCount">총 ${pageInfo.totalElements}건</span></h2>
@@ -407,7 +308,6 @@
                   <th>가격</th>
                   <th>위치</th>
                   <th>등록자</th>
-                  <th>등록자 구분</th>
                   <th>연락처</th>
                   <th>상태</th>
                   <th>등록일</th>
@@ -423,7 +323,6 @@
                     <td>${property.priceDisplay}</td>
                     <td>${property.location}</td>
                     <td>${property.ownerName}</td>
-                    <td>${property.ownerType}</td>
                     <td>${property.ownerContact}</td>
                     <td>
                       <c:choose>
@@ -466,24 +365,22 @@
         <button onclick="goToPage(${pageInfo.currentPage - 1})" ${!pageInfo.hasPrevious ? 'disabled' : ''}>
           <i class="fa-solid fa-angle-left"></i>
         </button>
-        
+
         <c:forEach items="${pageInfo.pageNumbers}" var="pageNum">
           <button onclick="goToPage(${pageNum})" class="${pageNum == pageInfo.currentPage ? 'active' : ''}">
             ${pageNum}
           </button>
         </c:forEach>
-        
+
         <button onclick="goToPage(${pageInfo.currentPage + 1})" ${!pageInfo.hasNext ? 'disabled' : ''}>
           <i class="fa-solid fa-angle-right"></i>
         </button>
         <button onclick="goToPage(${pageInfo.totalPages})" ${pageInfo.last ? 'disabled' : ''}>
           <i class="fa-solid fa-angles-right"></i>
         </button>
-        
+
         <span class="page-info">${pageInfo.currentPage} / ${pageInfo.totalPages} 페이지</span>
       </div>
-    </main>
-  </div>
 
   <div class="modal" id="statusModal">
     <div class="modal-content">
@@ -503,17 +400,13 @@
     </div>
   </div>
 
-  <footer>
-    © 2025 UNILAND Admin. All rights reserved.
-  </footer>
-
   <script>
     let currentPropertyNo = null;
     let currentPage = ${pageInfo.currentPage};
     let currentPageSize = ${pageInfo.size};
     let currentSearchCategory = '';
     let currentSearchKeyword = '';
-    
+
     let totalPages = ${pageInfo.totalPages};
 
     function goToPage(page) {
@@ -524,7 +417,7 @@
    	              '&size=' + currentPageSize +
    	              '&searchCategory=' + encodeURIComponent(currentSearchCategory) +
    	              '&searchKeyword=' + encodeURIComponent(currentSearchKeyword);
-   	  
+
    	  loadProperties(url);
    	}
 
@@ -554,13 +447,12 @@
       fetch(url)
         .then(response => response.json())
         .then(pageResponse => {
-          console.log('응답 데이터:', pageResponse);
-          
           if (pageResponse && pageResponse.content) {
             renderTable(pageResponse.content, pageResponse);
             renderPagination(pageResponse);
             document.getElementById('totalCount').textContent = '총 ' + pageResponse.totalElements + '건';
             currentPage = pageResponse.currentPage;
+            totalPages = pageResponse.totalPages;
           } else {
             alert('조회 중 오류가 발생했습니다.');
           }
@@ -573,91 +465,114 @@
           document.getElementById('loading').style.display = 'none';
           document.getElementById('tableContainer').style.display = 'block';
         });
-      
-      
-      totalPages = pageResponse.totalPages;
-      
-      console.log("📍 현재 페이지:", pageResponse.currentPage);
-      console.log("📍 총 페이지 수:", pageResponse.totalPages);
-      console.log("📍 받은 데이터 개수:", pageResponse.content.length);
     }
 
     function renderTable(properties, pageInfo) {
-  	  const tbody = document.querySelector('#listingTable');
-  	  if (!tbody) return; // table 구조가 처음 없으면 무시
+      const container = document.getElementById('tableContainer');
+      if (!container) return;
 
-  	  if (properties.length === 0) {
-  	    tbody.innerHTML = `
-  	      <tr><td colspan="11" style="text-align:center;">검색 결과가 없습니다.</td></tr>
-  	    `;
-  	    return;
-  	  }
+      if (properties.length === 0) {
+        container.innerHTML = '<div class="empty-list"><i class="fa-solid fa-folder-open" style="font-size: 48px; color: #ddd; margin-bottom: 10px;"></i><p>검색 결과가 없습니다.</p></div>';
+        return;
+      }
 
-  	  let rows = '';
-  	  properties.forEach((property, index) => {
-  	    const rowNum = (pageInfo.currentPage - 1) * pageInfo.size + index + 1;
-  	    const createdDate = new Date(property.createdAt).toISOString().split('T')[0];
-  	    const statusClass = property.status === 'ACTIVE' ? 'status-active' :
-  	                       property.status === 'RESERVED' ? 'status-reserved' :
-  	                       property.status === 'COMPLETED' ? 'status-completed' : '';
+      let tableHTML = '<table><thead><tr><th>No.</th><th>건물명</th><th>유형</th><th>가격</th><th>위치</th><th>등록자</th><th>연락처</th><th>상태</th><th>등록일</th><th>관리</th></tr></thead><tbody id="listingTable">';
 
-  	    rows += `
-  	      <tr>
-  	        <td>${rowNum}</td>
-  	        <td>${property.propertyName || '-'}</td>
-  	        <td>${property.propertyType || '-'}</td>
-  	        <td>${property.priceDisplay || '-'}</td>
-  	        <td>${property.location || '-'}</td>
-  	        <td>${property.ownerName || '-'}</td>
-  	        <td>${property.ownerType || '-'}</td>
-  	        <td>${property.ownerContact || '-'}</td>
-  	        <td><span class="${statusClass}">${property.status}</span></td>
-  	        <td>${createdDate}</td>
-  	        <td class="action-btns">
-  	          <button class="btn-edit" onclick="openStatusModal(${property.propertyNo}, '${property.status}')">
-  	            <i class="fa-solid fa-pen"></i> 수정
-  	          </button>
-  	          <button class="btn-delete" onclick="deleteProperty(${property.propertyNo})">
-  	            <i class="fa-solid fa-trash"></i> 삭제
-  	          </button>
-  	        </td>
-  	      </tr>
-  	    `;
-  	  });
-  	  tbody.innerHTML = rows;
-  	}
+      properties.forEach((property, index) => {
+        const rowNum = (pageInfo.currentPage - 1) * pageInfo.size + index + 1;
+        const createdDate = property.createdAt ? new Date(property.createdAt).toISOString().split('T')[0] : '-';
+
+        let statusText = '-';
+        let statusClass = '';
+        if (property.status === 'ACTIVE') {
+          statusText = '등록';
+          statusClass = 'status-active';
+        } else if (property.status === 'RESERVED') {
+          statusText = '예약중';
+          statusClass = 'status-reserved';
+        } else if (property.status === 'COMPLETED') {
+          statusText = '거래완료';
+          statusClass = 'status-completed';
+        } else if (property.status) {
+          statusText = property.status;
+        }
+
+        const propertyName = property.propertyName || '-';
+        const propertyType = property.propertyType || '-';
+        const priceDisplay = property.priceDisplay || '-';
+        const location = property.location || '-';
+        const ownerName = property.ownerName || '-';
+        const ownerContact = property.ownerContact || '-';
+
+        tableHTML += '<tr>' +
+          '<td>' + rowNum + '</td>' +
+          '<td>' + propertyName + '</td>' +
+          '<td>' + propertyType + '</td>' +
+          '<td>' + priceDisplay + '</td>' +
+          '<td>' + location + '</td>' +
+          '<td>' + ownerName + '</td>' +
+          '<td>' + ownerContact + '</td>' +
+          '<td><span class="' + statusClass + '">' + statusText + '</span></td>' +
+          '<td>' + createdDate + '</td>' +
+          '<td class="action-btns">' +
+          '<button class="btn-edit" onclick="openStatusModal(' + property.propertyNo + ', \'' + property.status + '\')"><i class="fa-solid fa-pen"></i> 수정</button>' +
+          '<button class="btn-delete" onclick="deleteProperty(' + property.propertyNo + ')"><i class="fa-solid fa-trash"></i> 삭제</button>' +
+          '</td>' +
+          '</tr>';
+      });
+
+      tableHTML += '</tbody></table>';
+      container.innerHTML = tableHTML;
+    }
 
     function renderPagination(pageInfo) {
       const container = document.getElementById('pagination');
-      
-      let paginationHTML = `
-        <button onclick="goToPage(1)" ${pageInfo.first ? 'disabled' : ''}>
-          <i class="fa-solid fa-angles-left"></i>
-        </button>
-        <button onclick="goToPage(${pageInfo.currentPage - 1})" ${!pageInfo.hasPrevious ? 'disabled' : ''}>
-          <i class="fa-solid fa-angle-left"></i>
-        </button>
-      `;
-      
+      container.innerHTML = '';
+
+      // 첫 페이지로 이동 버튼
+      const firstBtn = document.createElement('button');
+      firstBtn.innerHTML = '<i class="fa-solid fa-angles-left"></i>';
+      firstBtn.onclick = () => goToPage(1);
+      firstBtn.disabled = pageInfo.first;
+      container.appendChild(firstBtn);
+
+      // 이전 페이지 버튼
+      const prevBtn = document.createElement('button');
+      prevBtn.innerHTML = '<i class="fa-solid fa-angle-left"></i>';
+      prevBtn.onclick = () => goToPage(pageInfo.currentPage - 1);
+      prevBtn.disabled = !pageInfo.hasPrevious;
+      container.appendChild(prevBtn);
+
+      // 페이지 번호 버튼들
       pageInfo.pageNumbers.forEach(pageNum => {
-        paginationHTML += `
-          <button onclick="goToPage(${pageNum})" class="${pageNum == pageInfo.currentPage ? 'active' : ''}">
-            ${pageNum}
-          </button>
-        `;
+        const pageBtn = document.createElement('button');
+        pageBtn.textContent = pageNum;
+        pageBtn.onclick = () => goToPage(pageNum);
+        if (pageNum === pageInfo.currentPage) {
+          pageBtn.classList.add('active');
+        }
+        container.appendChild(pageBtn);
       });
-      
-      paginationHTML += `
-        <button onclick="goToPage(${pageInfo.currentPage + 1})" ${!pageInfo.hasNext ? 'disabled' : ''}>
-          <i class="fa-solid fa-angle-right"></i>
-        </button>
-        <button onclick="goToPage(${pageInfo.totalPages})" ${pageInfo.last ? 'disabled' : ''}>
-          <i class="fa-solid fa-angles-right"></i>
-        </button>
-        <span class="page-info">${pageInfo.currentPage} / ${pageInfo.totalPages} 페이지</span>
-      `;
-      
-      container.innerHTML = paginationHTML;
+
+      // 다음 페이지 버튼
+      const nextBtn = document.createElement('button');
+      nextBtn.innerHTML = '<i class="fa-solid fa-angle-right"></i>';
+      nextBtn.onclick = () => goToPage(pageInfo.currentPage + 1);
+      nextBtn.disabled = !pageInfo.hasNext;
+      container.appendChild(nextBtn);
+
+      // 마지막 페이지로 이동 버튼
+      const lastBtn = document.createElement('button');
+      lastBtn.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
+      lastBtn.onclick = () => goToPage(pageInfo.totalPages);
+      lastBtn.disabled = pageInfo.last;
+      container.appendChild(lastBtn);
+
+      // 페이지 정보 표시
+      const pageInfo_span = document.createElement('span');
+      pageInfo_span.className = 'page-info';
+      pageInfo_span.textContent = `${pageInfo.currentPage} / ${pageInfo.totalPages} 페이지`;
+      container.appendChild(pageInfo_span);
     }
 
     function openStatusModal(propertyNo, currentStatus) {
@@ -715,32 +630,6 @@
         alert('삭제 중 오류가 발생했습니다.');
       });
     }
-
-    document.querySelectorAll('.sidebar li').forEach((item, index) => {
-      item.addEventListener('click', function() {
-        const pages = [
-          '${pageContext.request.contextPath}/admin/dashboard',
-          '${pageContext.request.contextPath}/admin/user-management',
-          '${pageContext.request.contextPath}/admin/property-management',
-          '${pageContext.request.contextPath}/admin/content-management',
-          '${pageContext.request.contextPath}/admin/inquiry-management',
-          '${pageContext.request.contextPath}/admin/realtor-approval'
-        ];
-        if (pages[index]) {
-          window.location.href = pages[index];
-        }
-      });
-    });
-
-    document.querySelector('.logo').addEventListener('click', function() {
-      window.location.href = '${pageContext.request.contextPath}/uniland';
-    });
-
-    function logout() {
-      if (confirm('로그아웃 하시겠습니까?')) {
-        window.location.href = '${pageContext.request.contextPath}/auth/logout';
-      }
-    }
   </script>
-</body>
-</html>
+
+<jsp:include page="/WEB-INF/views/common/admin-footer.jsp"/>

@@ -1,98 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNILAND 관리자 - 회원관리</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<c:set var="pageTitle" value="UNILAND 관리자 - 회원관리" />
+<c:set var="currentPage" value="user-management" />
+<jsp:include page="/WEB-INF/views/common/admin-header.jsp"/>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-      background-color: #f5f5f5;
-      color: #1a1a1a;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    /* 헤더 */
-    header {
-      background: white;
-      border-bottom: 1px solid #e5e5e5;
-      padding: 18px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .header-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 24px;
-    }
-    .logo img {
-      height: 60px;
-      object-fit: contain;
-      object-position: center;
-      cursor: pointer;
-    }
-    .btn-login {
-      background: #667eea;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 25px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-    .btn-login:hover { background: #5a67d8; transform: translateY(-2px); }
-
-    /* 레이아웃 */
-    .admin-container { flex: 1; display: flex; }
-
-    /* 사이드바 */
-    .sidebar {
-      width: 240px;
-      background: #ffffff;
-      border-right: 1px solid #e5e5e5;
-      padding-top: 24px;
-    }
-    .sidebar h3 {
-      text-align: center;
-      color: #667eea;
-      margin-bottom: 20px;
-      font-size: 18px;
-      font-weight: 700;
-    }
-    .sidebar ul { list-style: none; }
-    .sidebar li {
-      padding: 14px 24px;
-      color: #333;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.2s;
-    }
-    .sidebar li:hover { background: #f0f2ff; color: #667eea; }
-    .sidebar li.active { background: #e6e8ff; color: #5568d3; font-weight: 600; }
-
-    /* 메인 콘텐츠 */
-    .main-content {
-      flex: 1;
-      padding: 32px;
-      overflow-y: auto;
-    }
-
     .page-header {
       display: flex;
       justify-content: space-between;
@@ -136,7 +49,7 @@
       transition: background 0.3s ease;
     }
     .btn-search:hover { background: #5a67d8; }
-    
+
     .btn-reset {
       background: #718096;
       color: white;
@@ -242,49 +155,8 @@
       margin-bottom: 12px;
       opacity: 0.5;
     }
-
-    /* 푸터 */
-    footer {
-      background: #2a2a2a;
-      color: #999;
-      padding: 40px 0;
-      border-top: 1px solid #3a3a3a;
-      text-align: center;
-      font-size: 13px;
-    }
   </style>
-</head>
 
-<body>
-  <!-- 헤더 -->
-  <header>
-    <div class="header-container">
-      <div class="logo">
-        <img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="UNILAND 관리자">
-      </div>
-      <div class="auth-buttons">
-        <button class="btn-login" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- 메인 -->
-  <div class="admin-container">
-    <!-- 사이드바 -->
-    <aside class="sidebar">
-      <h3>관리 메뉴</h3>
-      <ul>
-        <li><i class="fa-solid fa-chart-line"></i> 대시보드</li>
-        <li class="active"><i class="fa-solid fa-users"></i> 회원관리</li>
-        <li><i class="fa-solid fa-building"></i> 매물관리</li>
-        <li><i class="fa-solid fa-bullhorn"></i> 공지사항관리</li>
-        <li><i class="fa-solid fa-envelope"></i> 문의관리</li>
-        <li><i class="fa-solid fa-user-check"></i> 중개사 승인</li>
-      </ul>
-    </aside>
-
-    <!-- 메인 콘텐츠 -->
-    <main class="main-content">
       <div class="page-header">
         <h2>회원관리</h2>
       </div>
@@ -335,8 +207,8 @@
         <tbody id="memberTable">
           <c:forEach var="user" items="${userList}" varStatus="status">
             <c:if test="${user.adminYn == 'N'}">
-              <tr data-name="${user.userName}" 
-                  data-id="${user.userId}" 
+              <tr data-name="${user.userName}"
+                  data-id="${user.userId}"
                   data-email="${user.userEmail}"
                   data-phone="${user.userPhone}">
                 <td>${status.count}</td>
@@ -449,20 +321,13 @@
         <i class="fa-solid fa-inbox"></i>
         <div>검색 결과가 없습니다.</div>
       </div>
-    </main>
-  </div>
-
-  <!-- 푸터 -->
-  <footer>
-    © 2025 UNILAND Admin. All rights reserved.
-  </footer>
 
   <script>
     // 검색 기능
     function searchMember() {
       const category = document.getElementById('searchCategory').value;
       const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
-      
+
       if (!keyword) {
         alert('검색어를 입력하세요.');
         return;
@@ -471,15 +336,15 @@
       // 일반 회원 검색
       const userRows = document.querySelectorAll('#memberTable tr');
       let userVisibleCount = 0;
-      
+
       userRows.forEach(row => {
         const name = row.getAttribute('data-name') || '';
         const id = row.getAttribute('data-id') || '';
         const email = row.getAttribute('data-email') || '';
         const phone = row.getAttribute('data-phone') || '';
-        
+
         let isMatch = false;
-        
+
         if (category === 'all') {
           isMatch = name.toLowerCase().includes(keyword) ||
                    id.toLowerCase().includes(keyword) ||
@@ -494,7 +359,7 @@
         } else if (category === 'phone') {
           isMatch = phone.toLowerCase().includes(keyword);
         }
-        
+
         if (isMatch) {
           row.style.display = '';
           userVisibleCount++;
@@ -506,16 +371,16 @@
       // 중개사 검색
       const realtorRows = document.querySelectorAll('#realtorTable tr');
       let realtorVisibleCount = 0;
-      
+
       realtorRows.forEach(row => {
         const name = row.getAttribute('data-name') || '';
         const id = row.getAttribute('data-id') || '';
         const email = row.getAttribute('data-email') || '';
         const phone = row.getAttribute('data-phone') || '';
         const office = row.getAttribute('data-office') || '';
-        
+
         let isMatch = false;
-        
+
         if (category === 'all') {
           isMatch = name.toLowerCase().includes(keyword) ||
                    id.toLowerCase().includes(keyword) ||
@@ -533,7 +398,7 @@
         } else if (category === 'office') {
           isMatch = office.toLowerCase().includes(keyword);
         }
-        
+
         if (isMatch) {
           row.style.display = '';
           realtorVisibleCount++;
@@ -546,7 +411,7 @@
 		const totalCount = userVisibleCount + realtorVisibleCount;
 		const searchResultMessage = document.getElementById('searchResultMessage');
 		const searchResultText = document.getElementById('searchResultText');
-		
+
 /* 		if (totalCount > 0) {
 		  searchResultText.textContent = `'${keyword}' 검색 결과: 일반 ${userVisibleCount}명, 중개사 ${realtorVisibleCount}명`;
 		  searchResultMessage.classList.add('active');
@@ -561,8 +426,8 @@
 
       // 카운트 업데이트
       updateCounts();
-      
-      
+
+
     }
 
     // 검색 초기화
@@ -570,19 +435,19 @@
       document.getElementById('searchCategory').value = 'all';
       document.getElementById('searchInput').value = '';
       document.getElementById('searchResultMessage').classList.remove('active');
-      
+
       // 모든 행 표시
       document.querySelectorAll('#memberTable tr, #realtorTable tr').forEach(row => {
         row.style.display = '';
       });
-      
+
       // 결과 없음 메시지 숨김
       document.getElementById('noUserResult').style.display = 'none';
       document.getElementById('noRealtorResult').style.display = 'none';
 
       // 카운트 업데이트
       updateCounts();
-      
+
       window.searchMember = searchMember;
     }
 
@@ -590,18 +455,18 @@
     function updateCounts() {
       const userRows = document.querySelectorAll('#memberTable tr');
       const realtorRows = document.querySelectorAll('#realtorTable tr');
-      
+
       let userVisibleCount = 0;
       let realtorVisibleCount = 0;
-      
+
       userRows.forEach(row => {
         if (row.style.display !== 'none') userVisibleCount++;
       });
-      
+
       realtorRows.forEach(row => {
         if (row.style.display !== 'none') realtorVisibleCount++;
       });
-      
+
       document.getElementById('userCount').textContent = userVisibleCount;
       document.getElementById('realtorCount').textContent = realtorVisibleCount;
     }
@@ -610,38 +475,6 @@
     window.addEventListener('DOMContentLoaded', function() {
       updateCounts();
     });
-
-    // 사이드바 메뉴 클릭
-    document.querySelectorAll('.sidebar li').forEach((item, index) => {
-      item.addEventListener('click', function() {
-        document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
-        this.classList.add('active');
-
-        const pages = [
-          '${pageContext.request.contextPath}/admin/dashboard',
-          '${pageContext.request.contextPath}/admin/user-management',
-          '${pageContext.request.contextPath}/admin/property-management',
-          '${pageContext.request.contextPath}/admin/content-management',
-          '${pageContext.request.contextPath}/admin/inquiry-management',
-          '${pageContext.request.contextPath}/admin/realtor-approval'
-        ];
-        if (pages[index]) {
-          window.location.href = pages[index];
-        }
-      });
-    });
-
-    // 로고 클릭
-    document.querySelector('.logo').addEventListener('click', function() {
-      window.location.href = '${pageContext.request.contextPath}/uniland';
-    });
-
-    // 로그아웃
-    function logout() {
-      if (confirm('로그아웃 하시겠습니까?')) {
-        window.location.href = '${pageContext.request.contextPath}/auth/logout';
-      }
-    }
   </script>
-</body>
-</html>
+
+<jsp:include page="/WEB-INF/views/common/admin-footer.jsp"/>

@@ -99,6 +99,18 @@ public class HomeController {
             // 에러가 발생해도 페이지는 표시되도록 함
         }
 
+        try {
+            // 최근 등록 매물 5개 조회 (썸네일 이미지 및 옵션 포함)
+            List<Property> recentProperties = propertyService.getRecentProperties();
+            model.addAttribute("recentProperties", recentProperties);
+
+            log.debug("메인 페이지 최근 매물 조회: {} 건", recentProperties != null ? recentProperties.size() : 0);
+
+        } catch (Exception e) {
+            log.error("메인 페이지 최근 매물 조회 실패: ", e);
+            // 에러가 발생해도 페이지는 표시되도록 함
+        }
+
         return "uniland";
     }
 

@@ -71,4 +71,10 @@ public interface PropertyMapper {
     int updateProperty(Map<String, Object> params);
 	List<Property> selectListByNoList(List<Long> propertyNos);
 	List<PropertyImg> getImgListByNoList(List<Long> propertyNos);
+
+	/**
+	 * 최근 등록된 매물 5개를 조회합니다. (썸네일 이미지 포함)
+	 * @return 최근 등록 매물 목록 (최대 5개)
+	 */
+	List<Property> selectRecentProperties();
 }

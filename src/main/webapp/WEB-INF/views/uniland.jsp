@@ -828,11 +828,10 @@
             </div>
         </section>
 
-        <!-- 인기 매물 섹션 -->
+        <!-- 최근 등록 매물 섹션 -->
         <section class="popular-section">
             <div class="section-header">
-                <h2>이번 주 인기 매물</h2>
-                <span class="view-all">전체보기 →</span>
+                <h2>최근 등록 매물</h2>
             </div>
             <div class="property-slider-container">
                 <button class="slider-btn slider-btn-prev" onclick="slideProperty(-1)">
@@ -843,103 +842,69 @@
                 </button>
                 <div class="property-slider-wrapper">
                     <div class="property-grid">
-                <div class="property-card" onclick="location.href='${pageContext.request.contextPath}/property/1'">
-                    <div class="property-image">
-                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" alt="원룸">
-                        <span class="property-badge student">학생 우대</span>
-                    </div>
-                    <div class="property-info">
-                        <div class="property-title">신촌역 5분거리 풀옵션 원룸</div>
-                        <div class="property-location">서울 서대문구 창천동</div>
-                        <div class="property-price">500/55</div>
-                        <div class="property-tags">
-                            <span>풀옵션</span>
-                            <span>역세권</span>
-                            <span>단기가능</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="property-card" onclick="location.href='${pageContext.request.contextPath}/property/2'">
-                    <div class="property-image">
-                        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop" alt="오피스텔">
-                        <span class="property-badge new">NEW</span>
-                    </div>
-                    <div class="property-info">
-                        <div class="property-title">혜화역 도보 7분 깨끗한 오피스텔</div>
-                        <div class="property-location">서울 종로구 명륜동</div>
-                        <div class="property-price">1000/60</div>
-                        <div class="property-tags">
-                            <span>신축</span>
-                            <span>주차가능</span>
-                            <span>엘리베이터</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="property-card" onclick="location.href='${pageContext.request.contextPath}/property/3'">
-                    <div class="property-image">
-                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop" alt="원룸">
-                        <span class="property-badge urgent">급매</span>
-                    </div>
-                    <div class="property-info">
-                        <div class="property-title">홍대 캠퍼스 앞 저렴한 원룸</div>
-                        <div class="property-location">서울 마포구 서교동</div>
-                        <div class="property-price">300/45</div>
-                        <div class="property-tags">
-                            <span>저렴</span>
-                            <span>학교근처</span>
-                            <span>관리비저렴</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="property-card" onclick="location.href='${pageContext.request.contextPath}/property/4'">
-                    <div class="property-image">
-                        <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=300&fit=crop" alt="원룸">
-                        <span class="property-badge student">학생 우대</span>
-                    </div>
-                    <div class="property-info">
-                        <div class="property-title">건대입구역 초역세권 원룸</div>
-                        <div class="property-location">서울 광진구 화양동</div>
-                        <div class="property-price">500/50</div>
-                        <div class="property-tags">
-                            <span>초역세권</span>
-                            <span>풀옵션</span>
-                            <span>보안우수</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="property-card" onclick="location.href='${pageContext.request.contextPath}/property/5'">
-                    <div class="property-image">
-                        <img src="https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=400&h=300&fit=crop" alt="오피스텔">
-                    </div>
-                    <div class="property-info">
-                        <div class="property-title">이대역 3분 신축 오피스텔</div>
-                        <div class="property-location">서울 서대문구 대현동</div>
-                        <div class="property-price">1500/70</div>
-                        <div class="property-tags">
-                            <span>신축</span>
-                            <span>풀옵션</span>
-                            <span>세탁기</span>
-                        </div>
+                        <c:choose>
+                            <c:when test="${not empty recentProperties}">
+                                <c:forEach var="property" items="${recentProperties}">
+                                    <div class="property-card" onclick="location.href='${pageContext.request.contextPath}/property/${property.propertyNo}'">
+                                        <div class="property-image">
+                                            <c:choose>
+                                                <c:when test="${not empty property.thumbnailPath}">
+                                                    <img src="${pageContext.request.contextPath}${property.thumbnailPath}" alt="${property.propertyName}">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" alt="매물 이미지">
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <c:if test="${property.studentPref eq 'Y'}">
+                                                <span class="property-badge student">학생 우대</span>
+                                            </c:if>
+                                        </div>
+                                        <div class="property-info">
+                                            <div class="property-title">${property.propertyName}</div>
+                                            <div class="property-location">${property.roadAddress}</div>
+                                            <div class="property-price">${property.deposit}/${property.monthlyRent}</div>
+                                            <div style="font-size: 12px; color: #888; margin-bottom: 6px; font-weight: 600;">주요 옵션</div>
+                                            <div class="property-tags">
+                                                <!-- 주요 옵션만 최대 6개까지 표시 -->
+                                                <c:set var="optionCount" value="0" />
+
+                                                <c:if test="${property.propertyOption.airConditioner eq 'Y' and optionCount < 6}">
+                                                    <span>에어컨</span>
+                                                    <c:set var="optionCount" value="${optionCount + 1}" />
+                                                </c:if>
+                                                <c:if test="${property.propertyOption.refrigerator eq 'Y' and optionCount < 6}">
+                                                    <span>냉장고</span>
+                                                    <c:set var="optionCount" value="${optionCount + 1}" />
+                                                </c:if>
+                                                <c:if test="${property.propertyOption.washer eq 'Y' and optionCount < 6}">
+                                                    <span>세탁기</span>
+                                                    <c:set var="optionCount" value="${optionCount + 1}" />
+                                                </c:if>
+                                                <c:if test="${property.propertyOption.bed eq 'Y' and optionCount < 6}">
+                                                    <span>침대</span>
+                                                    <c:set var="optionCount" value="${optionCount + 1}" />
+                                                </c:if>
+                                                <c:if test="${property.propertyOption.parking eq 'Y' and optionCount < 6}">
+                                                    <span>주차</span>
+                                                    <c:set var="optionCount" value="${optionCount + 1}" />
+                                                </c:if>
+                                                <c:if test="${property.propertyOption.elevator eq 'Y' and optionCount < 6}">
+                                                    <span>엘리베이터</span>
+                                                    <c:set var="optionCount" value="${optionCount + 1}" />
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <div style="width: 100%; text-align: center; padding: 40px; color: #999;">
+                                    등록된 매물이 없습니다.
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </div>
-                <div class="property-card" onclick="location.href='${pageContext.request.contextPath}/property/6'">
-                    <div class="property-image">
-                        <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop" alt="투룸">
-                        <span class="property-badge student">학생 우대</span>
-                    </div>
-                    <div class="property-info">
-                        <div class="property-title">성신여대 도보 5분 투룸</div>
-                        <div class="property-location">서울 성북구 동선동</div>
-                        <div class="property-price">500/65</div>
-                        <div class="property-tags">
-                            <span>투룸</span>
-                            <span>단기가능</span>
-                            <span>반려동물</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            </div>
             </div>
         </section>
 

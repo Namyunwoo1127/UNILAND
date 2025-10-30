@@ -633,35 +633,19 @@
 					</c:when>
                         
                         <c:otherwise>
-                            <div class="card">
-                                <div class="card-image">매물 이미지</div>
-                                <div class="card-title">강남구 역삼동 아파트</div>
-                                <div class="card-desc">전용 84㎡ | 매매 12억</div>
-                            </div>
-                            <div class="card">
-                                <div class="card-image">매물 이미지</div>
-                                <div class="card-title">서초구 서초동 오피스텔</div>
-                                <div class="card-desc">전용 33㎡ | 전세 3억</div>
-                            </div>
-                            <div class="card">
-                                <div class="card-image">매물 이미지</div>
-                                <div class="card-title">송파구 잠실동 빌라</div>
-                                <div class="card-desc">전용 66㎡ | 월세 500/50</div>
-                            </div>
-                            <div class="card">
-                                <div class="card-image">매물 이미지</div>
-                                <div class="card-title">마포구 상암동 아파트</div>
-                                <div class="card-desc">전용 99㎡ | 매매 10억</div>
-                            </div>
-                            <div class="card">
-                                <div class="card-image">매물 이미지</div>
-                                <div class="card-title">용산구 이촌동 아파트</div>
-                                <div class="card-desc">전용 115㎡ | 매매 15억</div>
-                            </div>
-                            <div class="card">
-                                <div class="card-image">매물 이미지</div>
-                                <div class="card-title">성동구 성수동 오피스텔</div>
-                                <div class="card-desc">전용 40㎡ | 전세 3.5억</div>
+                            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #fafafa; border-radius: 8px;">
+                                <div style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;">
+                                    <i class="fa-solid fa-heart"></i>
+                                </div>
+                                <div style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px;">
+                                    찜한 매물이 없습니다
+                                </div>
+                                <div style="font-size: 14px; color: #999; margin-bottom: 20px;">
+                                    마음에 드는 매물을 찜해보세요
+                                </div>
+                                <button class="btn-edit" onclick="location.href='${pageContext.request.contextPath}/map'">
+                                    <i class="fa-solid fa-search"></i> 매물 찾아보기
+                                </button>
                             </div>
                         </c:otherwise>
                     </c:choose>
