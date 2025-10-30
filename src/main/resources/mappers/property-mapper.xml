@@ -9,24 +9,24 @@
     FROM PROPERTY_TBL
     WHERE PROPERTY_NO = #{id, jdbcType=NUMERIC}
   </select>
-	<select id="selectImagesByPropertyNo"
-	        parameterType="long"
-	        resultType="com.elon.boot.domain.property.model.vo.PropertyImg">
-	  SELECT
-	    IMG_NO            AS imgNo,
-	    PROPERTY_NO       AS propertyNo,
-	    IMG_PATH          AS imgPath,
-	    IMG_RENAME        AS imgRename,
-	    IMG_ORIGINAL_NAME AS imgOriginalName,
-	    IMG_ORDER         AS imgOrder
-	  FROM PROPERTIES_IMG_TBL
-	  WHERE PROPERTY_NO = #{id}
-	  ORDER BY IMG_ORDER ASC, IMG_NO ASC
-	</select>
-	<select id="selectRealtorById" resultType="com.elon.boot.domain.realtor.model.vo.Realtor">
-		SELECT * FROM REALTOR_TBL
-		WHERE REALTOR_ID = #{rId}
-	</select>
+   <select id="selectImagesByPropertyNo"
+           parameterType="long"
+           resultType="com.elon.boot.domain.property.model.vo.PropertyImg">
+     SELECT
+       IMG_NO            AS imgNo,
+       PROPERTY_NO       AS propertyNo,
+       IMG_PATH          AS imgPath,
+       IMG_RENAME        AS imgRename,
+       IMG_ORIGINAL_NAME AS imgOriginalName,
+       IMG_ORDER         AS imgOrder
+     FROM PROPERTIES_IMG_TBL
+     WHERE PROPERTY_NO = #{id}
+     ORDER BY IMG_ORDER ASC, IMG_NO ASC
+   </select>
+   <select id="selectRealtorById" resultType="com.elon.boot.domain.realtor.model.vo.Realtor">
+      SELECT * FROM REALTOR_TBL
+      WHERE REALTOR_ID = #{rId}
+   </select>
 
 
   <select id="selectOnesOption" resultType="com.elon.boot.domain.property.model.vo.PropertyOption">

@@ -410,7 +410,7 @@
     let totalPages = ${pageInfo.totalPages};
 
     function goToPage(page) {
-   	  if (page < 1 || page > totalPages) return;
+        if (page < 1 || page > totalPages) return;
 
    	  const url = '${pageContext.request.contextPath}/admin/api/properties/search' +
    	              '?page=' + page +

@@ -596,41 +596,41 @@
                 <div class="card-grid">
                     <c:choose>
                     
-					<c:when test="${not empty wishlist}">
-					    <c:forEach var="property" items="${wishlist}">
-					        <div class="card" onclick="location.href='${pageContext.request.contextPath}/property/${property.propertyNo}'">
-					            <div class="card-image">
-					                <c:choose>
-					                    <c:when test="${not empty wImg}">
-					                        <c:forEach var="img" items="${wImg}">
-					                            <c:if test="${img.propertyNo == property.propertyNo && img.imgOrder == 0}">
-					                                <img src="${pageContext.request.contextPath}${img.imgPath}" 
-					                                     alt="${property.propertyName}" 
-					                                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
-					                            </c:if>
-					                        </c:forEach>
-					                    </c:when>
-					                    <c:otherwise>
-					                        매물 이미지
-					                    </c:otherwise>
-					                </c:choose>
-					            </div>
-					
-					            <div class="card-title">${property.propertyName}</div>
-					            <div class="card-desc">
-					                ${property.contractArea}㎡ | 
-					                <c:choose>
-					                    <c:when test="${property.priceType eq '월세'}">
-					                        보증금 ${property.deposit} / 월세 ${property.monthlyRent}
-					                    </c:when>
-					                    <c:otherwise>
-					                        매매가 ${property.deposit}
-					                    </c:otherwise>
-					                </c:choose>
-					            </div>
-					        </div>
-					    </c:forEach>
-					</c:when>
+               <c:when test="${not empty wishlist}">
+                   <c:forEach var="property" items="${wishlist}">
+                       <div class="card" onclick="location.href='${pageContext.request.contextPath}/property/${property.propertyNo}'">
+                           <div class="card-image">
+                               <c:choose>
+                                   <c:when test="${not empty wImg}">
+                                       <c:forEach var="img" items="${wImg}">
+                                           <c:if test="${img.propertyNo == property.propertyNo && img.imgOrder == 0}">
+                                               <img src="${pageContext.request.contextPath}${img.imgPath}" 
+                                                    alt="${property.propertyName}" 
+                                                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                                           </c:if>
+                                       </c:forEach>
+                                   </c:when>
+                                   <c:otherwise>
+                                       매물 이미지
+                                   </c:otherwise>
+                               </c:choose>
+                           </div>
+               
+                           <div class="card-title">${property.propertyName}</div>
+                           <div class="card-desc">
+                               ${property.contractArea}㎡ | 
+                               <c:choose>
+                                   <c:when test="${property.priceType eq '월세'}">
+                                       보증금 ${property.deposit} / 월세 ${property.monthlyRent}
+                                   </c:when>
+                                   <c:otherwise>
+                                       매매가 ${property.deposit}
+                                   </c:otherwise>
+                               </c:choose>
+                           </div>
+                       </div>
+                   </c:forEach>
+               </c:when>
                         
                         <c:otherwise>
                             <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #fafafa; border-radius: 8px;">
@@ -828,7 +828,7 @@
             <div class="modal-title">회원 정보 수정</div>
 
             <form action="${pageContext.request.contextPath}/mypage/update" method="post" id="updateForm">
-            	<input type="hidden" name="userId" value="${user.userId}">
+               <input type="hidden" name="userId" value="${user.userId}">
                 <div class="form-group">
                     <label class="form-label">이름</label>
                     <input type="text" name="userName" class="form-input" value="${user.userName != null ? user.userName : '홍길동'}" placeholder="이름을 입력하세요">
@@ -986,12 +986,12 @@
             // 4. 정렬된 순서대로 DOM에 다시 삽입
             // inquiryItems 중 첫 번째 요소의 부모를 찾아 그 안에 정렬된 항목을 추가합니다.
             if (inquiryItems.length > 0) {
-	            const inquiryListContainer = inquiryItems[0].parentNode;
-	            if (inquiryListContainer) {
-	                 visibleItems.forEach(item => {
-	                    inquiryListContainer.appendChild(item);
-	                });
-	            }
+               const inquiryListContainer = inquiryItems[0].parentNode;
+               if (inquiryListContainer) {
+                    visibleItems.forEach(item => {
+                       inquiryListContainer.appendChild(item);
+                   });
+               }
             }
             
             // 빈 상태 메시지 표시/숨김
@@ -1047,10 +1047,10 @@
                     
                     // 만약 '내 문의내역' 탭이 활성화된 거라면, 내부 탭 정렬도 실행
                     if (tabParam === 'inquiries') {
-						const activeInquiryTab = document.querySelector('.inquiry-tab.active');
-						if(activeInquiryTab) {
-							switchInquiryTab(activeInquiryTab.dataset.inquiryType);
-						}
+                  const activeInquiryTab = document.querySelector('.inquiry-tab.active');
+                  if(activeInquiryTab) {
+                     switchInquiryTab(activeInquiryTab.dataset.inquiryType);
+                  }
                     }
                 }
             }
