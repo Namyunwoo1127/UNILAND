@@ -367,13 +367,17 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background: #f8f9fa;
+            border-color: #007bff;
+            color: #007bff;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
         }
 
         .btn-secondary {
@@ -911,7 +915,7 @@
                 </div>
 
                 <div class="action-buttons">
-                    <button class="btn-action btn-primary" onclick="openInquiryModal()">
+                    <button class="btn-action btn-primary" onclick="goToInquiryPage()">
                         <i class="fa-solid fa-comment-dots"></i> 중개사 문의하기
                     </button>
 					<form action="${pageContext.request.contextPath}/property/${property.propertyNo}/wishlist" method="post" style="margin-top:12px;">
@@ -928,48 +932,6 @@
         </div>
     </div>
 
-    <!-- 문의하기 모달 -->
-    <div class="modal-overlay" id="inquiryModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">매물 문의하기</h2>
-                <button class="modal-close" onclick="closeInquiryModal()">×</button>
-            </div>
-            <form id="inquiryForm" action="${pageContext.request.contextPath}/inquiry/create" method="post">
-                <input type="hidden" name="propertyId" value="${property.propertyNo}">
-                <div class="form-group">
-                    <label class="form-label">이름</label>
-                    <input type="text" name="name" class="form-input" placeholder="이름을 입력하세요" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">연락처</label>
-                    <input type="tel" name="phone" class="form-input" placeholder="010-0000-0000" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">문의 유형</label>
-                    <select name="inquiryType" class="form-select" required>
-                        <option value="">선택하세요</option>
-                        <option value="visit">방문 문의</option>
-                        <option value="price">가격 문의</option>
-                        <option value="contract">계약 문의</option>
-                        <option value="other">기타</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">문의 내용</label>
-                    <textarea name="content" class="form-textarea" placeholder="문의하실 내용을 입력하세요" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">연락 가능 시간대</label>
-                    <input type="text" name="availableTime" class="form-input" placeholder="예) 평일 오후 2시~6시">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-modal btn-modal-cancel" onclick="closeInquiryModal()">취소</button>
-                    <button type="submit" class="btn-modal btn-modal-submit">문의 전송</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- 푸터 포함 -->
     <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
@@ -1101,61 +1063,21 @@
 		  }
 		}
 
-		// 문의 모달
-        function openInquiryModal() {
-            // 로그인 체크 (map.jsp와 동일하게 loginUser 세션으로 변경)
-            const isLoggedIn = ${not empty sessionScope.loginUser}; 
+		// 중개사 문의하기 페이지로 이동
+        function goToInquiryPage() {
+            // 로그인 체크
+            const isLoggedIn = ${not empty sessionScope.loginUser};
 
             if (!isLoggedIn) {
-                // 로그인이 안 되어 있으면 확인 창 띄우기
                 if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
-                    // map.jsp처럼 로그인 후 현재 상세 페이지로 돌아오도록 redirectUrl 추가
                     window.location.href = '${pageContext.request.contextPath}/auth/login?redirectUrl=/property/${property.propertyNo}';
                 }
-                return; // 로그인이 안됐으므로 모달을 띄우지 않고 종료
+                return;
             }
 
-            // 로그인이 되어있으면 기존 로직대로 모달 열기
-            document.getElementById('inquiryModal').classList.add('active');
+            // 로그인이 되어있으면 중개사 문의 페이지로 이동
+            window.location.href = '${pageContext.request.contextPath}/inquiries/realtor?propertyId=${property.propertyNo}';
         }
-
-        function closeInquiryModal() {
-            document.getElementById('inquiryModal').classList.remove('active');
-        }
-
-        // 모달 외부 클릭 시 닫기
-        document.getElementById('inquiryModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeInquiryModal();
-            }
-        });
-
-        // 문의 폼 제출
-        document.getElementById('inquiryForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            // 폼 데이터 수집 및 제출
-            const formData = new FormData(this);
-
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('문의가 전송되었습니다!\n중개사가 빠른 시일 내에 연락드릴 예정입니다.');
-                    closeInquiryModal();
-                    this.reset();
-                } else {
-                    alert('문의 전송에 실패했습니다. 다시 시도해주세요.');
-                }
-            })
-            .catch(err => {
-                console.error('문의 전송 실패:', err);
-                alert('문의 전송 중 오류가 발생했습니다.');
-            });
-        });
 
         // 키보드 이미지 네비게이션
         document.addEventListener('keydown', function(e) {

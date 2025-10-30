@@ -189,7 +189,7 @@
         
         .btn-edit {
             padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
             border-radius: 4px;
@@ -292,7 +292,7 @@
         .btn-save {
             flex: 1;
             padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
             border-radius: 4px;
@@ -338,8 +338,9 @@
     <div class="container">
         <div class="tab-menu">
             <div class="tab-item active" data-tab="mypage">개인정보 수정</div>
+            <div class="tab-item" data-tab="contracts">계약현황</div>
         </div>
-        
+
         <div class="content-area">
             <div class="content-section active" id="mypage">
                 <div class="section-title">중개사 개인정보</div>
@@ -414,9 +415,72 @@
                     </div>
                 </form>
             </div>
+
+            <!-- 계약현황 탭 -->
+            <div class="content-section" id="contracts">
+                <div class="section-title">계약현황</div>
+
+                <c:choose>
+                    <c:when test="${empty contractedProperties}">
+                        <div style="text-align: center; padding: 80px 20px; color: #999;">
+                            <i class="fas fa-file-contract" style="font-size: 60px; margin-bottom: 20px; color: #ccc;"></i>
+                            <p style="font-size: 18px;">계약 완료된 매물이 없습니다.</p>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                                <thead>
+                                    <tr style="background: #f7fafc; border-bottom: 2px solid #e2e8f0;">
+                                        <th style="padding: 15px; text-align: left; font-weight: 600; color: #2d3748;">매물번호</th>
+                                        <th style="padding: 15px; text-align: left; font-weight: 600; color: #2d3748;">매물명</th>
+                                        <th style="padding: 15px; text-align: left; font-weight: 600; color: #2d3748;">주소</th>
+                                        <th style="padding: 15px; text-align: left; font-weight: 600; color: #2d3748;">가격</th>
+                                        <th style="padding: 15px; text-align: left; font-weight: 600; color: #2d3748;">구매자 ID</th>
+                                        <th style="padding: 15px; text-align: left; font-weight: 600; color: #2d3748;">계약일시</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="property" items="${contractedProperties}">
+                                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                                            <td style="padding: 15px;">${property.propertyNo}</td>
+                                            <td style="padding: 15px; font-weight: 500;">${property.propertyName}</td>
+                                            <td style="padding: 15px; color: #4a5568;">${property.roadAddress}</td>
+                                            <td style="padding: 15px; color: #667eea; font-weight: 600;">
+                                                <c:if test="${property.deposit > 0}">${property.deposit}</c:if>
+                                                <c:if test="${property.monthlyRent > 0}">/${property.monthlyRent}</c:if>
+                                            </td>
+                                            <td style="padding: 15px;">
+                                                <c:choose>
+                                                    <c:when test="${not empty property.userId}">
+                                                        <span style="background: #e6e8ff; color: #5568d3; padding: 4px 8px; border-radius: 4px; font-size: 13px;">
+                                                            ${property.userId}
+                                                        </span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span style="color: #999;">-</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td style="padding: 15px; color: #718096;">
+                                                <c:choose>
+                                                    <c:when test="${not empty property.contractAt}">
+                                                        <fmt:formatDate value="${property.contractAt}" pattern="yyyy-MM-dd HH:mm"/>
+                                                    </c:when>
+                                                    <c:otherwise>-</c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
         </div>
     </div>
-    
+
     <div class="modal" id="editModal">
         <div class="modal-content">
             <div class="modal-title">회원 정보 수정</div>
@@ -711,6 +775,30 @@
             if (e.target === this) {
                 closeEditModal();
             }
+        });
+
+        // 탭 전환 기능
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabItems = document.querySelectorAll('.tab-item');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            tabItems.forEach(function(tabItem) {
+                tabItem.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+
+                    // 모든 탭과 콘텐츠에서 active 클래스 제거
+                    tabItems.forEach(function(item) {
+                        item.classList.remove('active');
+                    });
+                    contentSections.forEach(function(section) {
+                        section.classList.remove('active');
+                    });
+
+                    // 클릭한 탭과 해당 콘텐츠에 active 클래스 추가
+                    this.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
         });
     </script>
 </body>

@@ -503,33 +503,50 @@
                 <div class="section-title">계약 현황</div>
 
                 <c:choose>
-                    <c:when test="${not empty contracts}">
-                        <c:forEach var="contract" items="${contracts}">
+                    <c:when test="${not empty contractedProperties}">
+                        <c:forEach var="property" items="${contractedProperties}">
                             <div class="contract-card">
-                                <div class="contract-status" style="${contract.status == 'COMPLETED' ? 'background: #e8f1ff; color: #2c5ff5;' : ''}">${contract.statusName}</div>
-                                <div class="contract-title">${contract.propertyTitle}</div>
-                                <div class="contract-location">📍 ${contract.propertyAddress}</div>
+                                <div class="contract-status" style="background: #e8f1ff; color: #2c5ff5;">계약 완료</div>
+                                <div class="contract-title">${property.propertyName}</div>
+                                <div class="contract-location">📍 ${property.roadAddress}</div>
 
                                 <div class="agent-info">
                                     <div class="agent-row">
-                                        <div class="agent-label">중개사</div>
-                                        <div class="agent-value">${contract.agencyName}</div>
+                                        <div class="agent-label">매물번호</div>
+                                        <div class="agent-value">#${property.propertyNo}</div>
                                     </div>
                                     <div class="agent-row">
-                                        <div class="agent-label">중개사 전화</div>
-                                        <div class="agent-value">${contract.agencyPhone}</div>
+                                        <div class="agent-label">매물유형</div>
+                                        <div class="agent-value">
+                                            <c:choose>
+                                                <c:when test="${property.propertyType eq 'ONEROOM'}">원룸</c:when>
+                                                <c:when test="${property.propertyType eq 'TWOROOM'}">투룸</c:when>
+                                                <c:when test="${property.propertyType eq 'THREEROOM'}">쓰리룸</c:when>
+                                                <c:when test="${property.propertyType eq 'OFFICETEL'}">오피스텔</c:when>
+                                                <c:otherwise>${property.propertyType}</c:otherwise>
+                                            </c:choose>
+                                        </div>
                                     </div>
                                     <div class="agent-row">
-                                        <div class="agent-label">담당자</div>
-                                        <div class="agent-value">${contract.agentName}</div>
+                                        <div class="agent-label">가격</div>
+                                        <div class="agent-value">
+                                            <c:if test="${property.deposit > 0}">보증금 ${property.deposit}만원</c:if>
+                                            <c:if test="${property.monthlyRent > 0}"> / 월세 ${property.monthlyRent}만원</c:if>
+                                        </div>
                                     </div>
                                     <div class="agent-row">
-                                        <div class="agent-label">거래 단계</div>
-                                        <div class="agent-value">${contract.stepName}</div>
+                                        <div class="agent-label">계약일시</div>
+                                        <div class="agent-value">
+                                            <fmt:formatDate value="${property.contractAt}" pattern="yyyy년 MM월 dd일 HH:mm"/>
+                                        </div>
+                                    </div>
+                                    <div class="agent-row">
+                                        <div class="agent-label">중개사 ID</div>
+                                        <div class="agent-value">${property.realtorId}</div>
                                     </div>
                                 </div>
 
-                                <button class="btn-chat" onclick="openChat('${contract.contractId}')">💬 중개사 채팅</button>
+                                <button class="btn-view" onclick="location.href='${pageContext.request.contextPath}/property/${property.propertyNo}'" style="width: 100%; padding: 12px; background: #8b7fc7; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s;">📋 매물 상세보기</button>
                             </div>
                         </c:forEach>
                     </c:when>

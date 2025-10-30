@@ -69,14 +69,21 @@
     }
     .btn-search:hover { background: #5a67d8; }
 
-    table {
+    /* 테이블 래퍼 - 반응형 스크롤 */
+    .table-wrapper {
       width: 100%;
+      overflow-x: auto;
       background: white;
-      border-collapse: collapse;
       border-radius: 8px;
-      overflow: hidden;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1000px; /* 최소 너비 설정 */
+      background: white;
+      border-collapse: collapse;
     }
     th, td {
       padding: 14px 12px;
@@ -84,6 +91,8 @@
       border-bottom: 1px solid #f0f0f0;
       font-size: 14px;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     th {
       background: #f8f8f8;
@@ -95,14 +104,20 @@
     /* 각 열별 너비 설정 */
     th:nth-child(1), td:nth-child(1) { width: 50px; }  /* No. */
     th:nth-child(2), td:nth-child(2) {
-      max-width: 150px;
+      min-width: 150px;
+      max-width: 200px;
       white-space: normal;
       word-break: break-word;
       line-height: 1.4;
     }  /* 건물명 - 두 줄 가능 */
     th:nth-child(3), td:nth-child(3) { width: 70px; }  /* 유형 */
     th:nth-child(4), td:nth-child(4) { width: 90px; }  /* 가격 */
-    th:nth-child(5), td:nth-child(5) { max-width: 120px; }  /* 위치 */
+    th:nth-child(5), td:nth-child(5) {
+      min-width: 120px;
+      max-width: 180px;
+      white-space: normal;
+      word-break: break-word;
+    }  /* 위치 */
     th:nth-child(6), td:nth-child(6) { width: 80px; }  /* 등록자 */
     th:nth-child(7), td:nth-child(7) { width: 110px; }  /* 연락처 */
     th:nth-child(8), td:nth-child(8) { width: 70px; }  /* 상태 */
@@ -253,6 +268,77 @@
       background: white;
       border-radius: 8px;
     }
+
+    /* 반응형 미디어 쿼리 */
+    @media (max-width: 1200px) {
+      .search-box {
+        flex-wrap: wrap;
+      }
+      .search-box select {
+        width: 120px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .search-box {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-box select,
+      .search-box input,
+      .btn-search {
+        width: 100%;
+      }
+
+      .page-size-box {
+        flex-wrap: wrap;
+      }
+
+      .pagination {
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 15px 10px;
+      }
+
+      .pagination button {
+        min-width: 32px;
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+
+      .action-btns {
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .action-btns button {
+        width: 100%;
+        padding: 5px 8px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      th, td {
+        padding: 10px 8px;
+        font-size: 12px;
+      }
+
+      .page-header h2 {
+        font-size: 20px;
+      }
+
+      .total-count {
+        font-size: 12px;
+      }
+    }
   </style>
 
       <div class="page-header">
@@ -299,60 +385,62 @@
             </div>
           </c:when>
           <c:otherwise>
-            <table>
-              <thead>
-                <tr>
-                  <th>No.</th>
-                  <th>건물명</th>
-                  <th>유형</th>
-                  <th>가격</th>
-                  <th>위치</th>
-                  <th>등록자</th>
-                  <th>연락처</th>
-                  <th>상태</th>
-                  <th>등록일</th>
-                  <th>관리</th>
-                </tr>
-              </thead>
-              <tbody id="listingTable">
-                <c:forEach items="${propertyList}" var="property" varStatus="status">
+            <div class="table-wrapper">
+              <table>
+                <thead>
                   <tr>
-                    <td>${(pageInfo.currentPage - 1) * pageInfo.size + status.count}</td>
-                    <td>${property.propertyName}</td>
-                    <td>${property.propertyType}</td>
-                    <td>${property.priceDisplay}</td>
-                    <td>${property.location}</td>
-                    <td>${property.ownerName}</td>
-                    <td>${property.ownerContact}</td>
-                    <td>
-                      <c:choose>
-                        <c:when test="${property.status == 'ACTIVE'}">
-                          <span class="status-active">등록</span>
-                        </c:when>
-                        <c:when test="${property.status == 'RESERVED'}">
-                          <span class="status-reserved">예약중</span>
-                        </c:when>
-                        <c:when test="${property.status == 'COMPLETED'}">
-                          <span class="status-completed">거래완료</span>
-                        </c:when>
-                        <c:otherwise>
-                          <span>${property.status}</span>
-                        </c:otherwise>
-                      </c:choose>
-                    </td>
-                    <td><fmt:formatDate value="${property.createdAt}" pattern="yyyy-MM-dd" /></td>
-                    <td class="action-btns">
-                      <button class="btn-edit" onclick="openStatusModal(${property.propertyNo}, '${property.status}')">
-                        <i class="fa-solid fa-pen"></i> 수정
-                      </button>
-                      <button class="btn-delete" onclick="deleteProperty(${property.propertyNo})">
-                        <i class="fa-solid fa-trash"></i> 삭제
-                      </button>
-                    </td>
+                    <th>No.</th>
+                    <th>건물명</th>
+                    <th>유형</th>
+                    <th>가격</th>
+                    <th>위치</th>
+                    <th>등록자</th>
+                    <th>연락처</th>
+                    <th>상태</th>
+                    <th>등록일</th>
+                    <th>관리</th>
                   </tr>
-                </c:forEach>
-              </tbody>
-            </table>
+                </thead>
+                <tbody id="listingTable">
+                  <c:forEach items="${propertyList}" var="property" varStatus="status">
+                    <tr>
+                      <td>${(pageInfo.currentPage - 1) * pageInfo.size + status.count}</td>
+                      <td>${property.propertyName}</td>
+                      <td>${property.propertyType}</td>
+                      <td>${property.priceDisplay}</td>
+                      <td>${property.location}</td>
+                      <td>${property.ownerName}</td>
+                      <td>${property.ownerContact}</td>
+                      <td>
+                        <c:choose>
+                          <c:when test="${property.status == 'ACTIVE'}">
+                            <span class="status-active">등록</span>
+                          </c:when>
+                          <c:when test="${property.status == 'RESERVED'}">
+                            <span class="status-reserved">예약중</span>
+                          </c:when>
+                          <c:when test="${property.status == 'COMPLETED'}">
+                            <span class="status-completed">거래완료</span>
+                          </c:when>
+                          <c:otherwise>
+                            <span>${property.status}</span>
+                          </c:otherwise>
+                        </c:choose>
+                      </td>
+                      <td><fmt:formatDate value="${property.createdAt}" pattern="yyyy-MM-dd" /></td>
+                      <td class="action-btns">
+                        <button class="btn-edit" onclick="openStatusModal(${property.propertyNo}, '${property.status}')">
+                          <i class="fa-solid fa-pen"></i> 수정
+                        </button>
+                        <button class="btn-delete" onclick="deleteProperty(${property.propertyNo})">
+                          <i class="fa-solid fa-trash"></i> 삭제
+                        </button>
+                      </td>
+                    </tr>
+                  </c:forEach>
+                </tbody>
+              </table>
+            </div>
           </c:otherwise>
         </c:choose>
       </div>
@@ -476,7 +564,7 @@
         return;
       }
 
-      let tableHTML = '<table><thead><tr><th>No.</th><th>건물명</th><th>유형</th><th>가격</th><th>위치</th><th>등록자</th><th>연락처</th><th>상태</th><th>등록일</th><th>관리</th></tr></thead><tbody id="listingTable">';
+      let tableHTML = '<div class="table-wrapper"><table><thead><tr><th>No.</th><th>건물명</th><th>유형</th><th>가격</th><th>위치</th><th>등록자</th><th>연락처</th><th>상태</th><th>등록일</th><th>관리</th></tr></thead><tbody id="listingTable">';
 
       properties.forEach((property, index) => {
         const rowNum = (pageInfo.currentPage - 1) * pageInfo.size + index + 1;
@@ -521,7 +609,7 @@
           '</tr>';
       });
 
-      tableHTML += '</tbody></table>';
+      tableHTML += '</tbody></table></div>';
       container.innerHTML = tableHTML;
     }
 

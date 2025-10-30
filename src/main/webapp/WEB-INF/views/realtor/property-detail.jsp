@@ -278,7 +278,7 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -470,7 +470,7 @@
         }
 
         .btn-modal-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
         }
 
@@ -641,10 +641,10 @@
                             <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">냉난방</div>
                             <div class="option-grid">
                                 <c:if test="${options.airConditioner == 'Y'}">
-                                    <div class="option-badge">❄️ 에어컨</div>
+                                    <div class="option-badge"><i class="fas fa-snowflake"></i> 에어컨</div>
                                 </c:if>
                                 <c:if test="${options.heater == 'Y'}">
-                                    <div class="option-badge">🌡️ 히터</div>
+                                    <div class="option-badge"><i class="fas fa-thermometer-half"></i> 히터</div>
                                 </c:if>
                             </div>
                         </div>
@@ -655,16 +655,16 @@
                             <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">주방</div>
                             <div class="option-grid">
                                 <c:if test="${options.refrigerator == 'Y'}">
-                                    <div class="option-badge">🧊 냉장고</div>
+                                    <div class="option-badge"><i class="fas fa-fridge"></i> 냉장고</div>
                                 </c:if>
                                 <c:if test="${options.microwave == 'Y'}">
-                                    <div class="option-badge">📻 전자레인지</div>
+                                    <div class="option-badge"><i class="fas fa-microwave"></i> 전자레인지</div>
                                 </c:if>
                                 <c:if test="${options.induction == 'Y'}">
-                                    <div class="option-badge">🍳 인덕션</div>
+                                    <div class="option-badge"><i class="fas fa-fire"></i> 인덕션</div>
                                 </c:if>
                                 <c:if test="${options.gasStove == 'Y'}">
-                                    <div class="option-badge">🔥 가스레인지</div>
+                                    <div class="option-badge"><i class="fas fa-fire-burner"></i> 가스레인지</div>
                                 </c:if>
                             </div>
                         </div>
@@ -675,25 +675,25 @@
                             <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">가구/가전</div>
                             <div class="option-grid">
                                 <c:if test="${options.washer == 'Y'}">
-                                    <div class="option-badge">🧺 세탁기</div>
+                                    <div class="option-badge"><i class="fas fa-tshirt"></i> 세탁기</div>
                                 </c:if>
                                 <c:if test="${options.dryer == 'Y'}">
-                                    <div class="option-badge">💨 건조기</div>
+                                    <div class="option-badge"><i class="fas fa-wind"></i> 건조기</div>
                                 </c:if>
                                 <c:if test="${options.bed == 'Y'}">
-                                    <div class="option-badge">🛏️ 침대</div>
+                                    <div class="option-badge"><i class="fas fa-bed"></i> 침대</div>
                                 </c:if>
                                 <c:if test="${options.desk == 'Y'}">
-                                    <div class="option-badge">📚 책상</div>
+                                    <div class="option-badge"><i class="fas fa-book"></i> 책상</div>
                                 </c:if>
                                 <c:if test="${options.wardrobe == 'Y'}">
-                                    <div class="option-badge">👔 옷장</div>
+                                    <div class="option-badge"><i class="fas fa-shirt"></i> 옷장</div>
                                 </c:if>
                                 <c:if test="${options.shoeRack == 'Y'}">
-                                    <div class="option-badge">👞 신발장</div>
+                                    <div class="option-badge"><i class="fas fa-shoe-prints"></i> 신발장</div>
                                 </c:if>
                                 <c:if test="${options.tv == 'Y'}">
-                                    <div class="option-badge">📺 TV</div>
+                                    <div class="option-badge"><i class="fas fa-tv"></i> TV</div>
                                 </c:if>
                             </div>
                         </div>
@@ -704,16 +704,16 @@
                             <div style="font-size: 14px; font-weight: 600; color: #666; margin-bottom: 10px;">시설</div>
                             <div class="option-grid">
                                 <c:if test="${options.parking == 'Y'}">
-                                    <div class="option-badge">🚗 주차 가능</div>
+                                    <div class="option-badge"><i class="fas fa-car"></i> 주차 가능</div>
                                 </c:if>
                                 <c:if test="${options.elevator == 'Y'}">
-                                    <div class="option-badge">🏢 엘리베이터</div>
+                                    <div class="option-badge"><i class="fas fa-building"></i> 엘리베이터</div>
                                 </c:if>
                                 <c:if test="${options.security == 'Y'}">
-                                    <div class="option-badge">🔒 보안시스템</div>
+                                    <div class="option-badge"><i class="fas fa-lock"></i> 보안시스템</div>
                                 </c:if>
                                 <c:if test="${options.petAllowed == 'Y'}">
-                                    <div class="option-badge">🐾 반려동물</div>
+                                    <div class="option-badge"><i class="fas fa-paw"></i> 반려동물</div>
                                 </c:if>
                             </div>
                         </div>
