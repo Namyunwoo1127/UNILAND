@@ -184,9 +184,11 @@ public class PropertyServiceImpl implements PropertyService {
      */
     @Override
     public List<Property> selectPropertyList(Map<String, String> filterParams, Pagination pager) {
-        // filterParams 맵에 startRow, limit 등의 정보를 추가하여 Mapper로 전달한다고 가정합니다.
-        filterParams.put("startRow", String.valueOf(pager.getStartRow()));
-        filterParams.put("limit", String.valueOf(pager.getBoardLimit()));
+        // pager가 null이 아닌 경우에만 페이징 정보 추가
+        if (pager != null) {
+            filterParams.put("startRow", String.valueOf(pager.getStartRow()));
+            filterParams.put("limit", String.valueOf(pager.getBoardLimit()));
+        }
 
         return propertyMapper.selectPropertyList(filterParams);
     }
@@ -261,6 +263,28 @@ public class PropertyServiceImpl implements PropertyService {
     @Override
     public int updateProperty(Map<String, Object> params) {
         return propertyMapper.updateProperty(params);
+    }
+
+    /**
+     * 계약 완료 처리를 수행합니다.
+     * USER_ID, CONTRACT_STATUS, STATUS, CONTRACT_AT 업데이트
+     */
+    @Transactional
+    @Override
+    public int completeContract(int propertyNo, String buyerUserId, String realtorId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("propertyNo", propertyNo);
+        params.put("buyerUserId", buyerUserId);
+        params.put("realtorId", realtorId);
+        return propertyMapper.completeContract(params);
+    }
+
+    /**
+     * 특정 사용자가 계약한 매물 목록을 조회합니다.
+     */
+    @Override
+    public List<Property> getContractedPropertiesByUserId(Map<String, String> filterParams) {
+        return propertyMapper.selectContractedPropertiesByUserId(filterParams);
     }
 
 	@Override

@@ -69,6 +69,22 @@ public interface PropertyMapper {
      * @return 업데이트된 행의 수 (성공 시 1)
      */
     int updateProperty(Map<String, Object> params);
+
+    /**
+     * 계약 완료 처리를 수행합니다.
+     * USER_ID, CONTRACT_STATUS, STATUS, CONTRACT_AT를 업데이트합니다.
+     * @param params propertyNo, buyerUserId, realtorId를 담은 Map
+     * @return 업데이트된 행의 수 (성공 시 1)
+     */
+    int completeContract(Map<String, Object> params);
+
+    /**
+     * 특정 사용자가 계약한 매물 목록을 조회합니다.
+     * @param filterParams userId와 CONTRACT_STATUS를 담은 Map
+     * @return 계약된 매물 목록
+     */
+    List<Property> selectContractedPropertiesByUserId(Map<String, String> filterParams);
+
 	List<Property> selectListByNoList(List<Long> propertyNos);
 	List<PropertyImg> getImgListByNoList(List<Long> propertyNos);
 
