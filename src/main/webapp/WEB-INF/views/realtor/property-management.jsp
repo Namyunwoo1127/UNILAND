@@ -18,15 +18,15 @@
         .sidebar-menu { list-style: none; padding: 20px 0; }
         .sidebar-menu li { margin: 5px 0; }
         .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 14px 25px; color: #4a5568; text-decoration: none; transition: all 0.3s; font-weight: 500; }
-        .sidebar-menu a:hover { background: #f7fafc; color: #667eea; }
-        .sidebar-menu a.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-right: 4px solid #667eea; }
+        .sidebar-menu a:hover { background: #f0f2ff; color: #667eea; }
+        .sidebar-menu a.active { background: #e6e8ff; color: #5568d3; font-weight: 600; }
         .menu-icon { font-size: 20px; width: 24px; text-align: center; }
 
         .main-content { flex: 1; padding: 40px; }
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .page-header-left h1 { font-size: 32px; color: #2d3748; margin-bottom: 10px; }
         .page-header-left p { color: #718096; font-size: 16px; }
-        .btn-register { padding: 14px 28px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-register { padding: 14px 28px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
         .btn-register:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
 
         .content-section { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
@@ -44,11 +44,10 @@
 
         .stats-bar { display: flex; gap: 30px; padding: 20px; background: #f7fafc; border-radius: 8px; margin-bottom: 30px; }
         .stat-item { display: flex; align-items: center; gap: 10px; }
-        .stat-item-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        .stat-item-icon.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .stat-item-icon.success { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; }
-        .stat-item-icon.warning { background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); color: white; }
-        .stat-item-icon.gray { background: #e2e8f0; color: #4a5568; }
+        .stat-item i { font-size: 24px; color: #667eea; }
+        .stat-item i.success { color: #48bb78; }
+        .stat-item i.warning { color: #ed8936; }
+        .stat-item i.gray { color: #a0aec0; }
         .stat-item-info span { display: block; font-size: 12px; color: #718096; }
         .stat-item-info strong { font-size: 20px; color: #2d3748; }
 
@@ -60,7 +59,7 @@
 
         .card-image { width: 100%; height: 200px; position: relative; padding: 0; overflow: hidden; } 
         .card-image img { width: 100%; height: 100%; object-fit: cover; }
-        .card-image .fallback-icon { width: 100%; height: 100%; background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%); display: flex; align-items: center; justify-content: center; font-size: 60px; color: #667eea; }
+        .card-image .fallback-icon { width: 100%; height: 100%; background: #e0e7ff; display: flex; align-items: center; justify-content: center; font-size: 60px; color: #667eea; }
 
         .card-badge { position: absolute; top: 12px; left: 12px; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; z-index: 10;}
         .badge-active { background: #c6f6d5; color: #22543d; }
@@ -176,10 +175,10 @@
     <aside class="sidebar">
         <div class="sidebar-title">중개사 메뉴</div>
         <ul class="sidebar-menu">
-            <li><a href="${pageContext.request.contextPath}/realtor/realtor-dashboard"><span class="menu-icon">📊</span>대시보드</a></li>
-            <li><a href="#" class="active"><span class="menu-icon">🏢</span>매물 관리</a></li>
-            <li><a href="${pageContext.request.contextPath}/realtor/property-register"><span class="menu-icon">➕</span>매물 등록</a></li>
-            <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management"><span class="menu-icon">💬</span>받은 문의</a></li>
+            <li><a href="${pageContext.request.contextPath}/realtor/realtor-dashboard"><i class="fas fa-chart-line menu-icon"></i>대시보드</a></li>
+            <li><a href="#" class="active"><i class="fas fa-building menu-icon"></i>매물 관리</a></li>
+            <li><a href="${pageContext.request.contextPath}/realtor/property-register"><i class="fas fa-plus-circle menu-icon"></i>매물 등록</a></li>
+            <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management"><i class="fas fa-comments menu-icon"></i>받은 문의</a></li>
         </ul>
     </aside>
 
@@ -190,35 +189,35 @@
                 <p>등록한 매물을 관리하고 수정하세요</p>
             </div>
             <button class="btn-register" onclick="location.href='${pageContext.request.contextPath}/realtor/property-register'">
-                ➕ 매물 등록하기
+                <i class="fas fa-plus-circle"></i> 매물 등록하기
             </button>
         </div>
 
         <div class="content-section">
             <div class="stats-bar">
                 <div class="stat-item">
-                    <div class="stat-item-icon primary">🏠</div>
+                    <i class="fas fa-home"></i>
                     <div class="stat-item-info">
                         <span>전체 매물</span>
                         <strong>${allCount != null ? allCount : 0}</strong>
                     </div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-item-icon success">✅</div>
+                    <i class="fas fa-check-circle success"></i>
                     <div class="stat-item-info">
                         <span>판매중</span>
                         <strong>${activeCount != null ? activeCount : 0}</strong>
                     </div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-item-icon warning">⏳</div>
+                    <i class="fas fa-hourglass-half warning"></i>
                     <div class="stat-item-info">
                         <span>예약중</span>
                         <strong>${reservedCount != null ? reservedCount : 0}</strong>
                     </div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-item-icon gray">🔒</div>
+                    <i class="fas fa-lock gray"></i>
                     <div class="stat-item-info">
                         <span>거래완료</span>
                         <strong>${completedCount != null ? completedCount : 0}</strong>
@@ -258,7 +257,7 @@
                     <div class="search-box">
                         <input type="text" class="search-input" name="searchKeyword" placeholder="매물명, 주소로 검색..." value="${param.searchKeyword != null ? param.searchKeyword : ''}"
                                onkeyup="if(window.event.keyCode==13) submitFilter()">
-                        <span class="search-icon" onclick="submitFilter()">🔍</span>
+                        <span class="search-icon" onclick="submitFilter()"><i class="fas fa-search"></i></span>
                     </div>
                 </div>
             </form>
@@ -267,7 +266,7 @@
                 <c:choose>
                     <c:when test="${empty propertyList}">
                         <div class="empty-state" style="grid-column: 1 / -1;">
-                            <span class="empty-icon">😥</span>
+                            <span class="empty-icon"><i class="fas fa-inbox"></i></span>
                             <h3>등록된 매물이 없습니다</h3>
                             <p>페이지 상단의 **매물 등록하기** 버튼을 이용해 새로운 매물을 등록해 보세요.</p>
                         </div>
@@ -298,7 +297,7 @@
                                                  onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop'">
                                         </c:when>
                                         <c:otherwise>
-                                            <div class="fallback-icon">🏠</div>
+                                            <div class="fallback-icon"><i class="fas fa-home"></i></div>
                                         </c:otherwise>
                                     </c:choose>
                                     
@@ -312,15 +311,15 @@
                                 
                                 <div class="card-content">
                                     <div class="card-title">${property.propertyName}</div>
-                                    <div class="card-location">📍 ${property.roadAddress}</div>
+                                    <div class="card-location"><i class="fas fa-map-marker-alt"></i> ${property.roadAddress}</div>
                                     <div class="card-price">
                                         <c:if test="${property.deposit > 0}">${property.deposit}</c:if>
                                         <c:if test="${property.monthlyRent > 0}">/${property.monthlyRent}</c:if>
                                     </div>
                                     <div class="card-info">
                                         <span>${property.typeIcon} ${propertyTypeKorean}</span>
-                                        <span>📏 <fmt:formatNumber value="${areaPyung}" pattern="0.0"/>평</span>
-                                        <span>📅 <fmt:formatDate value="${property.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
+                                        <span><i class="fas fa-ruler"></i> <fmt:formatNumber value="${areaPyung}" pattern="0.0"/>평</span>
+                                        <span><i class="fas fa-calendar"></i> <fmt:formatDate value="${property.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
                                     </div>
                                     <div class="card-actions">
                                         <button class="btn-card btn-edit" onclick="event.stopPropagation(); location.href='${pageContext.request.contextPath}/realtor/property-edit?id=${property.propertyNo}'">수정</button>
@@ -358,13 +357,38 @@
         <h3 id="modalTitle">매물 상태 변경</h3>
         <p>현재 상태: <strong id="currentStatusDisplay"></strong></p>
         <p>변경할 상태를 선택하세요:</p>
-        
+
         <div class="status-button-group">
             <button class="btn-modal-active" data-status="ACTIVE">판매중</button>
             <button class="btn-modal-reserved" data-status="RESERVED">예약중</button>
             <button class="btn-modal-completed" data-status="COMPLETED">거래완료</button>
         </div>
         <button class="btn-modal-cancel" onclick="hideStatusModal()">취소</button>
+    </div>
+</div>
+
+<%-- 계약 완료 처리 MODAL HTML 구조 --%>
+<div id="contractModal" class="modal-overlay" style="z-index: 1001;">
+    <div class="modal-content" style="width: 400px; position: relative; z-index: 1002;">
+        <h3>계약 완료 처리</h3>
+        <p style="font-size: 14px; color: #718096; margin-bottom: 20px;">
+            거래가 완료된 구매자의 USER ID를 입력해주세요.
+        </p>
+
+        <div style="text-align: left; margin-bottom: 20px;">
+            <label style="display: block; font-size: 14px; font-weight: 600; color: #2d3748; margin-bottom: 8px;">
+                구매자 USER ID
+            </label>
+            <input type="text" id="buyerUserId"
+                   style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;"
+                   placeholder="예: user123">
+            <span id="userIdError" style="display: block; color: #f56565; font-size: 12px; margin-top: 5px; visibility: hidden;"></span>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn-modal-cancel" onclick="hideContractModal()" style="flex: 1; margin-top: 0; position: relative; z-index: 1003; cursor: pointer;">취소</button>
+            <button type="button" class="btn-modal-completed" onclick="submitContractCompletion()" style="flex: 1; position: relative; z-index: 1003; cursor: pointer;">계약 완료</button>
+        </div>
     </div>
 </div>
 
@@ -405,6 +429,14 @@
     function changeStatus(newStatus) {
         if (!currentPropertyId) return;
 
+        // 거래완료 선택 시 계약 완료 모달 열기
+        if (newStatus === 'COMPLETED') {
+            // currentPropertyId를 유지하기 위해 직접 모달만 숨김
+            document.getElementById('statusModal').style.display = 'none';
+            showContractModal();
+            return;
+        }
+
         fetch('${pageContext.request.contextPath}/realtor/property/change-status', {
             method: 'POST',
             headers: {
@@ -417,7 +449,7 @@
             hideStatusModal();
             if (data.success) {
                 alert(data.message || "매물 상태가 성공적으로 변경되었습니다.");
-                location.reload(); 
+                location.reload();
             } else {
                 alert(data.message || "매물 상태 변경에 실패했습니다.");
             }
@@ -426,6 +458,78 @@
             console.error('상태 변경 요청 중 오류 발생:', error);
             hideStatusModal();
             alert('서버 통신 중 오류가 발생했습니다.');
+        });
+    }
+
+    /**
+     * 계약 완료 모달을 띄우는 함수
+     */
+    function showContractModal() {
+        console.log('계약 완료 모달 열기');
+        document.getElementById('buyerUserId').value = '';
+        document.getElementById('userIdError').style.visibility = 'hidden';
+        document.getElementById('contractModal').style.display = 'flex';
+    }
+
+    /**
+     * 계약 완료 모달을 숨기는 함수
+     */
+    function hideContractModal() {
+        document.getElementById('contractModal').style.display = 'none';
+        currentPropertyId = null; // ID 초기화
+    }
+
+    /**
+     * 계약 완료 처리를 서버에 전송하는 함수
+     */
+    function submitContractCompletion() {
+        console.log('submitContractCompletion 함수 호출됨');
+        const buyerUserId = document.getElementById('buyerUserId').value.trim();
+        const errorSpan = document.getElementById('userIdError');
+
+        console.log('입력된 buyerUserId:', buyerUserId);
+        console.log('currentPropertyId:', currentPropertyId);
+
+        if (!buyerUserId) {
+            errorSpan.textContent = '구매자 USER ID를 입력해주세요.';
+            errorSpan.style.visibility = 'visible';
+            return;
+        }
+
+        // 에러 메시지 숨기기
+        errorSpan.style.visibility = 'hidden';
+
+        if (!currentPropertyId) {
+            alert('매물 정보가 없습니다.');
+            return;
+        }
+
+        console.log('서버 요청 시작...');
+        fetch('${pageContext.request.contextPath}/realtor/property/complete-contract', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'propertyId=' + currentPropertyId + '&buyerUserId=' + encodeURIComponent(buyerUserId)
+        })
+        .then(response => {
+            console.log('서버 응답 상태:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('서버 응답 데이터:', data);
+            hideContractModal();
+            if (data.success) {
+                alert(data.message || "계약이 성공적으로 완료되었습니다.");
+                location.reload();
+            } else {
+                alert(data.message || "계약 완료 처리에 실패했습니다.");
+            }
+        })
+        .catch(error => {
+            console.error('계약 완료 처리 중 오류 발생:', error);
+            hideContractModal();
+            alert('서버 통신 중 오류가 발생했습니다: ' + error.message);
         });
     }
 
@@ -477,11 +581,18 @@
                 changeStatus(newStatus);
             });
         });
-        
-        // 오버레이 클릭 시 모달 닫기
+
+        // 오버레이 클릭 시 상태 변경 모달 닫기
         document.getElementById('statusModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 hideStatusModal();
+            }
+        });
+
+        // 오버레이 클릭 시 계약 완료 모달 닫기
+        document.getElementById('contractModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideContractModal();
             }
         });
     });

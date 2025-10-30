@@ -67,14 +67,14 @@
         }
 
         .sidebar-menu a:hover {
-            background: #f7fafc;
+            background: #f0f2ff;
             color: #667eea;
         }
 
         .sidebar-menu a.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-right: 4px solid #667eea;
+            background: #e6e8ff;
+            color: #5568d3;
+            font-weight: 600;
         }
 
         .menu-icon {
@@ -165,16 +165,9 @@
             gap: 10px;
         }
 
-        .section-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
+        .section-title i {
+            font-size: 20px;
+            color: #667eea;
         }
 
         .form-row {
@@ -299,7 +292,7 @@
         }
 
         .option-checkbox:checked + .option-label {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border-color: #667eea;
         }
@@ -318,7 +311,7 @@
             position: relative;
             aspect-ratio: 1;
             border-radius: 8px;
-            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+            background: #e0e7ff;
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -419,7 +412,7 @@
 
         .btn-submit {
             padding: 16px 48px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
             border-radius: 8px;
@@ -478,10 +471,10 @@
         <aside class="sidebar">
             <div class="sidebar-title">중개사 메뉴</div>
             <ul class="sidebar-menu">
-                <li><a href="${pageContext.request.contextPath}/realtor/realtor-dashboard"><span class="menu-icon">📊</span>대시보드</a></li>
-                <li><a href="${pageContext.request.contextPath}/realtor/property-management" class="active"><span class="menu-icon">🏢</span>매물 관리</a></li>
-                <li><a href="${pageContext.request.contextPath}/realtor/property-register"><span class="menu-icon">➕</span>매물 등록</a></li>
-                <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management"><span class="menu-icon">💬</span>받은 문의</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/realtor-dashboard"><i class="fas fa-chart-line menu-icon"></i>대시보드</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/property-management" class="active"><i class="fas fa-building menu-icon"></i>매물 관리</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/property-register"><i class="fas fa-plus-circle menu-icon"></i>매물 등록</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management"><i class="fas fa-comments menu-icon"></i>받은 문의</a></li>
             </ul>
         </aside>
 
@@ -494,12 +487,12 @@
             <div class="info-box">
                 <div class="info-box-content">
                     <div class="info-box-left">
-                        <h3>📌 ${property.propertyName}</h3>
+                        <h3><i class="fas fa-thumbtack"></i> ${property.propertyName}</h3>
                         <div class="info-stats">
-                            <span>📅 등록일: <fmt:formatDate value="${property.createdAt}" pattern="yyyy.MM.dd"/></span>
-                            <span>👁️ 조회수: ${property.views != null ? property.views : 0}</span>
-                            <span>❤️ 찜: ${property.likes != null ? property.likes : 0}</span>
-                            <span>💬 문의: 0건</span>
+                            <span><i class="fas fa-calendar"></i> 등록일: <fmt:formatDate value="${property.createdAt}" pattern="yyyy.MM.dd"/></span>
+                            <span><i class="fas fa-eye"></i> 조회수: ${property.views != null ? property.views : 0}</span>
+                            <span><i class="fas fa-heart"></i> 찜: ${property.likes != null ? property.likes : 0}</span>
+                            <span><i class="fas fa-comments"></i> 문의: 0건</span>
                         </div>
                     </div>
                 </div>
@@ -509,7 +502,7 @@
                 <input type="hidden" name="id" value="${property.propertyNo}">
                 <div class="form-section">
                     <h2 class="section-title">
-                        <span class="section-icon">🏷️</span>
+                        <i class="fas fa-tag"></i>
                         매물 상태
                     </h2>
                     <div class="form-row single">
@@ -526,7 +519,7 @@
 
                 <div class="form-section">
                     <h2 class="section-title">
-                        <span class="section-icon">📝</span>
+                        <i class="fas fa-file-alt"></i>
                         기본 정보
                     </h2>
                     <div class="form-row single">
@@ -539,7 +532,7 @@
 
                 <div class="form-section">
                     <h2 class="section-title">
-                        <span class="section-icon">💰</span>
+                        <i class="fas fa-dollar-sign"></i>
                         가격 정보
                     </h2>
                     <div class="form-row">
@@ -575,7 +568,7 @@
 
                 <div class="form-section">
                     <h2 class="section-title">
-                        <span class="section-icon">✨</span>
+                        <i class="fas fa-star"></i>
                         옵션 정보
                     </h2>
 
@@ -654,7 +647,7 @@
 
                 <div class="form-section">
                     <h2 class="section-title">
-                        <span class="section-icon">📄</span>
+                        <i class="fas fa-file-alt"></i>
                         매물 설명
                     </h2>
                     <div class="form-group">
@@ -666,7 +659,7 @@
 
                 <div class="form-section">
                     <h2 class="section-title">
-                        <span class="section-icon">📸</span>
+                        <i class="fas fa-camera"></i>
                         매물 사진
                     </h2>
                     <div class="photo-grid">
@@ -680,21 +673,21 @@
                                         </c:if>
                                         <button type="button" class="photo-remove">×</button>
                                         <div class="photo-controls">
-                                            <button type="button" class="photo-control-btn">◀</button>
-                                            <button type="button" class="photo-control-btn">▶</button>
+                                            <button type="button" class="photo-control-btn"><i class="fas fa-chevron-left"></i></button>
+                                            <button type="button" class="photo-control-btn"><i class="fas fa-chevron-right"></i></button>
                                         </div>
                                     </div>
                                 </c:forEach>
                             </c:when>
                             <c:otherwise>
                                 <div class="photo-item">
-                                    🏠
+                                    <i class="fas fa-home"></i>
                                     <span class="photo-badge">대표</span>
                                 </div>
                             </c:otherwise>
                         </c:choose>
                         <div class="photo-item photo-add" onclick="document.getElementById('photoInput').click()">
-                            ➕
+                            <i class="fas fa-plus-circle"></i>
                         </div>
                     </div>
                     <input type="file" id="photoInput" class="photo-input" accept="image/*" multiple>

@@ -1042,16 +1042,19 @@
         updateButtons();
 
         // AI 검색 버튼
-        document.querySelector('.search-button').addEventListener('click', function() {
-            const searchInput = document.querySelector('.search-input');
-            const query = searchInput.value.trim();
+        const searchButton = document.querySelector('.search-button');
+        if (searchButton) {
+            searchButton.addEventListener('click', function() {
+                const searchInput = document.querySelector('.search-input');
+                const query = searchInput.value.trim();
 
-            if (query) {
-                performAiSearch(query);
-            } else {
-                alert('검색어를 입력해주세요.');
-            }
-        });
+                if (query) {
+                    performAiSearch(query);
+                } else {
+                    alert('검색어를 입력해주세요.');
+                }
+            });
+        }
 
         // AI 검색 실행
         function performAiSearch(query) {
@@ -1091,36 +1094,50 @@
         }
 
         // 검색창 엔터키
-        document.querySelector('.search-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.querySelector('.search-button').click();
-            }
-        });
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchButton = document.querySelector('.search-button');
+                    if (searchButton) {
+                        searchButton.click();
+                    }
+                }
+            });
+        }
 
         // 검색 예시 클릭
         document.addEventListener('DOMContentLoaded', function() {
             const searchExamples = document.querySelectorAll('.search-examples span');
             const searchInput = document.querySelector('.search-input');
 
-            searchExamples.forEach(function(span) {
-                span.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    searchInput.value = this.textContent;
-                    searchInput.focus();
+            if (searchInput) {
+                searchExamples.forEach(function(span) {
+                    span.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        searchInput.value = this.textContent;
+                        searchInput.focus();
+                    });
                 });
-            });
+            }
         });
 
         // 지도 링크 클릭
-        document.querySelector('.map-link').addEventListener('click', function() {
-            location.href = '${pageContext.request.contextPath}/map';
-        });
+        const mapLink = document.querySelector('.map-link');
+        if (mapLink) {
+            mapLink.addEventListener('click', function() {
+                location.href = '${pageContext.request.contextPath}/map';
+            });
+        }
 
         // 전체보기 버튼
-        document.querySelector('.view-all').addEventListener('click', function() {
-            // TODO: 매물 목록 페이지로 이동
-            alert('매물 목록 페이지는 준비 중입니다.');
-        });
+        const viewAllButton = document.querySelector('.view-all');
+        if (viewAllButton) {
+            viewAllButton.addEventListener('click', function() {
+                // TODO: 매물 목록 페이지로 이동
+                alert('매물 목록 페이지는 준비 중입니다.');
+            });
+        }
         
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get("sessionExpired") === "true") {

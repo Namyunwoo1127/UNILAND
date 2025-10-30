@@ -73,14 +73,14 @@
         }
 
         .sidebar-menu a:hover {
-            background: #f7fafc;
+            background: #f0f2ff;
             color: #667eea;
         }
 
         .sidebar-menu a.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-right: 4px solid #667eea;
+            background: #e6e8ff;
+            color: #5568d3;
+            font-weight: 600;
         }
 
         .menu-icon {
@@ -144,29 +144,17 @@
             font-weight: 500;
         }
 
-        .stat-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
+        .stat-card i {
+            font-size: 28px;
+            color: #667eea;
         }
 
-        .stat-icon.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .stat-card i.success {
+            color: #10b981;
         }
 
-        .stat-icon.success {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-            color: white;
-        }
-
-        .stat-icon.warning {
-            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
-            color: white;
+        .stat-card i.warning {
+            color: #f59e0b;
         }
 
         .stat-value {
@@ -368,7 +356,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -431,17 +419,10 @@
             box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
         }
 
-        .action-icon {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 15px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 28px;
+        .action-card i {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
         }
 
         .action-title {
@@ -465,10 +446,10 @@
         <aside class="sidebar">
             <div class="sidebar-title">중개사 메뉴</div>
             <ul class="sidebar-menu">
-                <li><a href="#" class="active"><span class="menu-icon">📊</span>대시보드</a></li>
-                <li><a href="${pageContext.request.contextPath}/realtor/property-management"><span class="menu-icon">🏢</span>매물 관리</a></li>
-                <li><a href="${pageContext.request.contextPath}/realtor/property-register"><span class="menu-icon">➕</span>매물 등록</a></li>
-                <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management"><span class="menu-icon">💬</span>받은 문의</a></li>
+                <li><a href="#" class="active"><i class="fas fa-chart-line menu-icon"></i>대시보드</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/property-management"><i class="fas fa-building menu-icon"></i>매물 관리</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/property-register"><i class="fas fa-plus-circle menu-icon"></i>매물 등록</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management"><i class="fas fa-comments menu-icon"></i>받은 문의</a></li>
             </ul>
         </aside>
 
@@ -482,7 +463,7 @@
                 <div class="stat-card">
                     <div class="stat-header">
                         <span class="stat-title">전체 매물</span>
-                        <div class="stat-icon primary">🏠</div>
+                        <i class="fas fa-home"></i>
                     </div>
                     <div class="stat-value" id="totalProperties">${allCount }</div>
                     <div class="stat-change" id="propertyChange">계산 중...</div>
@@ -491,7 +472,7 @@
                 <div class="stat-card">
                     <div class="stat-header">
                         <span class="stat-title">거래 완료</span>
-                        <div class="stat-icon success">✅</div>
+                        <i class="fas fa-check-circle success"></i>
                     </div>
                     <div class="stat-value" id="completedDeals">${completedCount }</div>
                     <div class="stat-change" id="dealChange">계산 중...</div>
@@ -500,7 +481,7 @@
                 <div class="stat-card">
                     <div class="stat-header">
                         <span class="stat-title">새 문의</span>
-                        <div class="stat-icon warning">📩</div>
+                        <i class="fas fa-envelope warning"></i>
                     </div>
                     <div class="stat-value" id="newInquiries">${stats.pendingCount}</div>
                     <div class="stat-change" id="inquiryChange">계산 중...</div>
@@ -513,12 +494,12 @@
                 </div>
                 <div class="quick-actions">
                     <div class="action-card" onclick="location.href='${pageContext.request.contextPath}/realtor/property-register'">
-                        <div class="action-icon">➕</div>
+                        <i class="fas fa-plus"></i>
                         <h3 class="action-title">매물 등록</h3>
                         <p class="action-desc">새로운 매물을 등록하세요</p>
                     </div>
                     <div class="action-card" onclick="location.href='${pageContext.request.contextPath}/realtor/inquiry-management'">
-                        <div class="action-icon">💬</div>
+                        <i class="fas fa-comments"></i>
                         <h3 class="action-title">문의 답변</h3>
                         <p class="action-desc" id="inquiryActionDesc">대기 중인 문의 확인</p>
                     </div>

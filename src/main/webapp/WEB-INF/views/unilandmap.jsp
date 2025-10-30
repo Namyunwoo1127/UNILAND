@@ -1005,12 +1005,13 @@
         }
 
         .btn-contact {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
         }
 
         .btn-contact:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6b3f8f 100%);
+            background: #f7fafc;
         }
 
         .btn-favorite {
@@ -1022,6 +1023,7 @@
         .btn-favorite:hover {
             background: #f7fafc;
         }
+
         .btn-detail {
             background: white;
             color: #667eea;
@@ -1029,8 +1031,7 @@
         }
 
         .btn-detail:hover {
-            background: #667eea;
-            color: white;
+            background: #f7fafc;
         }
 
         .detail-sidebar::-webkit-scrollbar {
@@ -1392,9 +1393,15 @@
             </div>
         </div>
 		<div class="detail-actions">
-            <button class="btn-favorite" id="btnFavorite" onclick="toggleWishlist()">♡ 찜하기</button>
-            <button class="btn-contact" onclick="checkLoginAndGoToContact()">중개사 문의하기</button>
-            <button class="btn-detail" onclick="openDetailPage()">🔍 전체 상세보기</button>
+            <button class="btn-favorite" id="btnFavorite" onclick="toggleWishlist()">
+                <i class="fa-regular fa-heart"></i> 찜
+            </button>
+            <button class="btn-contact" onclick="checkLoginAndGoToContact()">
+                <i class="fa-solid fa-comment-dots"></i> 매물 문의
+            </button>
+            <button class="btn-detail" onclick="openDetailPage()">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> 상세보기
+            </button>
         </div>
     </div>
 
@@ -2016,6 +2023,9 @@
                         thumbnailPath: property.thumbnailPath || '',
                         studentPref: property.studentPref,
                         shortCont: property.shortCont,
+                        contractArea: property.contractArea,
+                        floor: property.floor,
+                        maintenanceFee: property.maintenanceFee,
                         options: property.propertyOption ? {
                             airConditioner: property.propertyOption.airConditioner || 'N',
                             heater: property.propertyOption.heater || 'N',
@@ -2418,6 +2428,9 @@
                         thumbnailPath: property.thumbnailPath || '',
                         studentPref: property.studentPref,
                         shortCont: property.shortCont,
+                        contractArea: property.contractArea,
+                        floor: property.floor,
+                        maintenanceFee: property.maintenanceFee,
                         options: property.propertyOption ? {
                             airConditioner: property.propertyOption.airConditioner || 'N',
                             heater: property.propertyOption.heater || 'N',
@@ -2738,7 +2751,11 @@
         	      const btn = document.getElementById('btnFavorite');
         	      if (btn) {
         	        const liked = btn.classList.toggle('active');
-        	        btn.textContent = liked ? '♥ 찜해제' : '♡ 찜하기';
+        	        const icon = btn.querySelector('i');
+        	        if (icon) {
+        	          icon.className = liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+        	        }
+        	        btn.innerHTML = liked ? '<i class="fa-solid fa-heart"></i> 찜 취소' : '<i class="fa-regular fa-heart"></i> 찜';
         	      }
         	      return { _handled: true };
         	    }
@@ -2753,10 +2770,10 @@
         	    if (data.success !== undefined) {
         	      const liked = !!data.liked;
         	      btn.classList.toggle('active', liked);
-        	      btn.textContent = liked ? '♥ 찜해제' : '♡ 찜하기';
+        	      btn.innerHTML = liked ? '<i class="fa-solid fa-heart"></i> 찜 취소' : '<i class="fa-regular fa-heart"></i> 찜';
         	    } else {
         	      const liked = btn.classList.toggle('active');
-        	      btn.textContent = liked ? '♥ 찜해제' : '♡ 찜하기';
+        	      btn.innerHTML = liked ? '<i class="fa-solid fa-heart"></i> 찜 취소' : '<i class="fa-regular fa-heart"></i> 찜';
         	    }
         	  })
         	  .catch(err => {

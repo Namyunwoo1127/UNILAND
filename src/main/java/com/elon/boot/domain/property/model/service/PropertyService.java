@@ -101,6 +101,22 @@ public interface PropertyService {
      */
     int updateProperty(Map<String, Object> params);
 
+    /**
+     * 계약 완료 처리를 수행합니다. (USER_ID, CONTRACT_STATUS, STATUS, CONTRACT_AT 업데이트)
+     * @param propertyNo 매물 번호
+     * @param buyerUserId 구매자 USER ID
+     * @param realtorId 중개사 ID (소유권 확인용)
+     * @return 성공 여부 (1: 성공, 0: 실패)
+     */
+    int completeContract(int propertyNo, String buyerUserId, String realtorId);
+
+    /**
+     * 특정 사용자가 계약한 매물 목록을 조회합니다.
+     * @param filterParams userId와 CONTRACT_STATUS를 담은 Map
+     * @return 계약된 매물 목록
+     */
+    List<Property> getContractedPropertiesByUserId(Map<String, String> filterParams);
+
 	List<Property> selectListByNoList(List<Long> propertyNos);
 
 	List<PropertyImg> getImgListByNoList(List<Long> propertyNos);

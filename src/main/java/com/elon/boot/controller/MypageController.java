@@ -1,6 +1,8 @@
 package com.elon.boot.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
@@ -36,7 +38,7 @@ public class MypageController {
     // 일반 사용자 마이페이지
     @GetMapping
     public String mypage(HttpSession session, Model model) {
-    	
+
         User loginUser = (User) session.getAttribute("loginUser");
         if (loginUser == null) {
             return "redirect:/auth/login"; // 미로그인 시 로그인 페이지로
@@ -49,15 +51,22 @@ public class MypageController {
         	    .collect(Collectors.toList());
         List<Property> wishlist = pService.selectListByNoList(propertyNos);
         List<PropertyImg> wImg = pService.getImgListByNoList(propertyNos);
-        
+
         System.out.println(wishlist);
         System.out.println(wImg);
         System.out.println(iList);
-        
+
+        // 계약된 매물 목록 조회 (USER_ID가 현재 로그인한 사용자이고 CONTRACT_STATUS = 'Y'인 매물)
+        Map<String, String> contractFilter = new HashMap<>();
+        contractFilter.put("userId", loginUser.getUserId());
+        contractFilter.put("CONTRACT_STATUS", "Y");
+        List<Property> contractedProperties = pService.getContractedPropertiesByUserId(contractFilter);
+
         model.addAttribute("inquiries", inquiries);
         model.addAttribute("wishlist", wishlist);
         model.addAttribute("wImg", wImg);
-        
+        model.addAttribute("contractedProperties", contractedProperties);
+
         return "mypage/real-estate-mypage";
     }
     // 임시: 로그인 체크 비활성화 (개발용)

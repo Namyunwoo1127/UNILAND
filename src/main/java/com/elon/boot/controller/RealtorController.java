@@ -313,10 +313,10 @@ public class RealtorController {
     public Map<String, Object> deleteProperty(
             @RequestParam("propertyId") int propertyNo,
             HttpSession session) {
-        
+
         Map<String, Object> res = new HashMap<>();
         Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
-        
+
         if (loginRealtor == null) {
             res.put("success", false);
             res.put("message", "로그인이 필요합니다.");
@@ -325,8 +325,8 @@ public class RealtorController {
 
         try {
             // 중개사 소유 매물인지 확인하는 로직이 Service에 있다고 가정
-            int result = propertyService.deleteProperty(propertyNo, loginRealtor.getRealtorId()); 
-            
+            int result = propertyService.deleteProperty(propertyNo, loginRealtor.getRealtorId());
+
             if (result > 0) {
                 res.put("success", true);
                 res.put("message", "매물이 성공적으로 삭제되었습니다.");
@@ -339,7 +339,44 @@ public class RealtorController {
             res.put("success", false);
             res.put("message", "오류가 발생했습니다.");
         }
-        
+
+        return res;
+    }
+
+    /** ⭐ 계약 완료 처리 (AJAX) */
+    @PostMapping("/property/complete-contract")
+    @ResponseBody
+    public Map<String, Object> completeContract(
+            @RequestParam("propertyId") int propertyNo,
+            @RequestParam("buyerUserId") String buyerUserId,
+            HttpSession session) {
+
+        Map<String, Object> res = new HashMap<>();
+        Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
+
+        if (loginRealtor == null) {
+            res.put("success", false);
+            res.put("message", "로그인이 필요합니다.");
+            return res;
+        }
+
+        try {
+            // 계약 완료 처리 (USER_ID, CONTRACT_STATUS, STATUS, CONTRACT_AT 업데이트)
+            int result = propertyService.completeContract(propertyNo, buyerUserId, loginRealtor.getRealtorId());
+
+            if (result > 0) {
+                res.put("success", true);
+                res.put("message", "계약이 성공적으로 완료되었습니다.");
+            } else {
+                res.put("success", false);
+                res.put("message", "계약 완료 처리에 실패했습니다. 매물 번호 또는 사용자 ID를 확인해주세요.");
+            }
+        } catch (Exception e) {
+            log.error("계약 완료 처리 중 오류 발생: {}", e.getMessage());
+            res.put("success", false);
+            res.put("message", "오류가 발생했습니다: " + e.getMessage());
+        }
+
         return res;
     }
 
@@ -547,14 +584,23 @@ public class RealtorController {
         Realtor loginRealtor = (Realtor) session.getAttribute("loginRealtor");
 
         if (loginRealtor == null) {
-            return "redirect:/realtor/realtor-login"; 
+            return "redirect:/realtor/realtor-login";
         }
 
-        // 최신 사용자 정보를 다시 조회 
+        // 최신 사용자 정보를 다시 조회
         Realtor currentRealtor = realtorService.getRealtorById(loginRealtor.getRealtorId());
-        
+
         session.setAttribute("loginRealtor", currentRealtor);
         model.addAttribute("realtor", currentRealtor);
+
+        // 계약 완료된 매물 목록 조회 (CONTRACT_STATUS = 'Y')
+        Map<String, String> filterParams = new HashMap<>();
+        filterParams.put("realtorId", currentRealtor.getRealtorId());
+        filterParams.put("STATUS", "COMPLETED");
+        filterParams.put("CONTRACT_STATUS", "Y");
+
+        List<Property> contractedProperties = propertyService.selectPropertyList(filterParams, null);
+        model.addAttribute("contractedProperties", contractedProperties);
 
         return "realtor/realtor-mypage";
     }

@@ -67,14 +67,14 @@
         }
 
         .sidebar-menu a:hover {
-            background: #f7fafc;
+            background: #f0f2ff;
             color: #667eea;
         }
 
         .sidebar-menu a.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-right: 4px solid #667eea;
+            background: #e6e8ff;
+            color: #5568d3;
+            font-weight: 600;
         }
 
         .menu-icon {
@@ -132,16 +132,9 @@
             gap: 10px;
         }
 
-        .section-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
+        .section-title i {
+            font-size: 20px;
+            color: #667eea;
         }
 
         .form-row {
@@ -288,7 +281,7 @@
         }
 
         .option-checkbox:checked + .option-label {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border-color: #667eea;
         }
@@ -399,7 +392,7 @@
 
         .btn-submit {
             padding: 16px 48px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
             border-radius: 8px;
@@ -450,10 +443,10 @@
     <aside class="sidebar">
         <div class="sidebar-title">중개사 메뉴</div>
         <ul class="sidebar-menu">
-            <li><a href="${pageContext.request.contextPath}/realtor/realtor-dashboard"><span class="menu-icon">📊</span>대시보드</a></li>
-            <li><a href="${pageContext.request.contextPath}/realtor/property-management"><span class="menu-icon">🏢</span>매물 관리</a></li>
-            <li><a href="#" class="active"><span class="menu-icon">➕</span>매물 등록</a></li>
-            <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management"><span class="menu-icon">💬</span>받은 문의</a></li>
+            <li><a href="${pageContext.request.contextPath}/realtor/realtor-dashboard"><i class="fas fa-chart-line menu-icon"></i>대시보드</a></li>
+            <li><a href="${pageContext.request.contextPath}/realtor/property-management"><i class="fas fa-building menu-icon"></i>매물 관리</a></li>
+            <li><a href="#" class="active"><i class="fas fa-plus-circle menu-icon"></i>매물 등록</a></li>
+            <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management"><i class="fas fa-comments menu-icon"></i>받은 문의</a></li>
         </ul>
     </aside>
 
@@ -472,7 +465,7 @@
 
             <!-- 기본 정보 -->
             <div class="form-section">
-                <h2 class="section-title"><span class="section-icon">📝</span>기본 정보</h2>
+                <h2 class="section-title"><i class="fas fa-file-alt"></i>기본 정보</h2>
                 <div class="form-row single">
                     <div class="form-group">
                         <label class="form-label">매물 제목<span class="required">*</span></label>
@@ -504,7 +497,7 @@
 
             <!-- 가격 정보 -->
             <div class="form-section">
-                <h2 class="section-title"><span class="section-icon">💰</span>가격 정보</h2>
+                <h2 class="section-title"><i class="fas fa-dollar-sign"></i>가격 정보</h2>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">보증금<span class="required">*</span></label>
@@ -553,7 +546,7 @@
 
             <!-- 위치 정보 -->
             <div class="form-section">
-                <h2 class="section-title"><span class="section-icon">📍</span>위치 정보</h2>
+                <h2 class="section-title"><i class="fas fa-map-marker-alt"></i>위치 정보</h2>
                 <div class="form-row single">
                     <div class="form-group">
                         <label class="form-label">주소<span class="required">*</span></label>
@@ -574,7 +567,7 @@
 
             <!-- 상세 정보 -->
             <div class="form-section">
-                <h2 class="section-title"><span class="section-icon">🏠</span>상세 정보</h2>
+                <h2 class="section-title"><i class="fas fa-home"></i>상세 정보</h2>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">전용면적<span class="required">*</span></label>
@@ -638,7 +631,7 @@
 
          <!-- 옵션 정보 -->
          <div class="form-section">
-           <h2 class="section-title"><span class="section-icon">✨</span>옵션 정보</h2>
+           <h2 class="section-title"><i class="fas fa-star"></i>옵션 정보</h2>
          
            <!-- 냉난방 -->
            <div class="form-group">
@@ -688,7 +681,7 @@
 
             <!-- 매물 설명 -->
             <div class="form-section">
-                <h2 class="section-title"><span class="section-icon">📄</span>매물 설명</h2>
+                <h2 class="section-title"><i class="fas fa-file-alt"></i>매물 설명</h2>
                 <div class="form-group">
                     <label class="form-label">상세 설명<span class="required">*</span></label>
                     <textarea class="form-textarea" name="description" placeholder="매물에 대한 자세한 설명을 입력하세요. (최대 1000자)" maxlength="1000" required></textarea>
@@ -698,11 +691,11 @@
 
             <!-- 매물 사진 -->
             <div class="form-section">
-                <h2 class="section-title"><span class="section-icon">📸</span>매물 사진</h2>
+                <h2 class="section-title"><i class="fas fa-camera"></i>매물 사진</h2>
                 <div class="form-group">
                     <label class="form-label">사진 업로드<span class="required">*</span> (최소 1장, 최대 10장)</label>
                     <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
-                        <div class="upload-icon">📷</div>
+                        <div class="upload-icon"><i class="fas fa-camera"></i></div>
                         <div class="upload-text">클릭하여 사진 업로드</div>
                         <div class="upload-hint">JPG, PNG 파일 (최대 5MB)</div>
                     </div>

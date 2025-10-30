@@ -64,14 +64,14 @@
         }
 
         .sidebar-menu a:hover {
-            background: #f7fafc;
+            background: #f0f2ff;
             color: #667eea;
         }
 
         .sidebar-menu a.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-right: 4px solid #667eea;
+            background: #e6e8ff;
+            color: #5568d3;
+            font-weight: 600;
         }
 
         .menu-icon {
@@ -249,7 +249,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -518,10 +518,10 @@
         <aside class="sidebar">
             <div class="sidebar-title">중개사 메뉴</div>
             <ul class="sidebar-menu">
-                <li><a href="${pageContext.request.contextPath}/realtor/realtor-dashboard"><span class="menu-icon">📊</span>대시보드</a></li>
-                <li><a href="${pageContext.request.contextPath}/realtor/property-management"><span class="menu-icon">🏢</span>매물 관리</a></li>
-                <li><a href="${pageContext.request.contextPath}/realtor/property-register"><span class="menu-icon">➕</span>매물 등록</a></li>
-                <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management" class="active"><span class="menu-icon">💬</span>받은 문의</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/realtor-dashboard"><i class="fas fa-chart-line menu-icon"></i>대시보드</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/property-management"><i class="fas fa-building menu-icon"></i>매물 관리</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/property-register"><i class="fas fa-plus-circle menu-icon"></i>매물 등록</a></li>
+                <li><a href="${pageContext.request.contextPath}/realtor/inquiry-management" class="active"><i class="fas fa-comments menu-icon"></i>받은 문의</a></li>
             </ul>
         </aside>
 
@@ -587,14 +587,14 @@
                     </div>
                     <div class="search-box">
                         <input type="text" class="search-input" id="searchInput" placeholder="문의자, 매물명으로 검색...">
-                        <span class="search-icon">🔍</span>
+                        <span class="search-icon"><i class="fas fa-search"></i></span>
                     </div>
                 </div>
 
                 <c:choose>
                     <c:when test="${empty inquiries}">
                         <div class="empty-state">
-                            <div class="empty-icon">📭</div>
+                            <div class="empty-icon"><i class="fas fa-inbox"></i></div>
                             <h3>받은 문의가 없습니다</h3>
                             <p>고객이 문의를 남기면 여기에 표시됩니다</p>
                         </div>
@@ -612,14 +612,14 @@
                                                 <div class="inquiry-user-detail">
                                                     <h3>${inquiry.userName} 님</h3>
                                                     <div class="inquiry-meta">
-                                                        <span>📞 ${inquiry.userPhone}</span>
-                                                        <span>🕐 <fmt:formatDate value="${inquiry.createdAt}" pattern="yyyy.MM.dd HH:mm"/></span>
+                                                        <span><i class="fas fa-phone"></i> ${inquiry.userPhone}</span>
+                                                        <span><i class="fas fa-clock"></i> <fmt:formatDate value="${inquiry.createdAt}" pattern="yyyy.MM.dd HH:mm"/></span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <c:if test="${not empty inquiry.propertyName}">
-                                                <div class="inquiry-property">🏠 ${inquiry.propertyName}</div>
+                                                <div class="inquiry-property"><i class="fas fa-home"></i> ${inquiry.propertyName}</div>
                                             </c:if>
                                             
                                             <div>
@@ -670,7 +670,7 @@
                                         <c:choose>
                                             <c:when test="${inquiry.status == 'PENDING'}">
                                                 <div class="reply-section">
-                                                    <div class="reply-title">💬 답변 작성</div>
+                                                    <div class="reply-title"><i class="fas fa-comments"></i> 답변 작성</div>
                                                     <textarea class="reply-textarea" placeholder="고객님께 답변을 작성하세요..."></textarea>
                                                     <div class="reply-actions">
                                                         <button class="btn-cancel" onclick="event.stopPropagation(); hideReplyForm(this)">취소</button>
@@ -681,7 +681,7 @@
                                             <c:otherwise>
                                                 <div class="replied-content">
                                                     <div class="replied-header">
-                                                        <span class="replied-title">✅ 답변 완료</span>
+                                                        <span class="replied-title"><i class="fas fa-check-circle"></i> 답변 완료</span>
                                                         <span class="replied-date">
                                                             <fmt:formatDate value="${inquiry.answeredAt}" pattern="yyyy.MM.dd HH:mm"/>
                                                         </span>
