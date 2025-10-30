@@ -1306,12 +1306,6 @@
         <div class="sidebar">
             <div class="list-header">
                 <h2>매물 <span class="count" id="sidebarCount">0</span>개</h2>
-                <select class="sort-select">
-                    <option>추천순</option>
-                    <option>최신순</option>
-                    <option>가격낮은순</option>
-                    <option>가격높은순</option>
-                </select>
             </div>
 
             <div class="property-list-content" id="propertyListContent">
@@ -2628,8 +2622,31 @@
             ).join('');
             document.getElementById('detailOptions').innerHTML = optionsHtml;
 
+            // 찜 상태 로드
+            loadWishlistStatus(propertyId);
+
             document.getElementById('detailSidebar').classList.add('active');
             document.getElementById('sidebarOverlay').classList.add('active');
+        }
+
+        // 찜 상태 로드 함수
+        function loadWishlistStatus(propertyId) {
+            fetch('${pageContext.request.contextPath}/property/' + propertyId + '/wishlist/status', {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(res => res.json())
+            .then(data => {
+                const btn = document.getElementById('btnFavorite');
+                if (!btn) return;
+
+                const liked = !!data.liked;
+                btn.classList.toggle('active', liked);
+                btn.innerHTML = liked ? '<i class="fa-solid fa-heart"></i> 찜 취소' : '<i class="fa-regular fa-heart"></i> 찜';
+            })
+            .catch(err => {
+                console.error('찜 상태 로드 중 오류:', err);
+            });
         }
 
         // 상세정보 닫기
@@ -2739,7 +2756,7 @@
 
         	  fetch('${pageContext.request.contextPath}/property/' + propertyId + '/wishlistM', {
         	    method: 'POST',
-        	    headers: {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };,
+        	    headers: {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
         	    body: '{}'
         	  })
         	  .then(res => {
